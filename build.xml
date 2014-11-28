@@ -1,0 +1,33 @@
+<project name="Contests" default="dist" basedir=".">
+	<property file="./config/build.properties"/>
+
+	<target name="init">
+		<!-- Create a timestamp -->
+		<tstamp/>
+		<!-- Create directories if not existing -->
+		<mkdir dir="${build}"/>
+		<mkdir dir="${dist}"/>
+		<mkdir dir="${dist}/config"/>
+	</target>
+
+	<target name="compile" depends="init" description="compile the source files">
+		<javac srcdir="${src}" destdir="${build}" includeantruntime="false"/>
+	</target>
+
+	<target name="dist" depends="compile" description="packages compiled files">
+		<copy todir="${dist}/config">
+			<fileset dir="${config}" excludes="*build.properties"/>
+		</copy>
+		<jar destfile="${dist}Contests-${version}.jar">
+			<fileset dir="${build}"/>
+			<manifest>
+				<attribute name="Main-Class" value="cz.salmelu.contests"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="clean" description="removes compiled files">
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+	</target>
+</project>
