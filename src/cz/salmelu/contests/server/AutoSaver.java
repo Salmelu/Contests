@@ -1,6 +1,6 @@
 package cz.salmelu.contests.server;
 
-public class AutoSaver implements Runnable {
+public class AutoSaver extends Thread {
 
 	private DataHolder dh;
 	private DataLoader dl;
@@ -12,10 +12,10 @@ public class AutoSaver implements Runnable {
 
 	@Override
 	public void run() {
-		Thread.currentThread().setDaemon(true);
+		this.setDaemon(true);
 		while(true) {
 			try {
-				Thread.sleep(Config.SAVE_INTERVAL);
+				Thread.sleep(Config.SAVE_INTERVAL * 1000);
 			} 
 			catch (InterruptedException e) {
 				System.err.println("Saving thread interrupted.");
@@ -23,7 +23,9 @@ public class AutoSaver implements Runnable {
 			
 			try {
 				if(dh.lock()) {
+					if(Config.VERBOSE) System.out.println("Saving data");
 					dl.save(dh.getAllContests());
+					if(Config.VERBOSE) System.out.println("Data successfully saved");
 					dh.unlock();
 				}
 				else {
