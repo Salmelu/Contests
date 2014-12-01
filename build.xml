@@ -18,6 +18,7 @@
 		<copy todir="${dist}/config">
 			<fileset dir="${config}" excludes="*build.properties"/>
 		</copy>
+		<mkdir dir="${log}"/>
 		<jar destfile="${dist}Contests-${version}.jar">
 			<fileset dir="${build}"/>
 			<manifest>

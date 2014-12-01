@@ -6,7 +6,8 @@ import cz.salmelu.contests.util.ConfigParser;
 
 public class Config {
 		
-	public static final boolean VERBOSE;
+	public static final String LOGGING;
+	public static final String LOGGING_PATH;
 
 	public static final boolean SAVE_METHOD_FILE;
 	public static final String SAVE_FILE;
@@ -16,9 +17,12 @@ public class Config {
 	
 	public static final int INET_PORT;
 
+
 	static {
 		ConfigParser cp = new ConfigParser(new File("config/server.conf"));
-		VERBOSE = cp.getBooleanProperty("VERBOSE", false);
+		LOGGING = cp.getAllowedStringProperty("LOGGING", "verbose-warning",
+				"verbose-verbose", "verbose-info", "verbose-warning", "info-info", "info-warning", "warning-warning");
+		LOGGING_PATH = cp.getStringProperty("LOGGING_PATH", "log/");
 
 		SAVE_METHOD_FILE = cp.getBooleanProperty("SAVE_METHOD_FILE", true);
 		SAVE_FILE = cp.getStringProperty("SAVE_FILE", "");

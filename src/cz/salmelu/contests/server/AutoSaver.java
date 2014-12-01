@@ -1,5 +1,9 @@
 package cz.salmelu.contests.server;
 
+import cz.salmelu.contests.model.DataLoader;
+import cz.salmelu.contests.util.Logger;
+import cz.salmelu.contests.util.LoggerSeverity;
+
 public class AutoSaver extends Thread {
 
 	private DataHolder dh;
@@ -18,14 +22,15 @@ public class AutoSaver extends Thread {
 				Thread.sleep(Config.SAVE_INTERVAL * 1000);
 			} 
 			catch (InterruptedException e) {
-				System.err.println("Saving thread interrupted.");
+				Logger.getInstance().log("Saving thread interrupted", LoggerSeverity.ERROR);
+				Logger.getInstance().log(e.getLocalizedMessage(), LoggerSeverity.ERROR);
 			}
 			
 			try {
 				if(dh.lock()) {
-					if(Config.VERBOSE) System.out.println("Saving data");
+					Logger.getInstance().log("Saving data", LoggerSeverity.INFO);
 					dl.save(dh.getAllContests());
-					if(Config.VERBOSE) System.out.println("Data successfully saved");
+					Logger.getInstance().log("Data successfully saved", LoggerSeverity.INFO);
 					dh.unlock();
 				}
 				else {

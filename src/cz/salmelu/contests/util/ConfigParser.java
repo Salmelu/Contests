@@ -64,6 +64,21 @@ public class ConfigParser {
 		}
 		return properties.get(name);
 	}
+	
+	public String getAllowedStringProperty(String name, String defaultValue, String... allowed) {
+		if(!properties.containsKey(name)) {
+			System.err.println("Error parsing config: Property " + name + " was not found.");
+			return defaultValue;
+		}
+		String loaded = properties.get(name);
+		for(String s : allowed) {
+			if(loaded.equalsIgnoreCase(s)) {
+				return s;
+			}
+		}
+		System.err.println("Error parsing config: Property " + name + " has invalid value " + loaded + ".");
+		return defaultValue;
+	}
 
 	public boolean getBooleanProperty(String name, boolean defaultValue) {
 		if(!properties.containsKey(name)) {

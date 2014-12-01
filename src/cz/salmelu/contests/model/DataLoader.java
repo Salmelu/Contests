@@ -1,4 +1,4 @@
-package cz.salmelu.contests.server;
+package cz.salmelu.contests.model;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,8 +10,7 @@ import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.TreeMap;
 
-import cz.salmelu.contests.model.Contest;
-import cz.salmelu.contests.model.IdFactory;
+import cz.salmelu.contests.server.LoaderException;
 
 public class DataLoader {
 

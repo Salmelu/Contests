@@ -37,8 +37,6 @@ public class DataHolder {
 		
 	}
 	
-	
-	
 	public synchronized boolean lock() {
 		try {
 			while(locked) {
