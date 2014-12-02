@@ -6,11 +6,11 @@ public class TeamCategory {
 	private String name;
 	
 	public TeamCategory() {
-		this.id = IdFactory.getInstance().getNewTeamCategoryId();
+		this.id = IdFactory.getInstance().getNewId(this);
 	}
 	
 	public TeamCategory(String name) {
-		this.id = IdFactory.getInstance().getNewTeamCategoryId();
+		this.id = IdFactory.getInstance().getNewId(this);
 		this.name = name;
 	}
 	

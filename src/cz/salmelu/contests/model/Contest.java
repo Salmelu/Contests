@@ -20,11 +20,11 @@ public class Contest implements Serializable {
 	private String name;
 	
 	public Contest() {
-		this.id = IdFactory.getInstance().getNewContestId();
+		this.id = IdFactory.getInstance().getNewId(this);
 	}
 	
 	public Contest(String name) {
-		this.id = IdFactory.getInstance().getNewContestId();
+		this.id = IdFactory.getInstance().getNewId(this);
 		this.name = name;
 	}
 	

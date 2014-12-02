@@ -19,7 +19,7 @@ public class Team {
 	}
 	
 	public Team(String name, int teamBonus) {
-		this.id = IdFactory.getInstance().getNewContestId();
+		this.id = IdFactory.getInstance().getNewId(this);
 		this.name = name;
 		this.teamBonus = teamBonus;
 	}

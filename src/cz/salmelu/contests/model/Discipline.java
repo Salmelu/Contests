@@ -6,11 +6,11 @@ public class Discipline {
 	private String name;
 	
 	public Discipline() {
-		this.id = IdFactory.getInstance().getNewDisciplineId();
+		this.id = IdFactory.getInstance().getNewId(this);
 	}
 	
 	public Discipline(String name) {
-		this.id = IdFactory.getInstance().getNewDisciplineId();
+		this.id = IdFactory.getInstance().getNewId(this);
 		this.name = name;
 	}
 	

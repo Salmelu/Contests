@@ -20,7 +20,7 @@ public class Contestant {
 	}
 	
 	public Contestant(String firstName, String lastName, Category cat) {
-		this.id = IdFactory.getInstance().getNewContestantId();
+		this.id = IdFactory.getInstance().getNewId(this);
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.cat = cat;

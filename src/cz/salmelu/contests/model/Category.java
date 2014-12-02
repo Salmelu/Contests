@@ -9,11 +9,11 @@ public class Category {
 	private String name;
 	
 	public Category() {
-		this.id = IdFactory.getInstance().getNewCategoryId();
+		this.id = IdFactory.getInstance().getNewId(this);
 	}
 	
 	public Category(String name) {
-		this.id = IdFactory.getInstance().getNewCategoryId();
+		this.id = IdFactory.getInstance().getNewId(this);
 		this.name = name;
 	}
 	
