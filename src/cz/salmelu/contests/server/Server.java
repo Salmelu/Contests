@@ -17,7 +17,7 @@ import java.util.Date;
 import cz.salmelu.contests.model.Contest;
 import cz.salmelu.contests.model.DataLoader;
 import cz.salmelu.contests.net.Packet;
-import cz.salmelu.contests.net.ServerInputException;
+import cz.salmelu.contests.net.ServerError;
 import cz.salmelu.contests.util.Logger;
 import cz.salmelu.contests.util.LoggerSeverity;
 
@@ -115,7 +115,7 @@ public class Server {
 					else {
 						try {
 							output.writeBoolean(false);
-							output.writeObject(new ServerInputException("No packet received."));
+							output.writeObject(ServerError.InvalidPacket);
 						}
 						catch(IOException e1) {
 							e1.printStackTrace();

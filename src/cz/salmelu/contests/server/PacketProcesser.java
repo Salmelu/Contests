@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import cz.salmelu.contests.model.Contest;
+import cz.salmelu.contests.model.*;
 import cz.salmelu.contests.net.Packet;
-import cz.salmelu.contests.net.ServerInputException;
-import cz.salmelu.contests.net.ServerProcessException;
+import cz.salmelu.contests.net.ServerError;
 
 public class PacketProcesser {
 	
@@ -19,56 +18,167 @@ public class PacketProcesser {
 
 	public boolean processPacket(Packet p, ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		if(p == null) {
-			writeInputError(out, "Invalid packet received.");
+			writeServerError(out, ServerError.InvalidPacket);
 			return false;
 		}
-		switch(p) {
-		case GET_CONTEST:
-			if(getContest(in, out))
-				return true;
+		try {
+			switch(p) {
+			case CONTEST_GET:
+				if(getContest(in, out))
+					return true;
+				break;
+			case CONTEST_ADD:
+				if(addContest(in, out))
+					return true;
+				break;
+			case TCATEGORY_GET:
+				if(getTeamCategory(in, out))
+					return true;
+				break;
+			case TCATEGORY_ADD:
+				if(addTeamCategory(in, out))
+					return true;
+				break;
+			case TCATEGORY_EDIT_NAME:
+				if(editTeamCategoryName(in, out))
+					return true;
+				break;
+			case TCATEGORY_EDIT_MODE:
+				if(editTeamCategoryMode(in, out))
+					return true;
+				break;
+			case TEAM_ADD:
+				break;
+			case TEAM_EDIT_BONUS:
+				break;
+			case TEAM_EDIT_NAME:
+				break;
+			case TEAM_GET:
+				break;
+			case TEAM_JOIN_CONTESTANT:
+				break;
+			case TEAM_LEAVE_CONTESTANT:
+				break;
+			default:
+				break;
+			}
+		}
+		catch(IOException e) {
+			writeServerError(out, ServerError.InvalidInput);
+			return false;
+		}
+		catch (ClassNotFoundException e) {
+			writeServerError(out, ServerError.InvalidInput);
+			return false;
 		}
 		return false;
 	}
 	
-	private boolean getContest(ObjectInputStream in, ObjectOutputStream out) {
+	private boolean getContest(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		int contestId;
-		try {
-			contestId = in.readInt();
-		}
-		catch (IOException e) {
-			writeInputError(out, "Invalid server input, int expected.");
-			return false;
-		}
+		contestId = in.readInt();
 		Contest cs = dh.getContest(contestId);
 		if(cs == null) {
-			writeServerError(out, "No contest with id: " + contestId + " was found.");
+			writeServerError(out, ServerError.ContestNotFound);
 			return false;
 		}
-		try {
-			out.writeBoolean(true);
-			out.writeObject(cs);
-			return true;
+		out.writeBoolean(true);
+		out.writeObject(cs);
+		return true;
+	}
+	
+	private boolean addContest(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
+		String contestName;
+		contestName = (String) in.readObject();
+		Contest cs = new Contest(contestName);
+		dh.addContest(cs);
+		out.writeBoolean(true);
+		return true;
+	}
+	
+	private boolean getTeamCategory(ObjectInputStream in, ObjectOutputStream out) throws IOException {
+		int contestId, tcId;
+		contestId = in.readInt();
+		tcId = in.readInt();
+		TeamCategory tc = dh.getTeamCategory(contestId, tcId);
+		if(tc == null) {
+			writeServerError(out, ServerError.TeamCategoryNotFound);
+			return false;
 		}
-		catch(IOException e) {
+		out.writeBoolean(true);
+		out.writeObject(tc);
+		return true;
+	}
+	
+	private boolean addTeamCategory(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+		String tcName;
+		ScoreMode sm;
+		int contestId;
+		
+		tcName = (String) in.readObject();
+		sm = (ScoreMode) in.readObject();
+		contestId = in.readInt();
+		
+		Contest cs = dh.getContest(contestId);
+		if(cs == null) {
+			writeServerError(out, ServerError.ContestNotFound);
+			return false;
+		}
+		
+		TeamCategory tc = new TeamCategory(tcName, sm);
+		dh.addTeamCategory(tc, cs);
+		out.writeBoolean(true);
+		return true;
+	}
+	
+	public boolean editTeamCategoryName(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+		int contestId, tcId;
+		String newName;
+		contestId = in.readInt();
+		tcId = in.readInt();
+		newName = (String) in.readObject();
+		TeamCategory tc = dh.getTeamCategory(contestId, tcId);
+		if(tc == null) {
+			writeServerError(out, ServerError.TeamCategoryNotFound);
+			return false;
+		}
+		if(newName == null) {
+			writeServerError(out, ServerError.InvalidInput);
+			return false;
+		}
+		tc.setName(newName);
+		out.writeBoolean(true);
+		return true;
+	}
+	
+	public boolean editTeamCategoryMode(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+		int contestId, tcId;
+		ScoreMode sm;
+		contestId = in.readInt();
+		tcId = in.readInt();
+		sm = (ScoreMode) in.readObject();
+		TeamCategory tc = dh.getTeamCategory(contestId, tcId);
+		if(tc == null) {
+			writeServerError(out, ServerError.TeamCategoryNotFound);
+			return false;
+		}
+		if(sm == null) {
+			writeServerError(out, ServerError.InvalidInput);
+			return false;
+		}
+		tc.setScoreMode(sm);
+		out.writeBoolean(true);
+		return true;
+	}
+
+	private void writeServerError(ObjectOutputStream out, ServerError message) {
+		try {
+			out.writeBoolean(false);
+			out.writeObject(message);
+		}
+		catch (IOException e) {
 			e.printStackTrace();
-			return false;
 		}
-	}
-	
-	private void writeInputError(ObjectOutputStream out, String message) {
-		try {
-			out.writeBoolean(false);
-			out.writeObject(new ServerInputException(message));
-		}
-		catch (IOException e1) {}
-	}
-	
-	private void writeServerError(ObjectOutputStream out, String message) {
-		try {
-			out.writeBoolean(false);
-			out.writeObject(new ServerProcessException(message));
-		}
-		catch (IOException e1) {}
 	}
 	
 }

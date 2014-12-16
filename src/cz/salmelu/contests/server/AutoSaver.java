@@ -34,11 +34,11 @@ public class AutoSaver extends Thread {
 					dh.unlock();
 				}
 				else {
-					System.err.println("Couldn't lock data.");
+					Logger.getInstance().log("Saving thread couldn't lock data.", LoggerSeverity.WARNING);
 				}
 			}
 			catch(LoaderException e) {
-				System.err.println(e.getLocalizedMessage());
+				Logger.getInstance().log("Saving thread: " + e.getLocalizedMessage(), LoggerSeverity.ERROR);
 			}
 		}
 	}

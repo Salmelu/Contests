@@ -33,8 +33,16 @@ public class DataHolder {
 		this.contests.put(cs.getId(), cs);
 	}
 	
+	public TeamCategory getTeamCategory(int contestId, int tcId) {
+		if(!contests.containsKey(contestId))
+			return null;
+		if(!contests.get(contestId).getTeamCategories().contains(tcId))
+			return null;
+		return contests.get(contestId).getTeamCategories().get(tcId);
+	}
+	
 	public void addTeamCategory(TeamCategory tc, Contest c) {
-		
+		c.addTeamCategory(tc);
 	}
 	
 	public synchronized boolean lock() {
