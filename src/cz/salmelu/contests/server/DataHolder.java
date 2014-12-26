@@ -3,8 +3,7 @@ package cz.salmelu.contests.server;
 import java.util.Map;
 import java.util.TreeMap;
 
-import cz.salmelu.contests.model.Contest;
-import cz.salmelu.contests.model.TeamCategory;
+import cz.salmelu.contests.model.*;
 
 public class DataHolder {
 	
@@ -33,16 +32,31 @@ public class DataHolder {
 		this.contests.put(cs.getId(), cs);
 	}
 	
-	public TeamCategory getTeamCategory(int contestId, int tcId) {
-		if(!contests.containsKey(contestId))
-			return null;
-		if(!contests.get(contestId).getTeamCategories().contains(tcId))
+	public TeamCategory getTeamCategory(int tcId, int contestId) {
+		Contest cs = contests.get(contestId);
+		if(cs == null)
 			return null;
 		return contests.get(contestId).getTeamCategories().get(tcId);
 	}
 	
 	public void addTeamCategory(TeamCategory tc, Contest c) {
 		c.addTeamCategory(tc);
+	}
+	
+	public Team getTeam(int teamId, int tcId, int contestId) {
+		Contest cs = contests.get(contestId);
+		if(cs == null)
+			return null;
+		TeamCategory tc = cs.getTeamCategories().get(tcId);
+		if(tc == null)
+			return null;
+		Team t = cs.getTeams(tc).get(teamId);
+		return t;
+	}
+	
+	public void addTeam(Team t, TeamCategory tc, Contest cs) {
+		cs.addTeam(tc, t);
+		t.setCategory(tc);
 	}
 	
 	public synchronized boolean lock() {

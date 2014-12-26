@@ -2,6 +2,7 @@ package cz.salmelu.contests.model;
 
 public class TeamContestant extends Contestant {
 
+	private static final long serialVersionUID = 3976368930647480024L;
 	private double bonus;
 	private Team team = null;
 	

@@ -1,11 +1,14 @@
 package cz.salmelu.contests.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Team {
-
+public class Team implements Serializable {
+	
+	private static final long serialVersionUID = 3663526489659093306L;
 	private final int id;
 	private String name;
+	private TeamCategory cat;
 	private List<TeamContestant> contestants;
 	private double teamBonus;
 	private transient int order;
@@ -18,7 +21,7 @@ public class Team {
 		this(name, 0);
 	}
 	
-	public Team(String name, int teamBonus) {
+	public Team(String name, double teamBonus) {
 		this.id = IdFactory.getInstance().getNewId(this);
 		this.name = name;
 		this.teamBonus = teamBonus;
@@ -35,6 +38,14 @@ public class Team {
 	public String getName() {
 		return name;
 	}
+	
+	public void setCategory(TeamCategory tc) {
+		this.cat = tc;
+	}
+	
+	public TeamCategory getCategory() {
+		return cat;
+	}
  
 	public void setBonus(double bonus) {
 		this.teamBonus = bonus;
@@ -42,6 +53,11 @@ public class Team {
 	
 	public double getBonus() {
 		return teamBonus;
+	}
+	
+	public double getTotalScore() {
+		// FIXME fill a method to count it
+		return 0;
 	}
 	
 	public List<TeamContestant> getContestants() {

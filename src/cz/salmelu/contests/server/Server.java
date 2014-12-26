@@ -10,11 +10,12 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import cz.salmelu.contests.model.Category;
 import cz.salmelu.contests.model.Contest;
+import cz.salmelu.contests.model.Contestant;
 import cz.salmelu.contests.model.DataLoader;
 import cz.salmelu.contests.net.Packet;
 import cz.salmelu.contests.net.ServerError;
@@ -41,6 +42,21 @@ public class Server {
 			catch (LoaderException e) {
 				Logger.getInstance().log("Unable to load save file, starting new instance.", LoggerSeverity.WARNING);
 				Logger.getInstance().log(e.getLocalizedMessage(), LoggerSeverity.WARNING);
+				// TODO - remove, testing stuff
+				Contest c = new Contest("Hello");
+				Category ct1 = new Category("Bla");
+				Category ct2 = new Category("Dla");
+				c.addCategory(ct1);
+				c.addCategory(ct2);
+				Contestant p1 = new Contestant("Lama", "Lamut", ct1);
+				Contestant p2 = new Contestant("Lama2", "Lamut2", ct1);
+				Contestant p3 = new Contestant("Lama3", "Lamut3", ct1);
+				Contestant p4 = new Contestant("Lama4", "Lamut4", ct2);
+				c.addContestant(p1);
+				c.addContestant(p2);
+				c.addContestant(p3);
+				c.addContestant(p4);
+				dh.addContest(c);
 			}
 		}
 		
@@ -50,46 +66,6 @@ public class Server {
 			autoSaver.start();
 		}
 		
-		dh.addContest(new Contest());
-		
-		Thread t = new Thread() {
-			public void run() {
-				try {
-					sleep(3000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				
-				try {
-					InetSocketAddress addr = new InetSocketAddress(Inet4Address.getLocalHost(), Config.INET_PORT);
-			        Socket socket = new Socket();
-			        socket.connect(addr);
-			        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-			        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-			        send.writeByte(0x10);
-			        send.writeInt(1);
-			        send.flush();
-			        boolean ret = get.readBoolean();
-			        Object o = get.readObject();
-			        socket.close();
-			        System.out.println(ret);
-			        if(!ret) throw (Exception) o;
-			        else {
-			        	System.out.println(((Contest) o).getId());
-			        }
-				} catch (UnknownHostException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		};
-		t.start();
 	}
 	
 	public void start() {

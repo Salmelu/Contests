@@ -1,9 +1,11 @@
 package cz.salmelu.contests.model;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class Contestant {
+public class Contestant implements Serializable {
 
+	private static final long serialVersionUID = -9031088091797646634L;
 	private final int id;
 	private String firstName;
 	private String lastName;
@@ -50,9 +52,21 @@ public class Contestant {
 		return score;
 	}
 	
+	public Category getCategory() {
+		return cat;
+	}
+	
 	public double getScore(Discipline d) {
 		if(!score.containsKey(d)) return 0;
 		return score.get(d);
+	}
+	
+	public double getTotalScore() {
+		double total = 0;
+		for(Discipline d : cat.getDisciplines()) {
+			total += getScore(d);
+		}
+		return total;
 	}
 
 	public void setScore(Discipline d, double score) {

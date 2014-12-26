@@ -1,30 +1,59 @@
 <project name="Contests" default="dist" basedir=".">
 	<property file="./config/build.properties"/>
 
+	<path id="classpath">
+		<fileset dir="${libs}">
+			<include name="${dialoglib}"/>
+		</fileset>
+	</path>
+
 	<target name="init">
+		<available classname="java.util.stream.Stream" property="JDK8.present" />
+		<fail unless="JDK8.present" message="Java 1.8 is required, but your version is only ${ant.java.version} and probably JDK is not installed."/>
 		<!-- Create a timestamp -->
 		<tstamp/>
 		<!-- Create directories if not existing -->
 		<mkdir dir="${build}"/>
 		<mkdir dir="${dist}"/>
-		<mkdir dir="${dist}/config"/>
+		<mkdir dir="${dist}/server"/>
+		<mkdir dir="${dist}/server/config"/>
+		<mkdir dir="${dist}/client"/>
+		<mkdir dir="${dist}/client/config"/>
 	</target>
 
 	<target name="compile" depends="init" description="compile the source files">
-		<javac srcdir="${src}" destdir="${build}" includeantruntime="false"/>
+		<javac classpathref="classpath" srcdir="${src}" destdir="${build}" includeantruntime="false"/>
 	</target>
 
-	<target name="dist" depends="compile" description="packages compiled files">
-		<copy todir="${dist}/config">
-			<fileset dir="${config}" excludes="*build.properties"/>
-		</copy>
-		<mkdir dir="${log}"/>
-		<jar destfile="${dist}Contests-${version}.jar">
-			<fileset dir="${build}"/>
+	<target name="server" depends="compile" description="packages the server">
+		<copy todir="${dist}/server/config" file="${config}/server.conf"/>
+		<mkdir dir="${dist}/server/${log}"/>
+		<jar destfile="${dist}/server/ContestServer-${version}.jar">
+			<fileset dir="${build}" excludes="*contests/server*"/>
 			<manifest>
-				<attribute name="Main-Class" value="cz.salmelu.contests"/>
+				<attribute name="Main-Class" value="cz.salmelu.contests.server.Server"/>
 			</manifest>
 		</jar>
+	</target>
+
+	<target name="client" depends="compile" description="packages the client">
+		<copy todir="${dist}/client/config" file="${config}/client.conf"/>
+		<mkdir dir="${dist}/client/libs"/>
+		<copy todir="${dist}/client/libs">
+			<fileset dir="${libs}">
+				<include name="${dialoglib}"/>
+			</fileset>
+		</copy>
+		<jar destfile="${dist}/client/ContestClient-${version}.jar">
+			<fileset dir="${build}" excludes="*contests/client*"/>
+			<manifest>
+				<attribute name="Class-Path" value="libs/${dialoglib}"/>
+				<attribute name="Main-Class" value="cz.salmelu.contests.client.Client"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="dist" depends="server,client" description="packages server and client into jars">
 	</target>
 
 	<target name="clean" description="removes compiled files">

@@ -1,7 +1,10 @@
 package cz.salmelu.contests.model;
 
-public class TeamCategory {
+import java.io.Serializable;
 
+public class TeamCategory implements Serializable {
+
+	private static final long serialVersionUID = -5132348545396002065L;
 	private final int id;
 	private String name;
 	private ScoreMode sm;

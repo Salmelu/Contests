@@ -4,5 +4,6 @@ public enum ServerError {
 	InvalidPacket,
 	InvalidInput,
 	ContestNotFound,
-	TeamCategoryNotFound
+	TeamCategoryNotFound,
+	TeamNotFound
 }

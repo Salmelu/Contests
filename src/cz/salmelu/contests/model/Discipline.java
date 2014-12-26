@@ -1,7 +1,10 @@
 package cz.salmelu.contests.model;
 
-public class Discipline {
+import java.io.Serializable;
+
+public class Discipline implements Serializable {
 	
+	private static final long serialVersionUID = 6205234603449373935L;
 	private final int id;
 	private String name;
 	

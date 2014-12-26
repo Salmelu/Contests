@@ -3,6 +3,8 @@ package cz.salmelu.contests.server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import cz.salmelu.contests.model.*;
 import cz.salmelu.contests.net.Packet;
@@ -23,6 +25,10 @@ public class PacketProcesser {
 		}
 		try {
 			switch(p) {
+			case ALL_GET_NAMES:
+				if(getAllNames(in, out))
+					return true;
+				break;
 			case CONTEST_GET:
 				if(getContest(in, out))
 					return true;
@@ -47,13 +53,17 @@ public class PacketProcesser {
 				if(editTeamCategoryMode(in, out))
 					return true;
 				break;
+			case TEAM_GET:
+				if(getTeam(in, out))
+					return true;
+				break;
 			case TEAM_ADD:
+				if(addTeam(in, out))
+					return true;
 				break;
 			case TEAM_EDIT_BONUS:
 				break;
 			case TEAM_EDIT_NAME:
-				break;
-			case TEAM_GET:
 				break;
 			case TEAM_JOIN_CONTESTANT:
 				break;
@@ -72,6 +82,16 @@ public class PacketProcesser {
 			return false;
 		}
 		return false;
+	}
+	
+	private boolean getAllNames(ObjectInputStream in, ObjectOutputStream out) throws IOException {
+		HashMap<String, Integer> names = new HashMap<>();
+		for(Entry<Integer, Contest> e : dh.getAllContests().entrySet()) {
+			names.put(e.getValue().getName(), e.getKey());
+		}
+		out.writeBoolean(true);
+		out.writeObject(names);
+		return true;
 	}
 	
 	private boolean getContest(ObjectInputStream in, ObjectOutputStream out) throws IOException {
@@ -131,7 +151,7 @@ public class PacketProcesser {
 		return true;
 	}
 	
-	public boolean editTeamCategoryName(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+	private boolean editTeamCategoryName(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 		int contestId, tcId;
 		String newName;
 		contestId = in.readInt();
@@ -151,13 +171,13 @@ public class PacketProcesser {
 		return true;
 	}
 	
-	public boolean editTeamCategoryMode(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+	private boolean editTeamCategoryMode(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 		int contestId, tcId;
 		ScoreMode sm;
 		contestId = in.readInt();
 		tcId = in.readInt();
 		sm = (ScoreMode) in.readObject();
-		TeamCategory tc = dh.getTeamCategory(contestId, tcId);
+		TeamCategory tc = dh.getTeamCategory(tcId, contestId);
 		if(tc == null) {
 			writeServerError(out, ServerError.TeamCategoryNotFound);
 			return false;
@@ -167,6 +187,46 @@ public class PacketProcesser {
 			return false;
 		}
 		tc.setScoreMode(sm);
+		out.writeBoolean(true);
+		return true;
+	}
+	
+	private boolean getTeam(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+		int contestId, tcId, teamId;
+		teamId = in.readInt();
+		tcId = in.readInt();
+		contestId = in.readInt();
+		Team t = dh.getTeam(teamId, tcId, contestId);
+		if(t == null) {
+			writeServerError(out, ServerError.TeamNotFound);
+			return false;
+		}
+		out.writeBoolean(true);
+		out.writeObject(t);
+		return true;
+	}
+	
+	private boolean addTeam(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+		int contestId, tcId;
+		String name;
+		double bonus;
+		
+		name = (String) in.readObject();
+		bonus = in.readDouble();
+		tcId = in.readInt();
+		contestId = in.readInt();
+		Contest cs = dh.getContest(contestId);
+		if(cs == null) {
+			writeServerError(out, ServerError.ContestNotFound);
+			return false;
+		}
+		TeamCategory tc = dh.getTeamCategory(contestId, tcId);
+		if(tc == null) {
+			writeServerError(out, ServerError.TeamCategoryNotFound);
+			return false;
+		}
+		Team t = new Team(name, bonus);
+		dh.addTeam(t, tc, cs);
 		out.writeBoolean(true);
 		return true;
 	}

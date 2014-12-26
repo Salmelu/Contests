@@ -1,31 +1,36 @@
 package cz.salmelu.contests.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Contest implements Serializable {
 
 	/**  */
 	private static final long serialVersionUID = -2941146427528620926L;
-	private Map<TeamCategory, List<Team>> teams;
-	private Map<Category, List<Contestant>> contestants;
-	private List<Category> categories;
-	private List<Discipline> disciplines;
-	private List<TeamCategory> teamCategories;
+	private Map<TeamCategory, Map<Integer, Team>> teams;
+	private Map<Category, Map<Integer, Contestant>> contestants;
+	private Map<Integer, Category> categories;
+	private Map<Integer, Discipline> disciplines;
+	private Map<Integer, TeamCategory> teamCategories;
 	private ScoreMode mode;
 	
 	private final int id;
 	private String name;
 	
 	public Contest() {
-		this.id = IdFactory.getInstance().getNewId(this);
+		this("");
 	}
 	
 	public Contest(String name) {
 		this.id = IdFactory.getInstance().getNewId(this);
 		this.name = name;
+		this.categories = new HashMap<>();
+		this.disciplines = new HashMap<>();
+		this.teamCategories = new HashMap<>();
+		this.contestants = new HashMap<>();
+		this.teams = new HashMap<>();
 	}
 	
 	public int getId() {
@@ -48,64 +53,64 @@ public class Contest implements Serializable {
 		return mode;
 	}
 	
-	public Map<TeamCategory, List<Team>> getAllTeams() {
+	public Map<TeamCategory, Map<Integer, Team>> getAllTeams() {
 		return teams;
 	}
 	
-	public List<Team> getTeam(TeamCategory tc) {
+	public Map<Integer, Team> getTeams(TeamCategory tc) {
 		if(teams.containsKey(tc)) {
 			return teams.get(tc);
 		}
 		return null;
 	}
 	
-	public Map<Category, List<Contestant>> getAllContestants() {
+	public Map<Category, Map<Integer, Contestant>> getAllContestants() {
 		return contestants;
 	}
 	
-	public List<Contestant> getContestants(Category c) {
+	public Map<Integer, Contestant> getContestants(Category c) {
 		if(contestants.containsKey(c)) {
 			return contestants.get(c);
 		}
 		return null;
 	}
 	
-	public List<Category> getCategories() {
+	public Map<Integer, Category> getCategories() {
 		return categories;
 	}
 	
-	public List<Discipline> getDisciplines() {
+	public Map<Integer, Discipline> getDisciplines() {
 		return disciplines;
 	}
 	
-	public List<TeamCategory> getTeamCategories() {
+	public Map<Integer, TeamCategory> getTeamCategories() {
 		return teamCategories;
 	}
 	
 	public void addTeamCategory(TeamCategory tc) {
-		teamCategories.add(tc);
+		teamCategories.put(tc.getId(), tc);
 	}
 	
 	public void addCategory(Category c) {
-		categories.add(c);
+		categories.put(c.getId(), c);
 	}
 	
 	public void addDiscipline(Discipline d) {
-		disciplines.add(d);
+		disciplines.put(d.getId(), d);
 	}
 	
 	public void addTeam(TeamCategory tc, Team t) {
 		if(!teams.containsKey(tc)) {
-			teams.put(tc, new ArrayList<>());
+			teams.put(tc, new TreeMap<>());
 		}
-		teams.get(tc).add(t);
+		teams.get(tc).put(t.getId(), t);
 	}
 	
-	public void addContestant(Category cat, Contestant c) {
-		if(!contestants.containsKey(cat)) {
-			contestants.put(cat, new ArrayList<>());
+	public void addContestant(Contestant c) {
+		if(!contestants.containsKey(c.getCategory())) {
+			contestants.put(c.getCategory(), new TreeMap<>());
 		}
-		contestants.get(cat).add(c);
+		contestants.get(c.getCategory()).put(c.getId(), c);
 	}
 
 }
