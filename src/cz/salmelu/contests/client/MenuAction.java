@@ -3,7 +3,6 @@ package cz.salmelu.contests.client;
 public enum MenuAction {
 	MAIN_CONTESTS,
 	MAIN_RELOAD,
-	MAIN_SETTINGS,
 	MAIN_EXIT,
 	SHOW_TEAMS,
 	SHOW_CONTESTANTS,

@@ -94,6 +94,7 @@ class ActionHandler {
 					}
 					else {
 						showConnectionError(c);
+						c.contests = null;
 					}
 				}
 			});
@@ -104,6 +105,7 @@ class ActionHandler {
 				public void handle(WorkerStateEvent arg0) {
 					if(!load.getValue()) {
 						showConnectionError(c);
+						c.contests = null;
 					}
 				}
 			});

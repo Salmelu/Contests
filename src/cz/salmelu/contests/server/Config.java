@@ -4,6 +4,11 @@ import java.io.File;
 
 import cz.salmelu.contests.util.ConfigParser;
 
+/**
+ * A class with final static fields used for remembering configuration settings
+ * @author salmelu
+ *
+ */
 public class Config {
 		
 	public static final String LOGGING;

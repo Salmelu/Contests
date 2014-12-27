@@ -18,15 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Client extends Application {
-	/*
-	 * menu : reload
-	 * menu : add contest
-	 * menu : remove contest
-	 * menu : 
-	 * [ choose contest ]
-	 * [ data ... ]
-	 */
-	
+
 	protected HashMap<String, ContestInfo> contests = null;
 	protected VBox mainBox;
 	protected Stage mainStage;
@@ -64,8 +56,7 @@ public class Client extends Application {
 		
 		MenuItem imain1 = new MenuItem("Contests");
 		MenuItem imain2 = new MenuItem("Reload");
-		MenuItem imain3 = new MenuItem("Settings");
-		MenuItem imain4 = new MenuItem("Exit");
+		MenuItem imain3 = new MenuItem("Exit");
 
 		MenuItem ishow1 = new MenuItem("Contestants");
 		MenuItem ishow2 = new MenuItem("Teams");
@@ -87,12 +78,6 @@ public class Client extends Application {
 			}
 		});
 		imain3.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.MAIN_SETTINGS);
-			}
-		});
-		imain4.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
 				handleMenuAction(MenuAction.MAIN_EXIT);
@@ -130,7 +115,7 @@ public class Client extends Application {
 			}
 		});
 		
-		main.getItems().addAll(imain1, imain2, imain3, imain4);
+		main.getItems().addAll(imain1, imain2, imain3);
 		show.getItems().addAll(ishow1, ishow2, ishow3);
 		score.getItems().addAll(iscore1, iscore2);
 		mbar.getMenus().addAll(main, show, score, edit);
@@ -151,6 +136,7 @@ public class Client extends Application {
 			ah.showContestList(this);
 			break;
 		case MAIN_RELOAD:
+			ah.reloadContestList(this, false);
 			if(current != null) {
 				ah.loadContest(this, current.getId());
 			}

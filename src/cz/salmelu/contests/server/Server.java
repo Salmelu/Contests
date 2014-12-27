@@ -15,7 +15,6 @@ import java.util.Date;
 
 import cz.salmelu.contests.model.Category;
 import cz.salmelu.contests.model.Contest;
-import cz.salmelu.contests.model.Contestant;
 import cz.salmelu.contests.model.DataLoader;
 import cz.salmelu.contests.model.ScoreMode;
 import cz.salmelu.contests.model.Team;

@@ -4,11 +4,24 @@ import cz.salmelu.contests.model.DataLoader;
 import cz.salmelu.contests.util.Logger;
 import cz.salmelu.contests.util.LoggerSeverity;
 
+/**
+ * A class designed for automatically saving all the data. 
+ * Runs another thread, which is used once a while to save
+ * all the data required.
+ * @author salmelu
+ */
 public class AutoSaver extends Thread {
 
+	/** Reference to DataHolder, which stores all the data */
 	private DataHolder dh;
+	/** Reference to DataLoader used to save the data */
 	private DataLoader dl;
 	
+	/**
+	 * Initializes an autosaver
+	 * @param dh DataHolder to be used to extract the data
+	 * @param dl DataLoader used to save the data
+	 */
 	public AutoSaver(DataHolder dh, DataLoader dl) {
 		this.dh = dh;
 		this.dl = dl;
