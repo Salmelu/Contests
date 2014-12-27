@@ -9,9 +9,19 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Custom class used for parsing configuration files
+ * @author salmelu
+ */
 public class ConfigParser {
+	/** holds read properties */
 	private Map<String, String> properties;
 	
+	/**
+	 * Constructs a parser and tries to parse the given file. Saves the parsed
+	 *  data for later uses or requests
+	 * @param fname File to be parsed
+	 */
 	public ConfigParser(File fname) {
 		properties = new HashMap<>();
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fname)))){
@@ -32,6 +42,13 @@ public class ConfigParser {
 		}
 	}
 	
+	/**
+	 * Gets an integer property parsed from the file, if it exists.
+	 *  If the property doesn't exist or is an invalid integer, returns default value
+	 * @param name Name of the parsed property
+	 * @param defaultValue Value returned if something fails
+	 * @return the read property or default value
+	 */
 	public int getIntegerProperty(String name, int defaultValue) {
 		if(!properties.containsKey(name)) {
 			System.err.println("Error parsing config: Property " + name + " was not found.");
@@ -47,6 +64,16 @@ public class ConfigParser {
 		}
 	}
 	
+	/**
+	 * Gets an integer property parsed from the file, if it exists.
+	 *  If the property doesn't exist, it is not a valid integer,
+	 *   or it is not in allowed range returns default value
+	 * @param name Name of the parsed property
+	 * @param defaultValue Value returned if something fails
+	 * @param min Minimal allowed value
+	 * @param max Maximal allowed value
+	 * @return the read property or default value
+	 */
 	public int getIntegerProperty(String name, int defaultValue, int min, int max) {
 		int result = getIntegerProperty(name, defaultValue);
 		if(result < min || result > max) {
@@ -57,6 +84,13 @@ public class ConfigParser {
 		return result;
 	}
 	
+	/**
+	 * Gets a string property parsed from the file, if it exists.
+	 *  If the property doesn't exist, returns default value
+	 * @param name Name of the parsed property
+	 * @param defaultValue Value returned if the property doesn't exist
+	 * @return the read property or default value
+	 */
 	public String getStringProperty(String name, String defaultValue) {
 		if(!properties.containsKey(name)) {
 			System.err.println("Error parsing config: Property " + name + " was not found.");
@@ -65,6 +99,15 @@ public class ConfigParser {
 		return properties.get(name);
 	}
 	
+	/**
+	 * Gets a string property parsed from the file, if it exists.
+	 *  Checks if the string is in allowed values. 
+	 *  If the property doesn't exist or is not in allowed values, returns default value
+	 * @param name Name of the parsed property
+	 * @param defaultValue Value returned if the property doesn't exist or it is not in allowed values
+	 * @param allowed An array or enumeration of allowed values
+	 * @return the read property or default value
+	 */
 	public String getAllowedStringProperty(String name, String defaultValue, String... allowed) {
 		if(!properties.containsKey(name)) {
 			System.err.println("Error parsing config: Property " + name + " was not found.");
@@ -80,6 +123,13 @@ public class ConfigParser {
 		return defaultValue;
 	}
 
+	/**
+	 * Gets a boolean property parsed from the file, if it exists.
+	 *  If the property doesn't exist, or it is not a valid boolean, returns default value
+	 * @param name Name of the parsed property
+	 * @param defaultValue Value returned if the property doesn't exist or it's an invalid boolean
+	 * @return the read property or default value
+	 */
 	public boolean getBooleanProperty(String name, boolean defaultValue) {
 		if(!properties.containsKey(name)) {
 			System.err.println("Error parsing config: Property " + name + " was not found.");

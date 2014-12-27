@@ -3,6 +3,11 @@ package cz.salmelu.contests.net;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * An enumeration of supported packets to be sent to server.
+ *  First byte sent to the server should always be one of the packet codes.
+ * @author salmelu
+ */
 public enum Packet {
 	ALL_GET_NAMES((byte) 0x00), // Gets a full map of contests of <name, contestinfo>
 	CONTEST_GET((byte) 0x10), // Get a contest by Id (contest id)
@@ -19,7 +24,9 @@ public enum Packet {
 	TEAM_LEAVE_CONTESTANT((byte) 0x35);	// Remove an existing contestant from a team
 	//TEAM_ADD_CONTESTANT((byte) 0x34);
 	
+	/** Byte value of the packet */
 	private byte order;
+	/** Map of all the packet used for searching purposes */
 	private static Map<Byte, Packet> packetList;
 	
 	static {
@@ -29,10 +36,19 @@ public enum Packet {
 		}
 	}
 	
+	/**
+	 * Creates new packet 
+	 * @param order the byte value of the packet
+	 */
 	private Packet(byte order) {
 		this.order = order;
 	}
 	
+	/**
+	 * Gets a packet with the supplied byte value
+	 * @param order byte value received
+	 * @return corresponding packet or null if there is no packet for that value
+	 */
 	public static Packet getPacket(byte order) {
 		if(packetList.containsKey(order)) {
 			return packetList.get(order);
@@ -40,6 +56,10 @@ public enum Packet {
 		return null;
 	}
 	
+	/**
+	 * Converts a packet to its byte value
+	 * @return byte representing the packet
+	 */
 	public byte toByte() {
 		return order;
 	}
