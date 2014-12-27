@@ -85,9 +85,9 @@ public class PacketProcesser {
 	}
 	
 	private boolean getAllNames(ObjectInputStream in, ObjectOutputStream out) throws IOException {
-		HashMap<String, Integer> names = new HashMap<>();
+		HashMap<String, ContestInfo> names = new HashMap<>();
 		for(Entry<Integer, Contest> e : dh.getAllContests().entrySet()) {
-			names.put(e.getValue().getName(), e.getKey());
+			names.put(e.getValue().getName(), e.getValue().getContestInfo());
 		}
 		out.writeBoolean(true);
 		out.writeObject(names);

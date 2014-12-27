@@ -3,12 +3,14 @@ package cz.salmelu.contests.model;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class Contest implements Serializable {
 
 	/**  */
 	private static final long serialVersionUID = -2941146427528620926L;
+	private ContestInfo infos;
 	private Map<TeamCategory, Map<Integer, Team>> teams;
 	private Map<Category, Map<Integer, Contestant>> contestants;
 	private Map<Integer, Category> categories;
@@ -31,6 +33,7 @@ public class Contest implements Serializable {
 		this.teamCategories = new HashMap<>();
 		this.contestants = new HashMap<>();
 		this.teams = new HashMap<>();
+		this.infos = new ContestInfo(id, name);
 	}
 	
 	public int getId() {
@@ -111,6 +114,20 @@ public class Contest implements Serializable {
 			contestants.put(c.getCategory(), new TreeMap<>());
 		}
 		contestants.get(c.getCategory()).put(c.getId(), c);
+	}
+	
+	private void updateInfo() {
+		int count = 0;
+		for(Entry<Category, Map<Integer, Contestant>> e : contestants.entrySet()) {
+			if(e.getValue() != null) count += e.getValue().size();
+		}
+		infos.setContestants(count);
+		infos.setTeams(teams.size());
+	}
+	
+	public ContestInfo getContestInfo() {
+		updateInfo();
+		return infos;
 	}
 
 }

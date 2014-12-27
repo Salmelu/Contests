@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Packet {
-	ALL_GET_NAMES((byte) 0x00), // Gets a full map of contests of <name, id>
+	ALL_GET_NAMES((byte) 0x00), // Gets a full map of contests of <name, contestinfo>
 	CONTEST_GET((byte) 0x10), // Get a contest by Id (contest id)
 	CONTEST_ADD((byte) 0x11), // Add a new contest (string name)
 	TCATEGORY_GET((byte) 0x20), // Get a team category by Id (category id, contest id)

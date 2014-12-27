@@ -1,6 +1,7 @@
 package cz.salmelu.contests.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Team implements Serializable {
@@ -25,6 +26,7 @@ public class Team implements Serializable {
 		this.id = IdFactory.getInstance().getNewId(this);
 		this.name = name;
 		this.teamBonus = teamBonus;
+		contestants = new ArrayList<>();
 	}
 	
 	public int getId() {
@@ -37,6 +39,11 @@ public class Team implements Serializable {
 	
 	public String getName() {
 		return name;
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
 	}
 	
 	public void setCategory(TeamCategory tc) {
@@ -62,6 +69,10 @@ public class Team implements Serializable {
 	
 	public List<TeamContestant> getContestants() {
 		return contestants;
+	}
+	
+	public void addContestant(TeamContestant tc) {
+		contestants.add(tc);
 	}
 	
 	public int getOrder() {

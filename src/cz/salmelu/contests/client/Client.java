@@ -27,7 +27,7 @@ public class Client extends Application {
 	 * [ data ... ]
 	 */
 	
-	protected HashMap<String, Integer> contests = null;
+	protected HashMap<String, ContestInfo> contests = null;
 	protected VBox mainBox;
 	protected Stage mainStage;
 	protected BorderPane mainPanel;
@@ -168,6 +168,10 @@ public class Client extends Application {
 		case SHOW_TEAMS:
 			clearPanel();
 			ah.showTeamTable(this);
+			break;
+		case SHOW_ONE_TEAM:
+			clearPanel();
+			ah.showTeamDetail(this);
 			break;
 		default:
 				

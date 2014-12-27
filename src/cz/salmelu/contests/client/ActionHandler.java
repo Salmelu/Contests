@@ -11,18 +11,13 @@ import java.util.HashMap;
 
 import org.controlsfx.dialog.Dialogs;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.VBox;
 import cz.salmelu.contests.model.Contest;
+import cz.salmelu.contests.model.ContestInfo;
 import cz.salmelu.contests.net.Packet;
 
 @SuppressWarnings("deprecation")
@@ -46,32 +41,10 @@ class ActionHandler {
 			done.setAlignment(Pos.CENTER);
 			c.mainPanel.setCenter(done);
 		}
-		VBox centerBox = new VBox();
-		final ToggleGroup choiceGroup = new ToggleGroup();
-		for(String s : c.contests.keySet()) {
-			RadioButton rb = new RadioButton(s);
-			rb.setToggleGroup(choiceGroup);
-			rb.setUserData(s);
-			if(c.current != null && s.equals(c.current.getName())) {
-				rb.setSelected(true);
-			}
-			centerBox.getChildren().add(rb);
+		if(ContestTable.getInstance() == null) {
+			ContestTable.setClient(c);
 		}
-		centerBox.setAlignment(Pos.CENTER);
-		c.mainPanel.setCenter(centerBox);
-		choiceGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-			@Override
-			public void changed(ObservableValue<? extends Toggle> arg0,
-					Toggle arg1, Toggle arg2) {
-				String name = choiceGroup.getSelectedToggle().getUserData().toString();
-				for(String s : c.contests.keySet()) {
-					if(s.equals(name)) {
-						loadContest(c, c.contests.get(s));
-						return;
-					}
-				}
-			}
-		});
+		ContestTable.getInstance().display();
 	}
 	
 	protected void reloadContestList(Client c, boolean display) {
@@ -96,7 +69,7 @@ class ActionHandler {
 						socket.close();
 						return false;
 			        }
-			        c.contests = (HashMap<String, Integer>) get.readObject();
+			        c.contests = (HashMap<String, ContestInfo>) get.readObject();
 			        socket.close();
 			        return true;
 				}
@@ -206,6 +179,16 @@ class ActionHandler {
 			TeamTable.setClient(c);
 		}
 		TeamTable.getInstance().displayAll();
+	}
+	
+	protected void showTeamDetail(Client c) {
+		if(c.current == null) {
+			showNoContestWarning(c);
+		}
+		if(TeamDetail.getInstance() == null) {
+			TeamDetail.setClient(c);
+		}
+		TeamDetail.getInstance().displayAll();
 	}
 	
 	protected void showNoContestWarning(Client c) {

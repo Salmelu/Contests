@@ -31,6 +31,11 @@ public class TeamCategory implements Serializable {
 		return name;
 	}
 	
+	@Override
+	public String toString() {
+		return getName();
+	}
+	
 	public void setScoreMode(ScoreMode sm) {
 		this.sm = sm;
 	}
