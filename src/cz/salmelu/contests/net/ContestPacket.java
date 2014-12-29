@@ -2,8 +2,6 @@ package cz.salmelu.contests.net;
 
 import java.io.Serializable;
 
-import cz.salmelu.contests.model.ScoreMode;
-
 /**
  * Used for sending contest field updates to server 
  * @author salmelu

@@ -187,6 +187,51 @@ public class Contest implements Serializable {
 		categories.put(c.getId(), c);
 		contestants.put(c, new TreeMap<>());
 	}
+
+	/**
+	 * Checks if the contest contains a category
+	 * @param catId id of the contained category
+	 * @return true, if the contest has a category with id catId
+	 */
+	public boolean hasCategory(int catId) {
+		return categories.containsKey(catId);
+	}
+	
+	/**
+	 * Checks if the contest contains a category
+	 * @param cat the category
+	 * @return true, if the contest has category cat
+	 */
+	public boolean hasCategory(Category cat) {
+		return categories.containsValue(cat);
+	}
+	
+	/**
+	 * Removes a category.
+	 * Warning: Removes all the contestants in the current category.
+	 * @param catId id of the removed category
+	 */
+	public void removeCategory(int catId) {
+		Category cat = categories.remove(catId);
+		for(Contestant cs : contestants.get(cat).values()) {
+			if(cs instanceof TeamContestant) {
+				TeamContestant tcs = (TeamContestant) cs;
+				if(tcs.getTeam() != null) {
+					tcs.getTeam().removeContestant(tcs);
+				}
+			}
+		}
+		contestants.remove(cat);
+	}
+	
+	/**
+	 * Gets a category in the contest
+	 * @param catId id of the wanted category
+	 * @return the category, or null, if it doesn't exist
+	 */
+	public Category getCategory(int catId) {
+		return categories.get(catId);
+	}
 	
 	/**
 	 * Adds a new discipline
@@ -272,7 +317,11 @@ public class Contest implements Serializable {
 			if(e.getValue() != null) count += e.getValue().size();
 		}
 		infos.setContestants(count);
-		infos.setTeams(teams.size());
+		count = 0;
+		for(Entry<TeamCategory, Map<Integer, Team>> e : teams.entrySet()) {
+			if(e.getValue() != null) count += e.getValue().size();
+		}
+		infos.setTeams(count);
 	}
 	
 	/**

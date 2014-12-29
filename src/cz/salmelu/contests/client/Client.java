@@ -67,7 +67,8 @@ public class Client extends Application {
 
 		MenuItem iedit1 = new MenuItem("Update/New Contest");
 		MenuItem iedit2 = new MenuItem("Update/New Discipline");
-		MenuItem iedit3 = new MenuItem("Update/New Team category");
+		MenuItem iedit3 = new MenuItem("Update/New Team Category");
+		MenuItem iedit4 = new MenuItem("Update/New Category");
 		
 		imain1.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -130,11 +131,17 @@ public class Client extends Application {
 				handleMenuAction(MenuAction.UPDATE_TCATEGORY);
 			}
 		});
+		iedit4.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				handleMenuAction(MenuAction.UPDATE_CATEGORY);
+			}
+		});
 		
 		main.getItems().addAll(imain1, imain2, imain3);
 		show.getItems().addAll(ishow1, ishow2, ishow3);
 		score.getItems().addAll(iscore1);
-		edit.getItems().addAll(iedit1, iedit2, iedit3);
+		edit.getItems().addAll(iedit1, iedit2, iedit3, iedit4);
 		mbar.getMenus().addAll(main, show, score, edit);
 		
 		return mbar;
@@ -196,6 +203,10 @@ public class Client extends Application {
 		case UPDATE_TCATEGORY:
 			clearPanel();
 			ah.updateTeamCategory(this);
+			break;
+		case UPDATE_CATEGORY:
+			clearPanel();
+			ah.updateCategory(this);
 			break;
 		default:
 				

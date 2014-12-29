@@ -3,10 +3,13 @@ package cz.salmelu.contests.server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import cz.salmelu.contests.model.*;
+import cz.salmelu.contests.net.CategoryPacket;
 import cz.salmelu.contests.net.ContestPacket;
 import cz.salmelu.contests.net.DisciplinePacket;
 import cz.salmelu.contests.net.Packet;
@@ -79,6 +82,14 @@ class PacketProcesser {
 				if(deleteTeamCategory(in, out))
 					return true;
 				break;
+			case CATEGORY_EDIT:
+				if(editAddCategory(in, out))
+					return true;
+				break;
+			case CATEGORY_DELETE:
+				if(deleteCategory(in, out))
+					return true;
+				break;
 			case TEAM_GET:
 				if(getTeam(in, out))
 					return true;
@@ -86,14 +97,6 @@ class PacketProcesser {
 			case TEAM_ADD:
 				if(addTeam(in, out))
 					return true;
-				break;
-			case TEAM_EDIT_BONUS:
-				break;
-			case TEAM_EDIT_NAME:
-				break;
-			case TEAM_JOIN_CONTESTANT:
-				break;
-			case TEAM_LEAVE_CONTESTANT:
 				break;
 			case SCORE_UPDATE:
 				if(updateScore(in, out))
@@ -369,6 +372,113 @@ class PacketProcesser {
 			return false;
 		}
 		if(!dh.deleteTeamCategory(conId, tcId)) {
+			writeServerError(out, ServerError.InvalidDataState);
+			dh.unlock();
+			return false;
+		}
+		dh.unlock();
+		out.writeBoolean(true);
+		return true;
+	}
+
+	/**
+	 * Processes an update/edit team category packet
+	 * @param in ObjectInputStream received by the socket
+	 * @param out ObjectOutputStream received by the socket
+	 * @return true, if the packet was successfully processed, false otherwise
+	 * @throws ClassNotFoundException when the classes couldn't be loaded
+	 * @throws IOException if the streams are corrupted
+	 */
+	private boolean editAddCategory(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
+		CategoryPacket cp = (CategoryPacket) in.readObject();
+		if(cp.id == -1 || cp.name == null || cp.name == "" || cp.conId == -1 || cp.disciplines == null) {
+			writeServerError(out, ServerError.InvalidInput);
+			return false;
+		}
+		if(cp.id == 0) {
+			Category cat = new Category(cp.name);
+			if(!dh.lock()) {
+				writeServerError(out, ServerError.UnableToLock);
+				return false;
+			}
+			if(dh.getContest(cp.conId) == null) {
+				writeServerError(out, ServerError.ContestNotFound);
+				return false;
+			}
+			Contest cs = dh.getContest(cp.conId);
+			for(int discId : cp.disciplines) {
+				if(!cs.hasDiscipline(discId)) {
+					writeServerError(out, ServerError.InvalidDataState);
+					dh.unlock();
+					return false;
+				}
+				cat.addDiscipline(cs.getDiscipline(discId));
+			}
+			if(!dh.addCategory(cp.conId, cat)) {
+				writeServerError(out, ServerError.InvalidDataState);
+				dh.unlock();
+				return false;
+			}
+			dh.unlock();
+			out.writeBoolean(true);
+			return true;
+		}
+		else {
+			if(!dh.lock()) {
+				writeServerError(out, ServerError.UnableToLock);
+				return false;
+			}
+			if(dh.getContest(cp.conId) == null) {
+				writeServerError(out, ServerError.ContestNotFound);
+				return false;
+			}
+			Contest cs = dh.getContest(cp.conId);
+			Category cat = cs.getCategory(cp.id);
+			if(cat == null) {
+				writeServerError(out, ServerError.InvalidDataState);
+				return false;
+			}
+			cat.setName(cp.name);
+			ArrayList<Discipline> toAdd = new ArrayList<>();
+			for(int discId : cp.disciplines) {
+				if(!cs.hasDiscipline(discId)) {
+					writeServerError(out, ServerError.InvalidDataState);
+					dh.unlock();
+					return false;
+				}
+				if(!cat.hasDiscipline(cs.getDiscipline(discId))) {
+					toAdd.add(cs.getDiscipline(discId));
+				}
+			}
+			cat.getDisciplines().addAll(toAdd);
+			// A safe remove method
+			for(Iterator<Discipline> itd = cat.getDisciplines().iterator(); itd.hasNext(); ) {
+				Discipline d = itd.next();
+				if(!cp.disciplines.contains(d.getId())) {
+					itd.remove();
+				}
+			}
+			dh.unlock();
+			out.writeBoolean(true);
+			return true;
+		}
+	}
+	
+	/**
+	 * Processes a delete category request.
+	 * @param in ObjectInputStream received by the socket
+	 * @param out ObjectOutputStream received by the socket
+	 * @return true, if the packet was successfully processed, false otherwise
+	 * @throws IOException if the streams are corrupted
+	 */
+	private boolean deleteCategory(ObjectInputStream in, ObjectOutputStream out) throws IOException {
+		int conId = in.readInt();
+		int catId = in.readInt();
+		if(!dh.lock()) {
+			writeServerError(out, ServerError.UnableToLock);
+			return false;
+		}
+		if(!dh.deleteCategory(conId, catId)) {
 			writeServerError(out, ServerError.InvalidDataState);
 			dh.unlock();
 			return false;

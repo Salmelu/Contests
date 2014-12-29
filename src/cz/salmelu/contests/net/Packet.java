@@ -17,12 +17,10 @@ public enum Packet {
 	DISCIPLINE_EDIT((byte) 0x21), // Edits/Adds a new discipline
 	TCATEGORY_DELETE((byte) 0x25), // Deletes a team category (contest id, category id)
 	TCATEGORY_EDIT((byte) 0x26), // Edits/Adds a new team category
-	TEAM_GET((byte) 0x30),	// Get a team by Id (team id, category id, contest id)
-	TEAM_ADD((byte) 0x31),	// Add a new team (string name, double bonus, category id, contest id)
-	TEAM_EDIT_NAME((byte) 0x32),	// Edit a team name (string name, team id, category id, contest id)
-	TEAM_EDIT_BONUS((byte) 0x33),	// Edit a team bonus (double bonus, team id, category id, contest id)	
-	TEAM_JOIN_CONTESTANT((byte) 0x34),	// Add an existing contestant to team
-	TEAM_LEAVE_CONTESTANT((byte) 0x35),	// Remove an existing contestant from a team
+	CATEGORY_DELETE((byte) 0x30), // Deletes a category (contest id, category id)
+	CATEGORY_EDIT((byte) 0x31), // Edits/Adds a new category
+	TEAM_GET((byte) 0x40),	// Get a team by Id (team id, category id, contest id)
+	TEAM_ADD((byte) 0x41),	// Add a new team (string name, double bonus, category id, contest id)
 	//TEAM_ADD_CONTESTANT((byte) 0x34);
 	SCORE_UPDATE((byte) 0x50); // Updates score (double, size, UpdateScorePackets)
 	

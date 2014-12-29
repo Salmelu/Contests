@@ -237,6 +237,17 @@ class ActionHandler {
 		EditTeamCategory.getInstance().displayAll();
 	}
 	
+	protected void updateCategory(Client c) {
+		if(c.current == null) {
+			showNoContestWarning(c);
+			return;
+		}
+		if(EditCategory.getInstance() == null) {
+			EditCategory.setClient(c);
+		}
+		EditCategory.getInstance().displayAll();
+	}
+	
 	protected void showNoContestWarning(Client c) {
 		Dialogs.create()
 			.owner(c.mainStage)

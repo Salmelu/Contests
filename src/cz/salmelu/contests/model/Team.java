@@ -128,6 +128,16 @@ public class Team implements Serializable {
 	 */
 	public void addContestant(TeamContestant tc) {
 		contestants.add(tc);
+		tc.setTeam(this);
+	}
+	
+	/**
+	 * Removes a contestant from the team
+	 * @param tc removed contestant
+	 */
+	public void removeContestant(TeamContestant tc) {
+		contestants.remove(tc);
+		tc.setTeam(null);
 	}
 	
 	/* UNUSED

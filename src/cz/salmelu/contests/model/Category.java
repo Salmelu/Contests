@@ -82,4 +82,12 @@ public class Category implements Serializable {
 	public boolean hasDiscipline(Discipline d) {
 		return discs.contains(d);
 	}
+	
+	/**
+	 * Removes the discipline from the category
+	 * @param d removed discipline
+	 */
+	public void removeDiscipline(Discipline d) {
+		discs.remove(d);
+	}
 }

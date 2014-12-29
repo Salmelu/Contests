@@ -123,6 +123,27 @@ class DataHolder {
 		return true;
 	}
 	
+	protected boolean addCategory(int conId, Category cat) {
+		Contest cs = getContest(conId);
+		if(cs == null) {
+			return false;
+		}
+		cs.addCategory(cat);
+		return true;
+	}
+
+	protected boolean deleteCategory(int conId, int catId) {
+		Contest cs = getContest(conId);
+		if(cs == null) {
+			return false;
+		}
+		if(!cs.hasCategory(catId)) {
+			return false;
+		}
+		cs.removeCategory(catId);
+		return true;
+	}
+	
 	protected TeamCategory getTeamCategory(int tcId, int contestId) {
 		Contest cs = contests.get(contestId);
 		if(cs == null)

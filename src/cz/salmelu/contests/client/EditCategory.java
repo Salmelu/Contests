@@ -9,9 +9,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import org.controlsfx.control.CheckComboBox;
+
 import cz.salmelu.contests.model.Discipline;
-import cz.salmelu.contests.net.DisciplinePacket;
+import cz.salmelu.contests.model.Category;
 import cz.salmelu.contests.net.Packet;
+import cz.salmelu.contests.net.CategoryPacket;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -28,39 +31,40 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-final class EditDiscipline {
+final class EditCategory {
 	
 	private Client c;
-	private static EditDiscipline instance = null;
+	private static EditCategory instance = null;
 	
-	private ChoiceBox<Discipline> discChoice = null;
-	private Label discLabel = null;
-	private HBox discBox = null;
-	private Discipline currentDisc = null;
+	private ChoiceBox<Category> catChoice = null;
+	private Label catLabel = null;
+	private HBox catBox = null;
+	private Category currentCat = null;
 	private Button deleteButton = null;
 	
 	private GridPane gp = null;
 	private TextField name = null;
+	private CheckComboBox<Discipline> discChoice; 
 	
-	private EditDiscipline(Client c) {
+	private EditCategory(Client c) {
 		this.c = c;
 		
-		discBox = new HBox(16);
-		discBox.setAlignment(Pos.CENTER);
-		discLabel = new Label("Choose a discipline: ");
-		discChoice = new ChoiceBox<>();
-		discChoice.setPrefWidth(180);
-		deleteButton = new Button("Delete discipline");
+		catBox = new HBox(16);
+		catBox.setAlignment(Pos.CENTER);
+		catLabel = new Label("Choose a category: ");
+		catChoice = new ChoiceBox<>();
+		catChoice.setPrefWidth(180);
+		deleteButton = new Button("Delete category");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(200);
 		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				deleteDiscipline();
+				deleteCategory();
 			}
 		});
-		discBox.setPadding(new Insets(0,15,40,15));
-		discBox.getChildren().addAll(discLabel, discChoice, deleteButton);
+		catBox.setPadding(new Insets(0,15,40,15));
+		catBox.getChildren().addAll(catLabel, catChoice, deleteButton);
 		
 		createTable();
 	}
@@ -72,86 +76,102 @@ final class EditDiscipline {
 		gp.setVgap(6);
 		
 		name = new TextField();
-		name.setPromptText("Enter discipline name");
+		name.setPromptText("Enter category name");
 		name.setPrefWidth(200);
 		
 		HBox buttonBox = new HBox(10);
-		Button newButton = new Button("New discipline");
+		Button newButton = new Button("New category");
 		newButton.setPadding(new Insets(5,5,5,5));
 		newButton.setPrefWidth(200);
-		Button updateButton = new Button("Update discipline");
+		Button updateButton = new Button("Update category");
 		updateButton.setPadding(new Insets(5,5,5,5));
 		updateButton.setPrefWidth(200);
 		
 		newButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				newDiscipline();
+				newCategory();
 			}
 		});
 		updateButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				updateDiscipline();
+				updateCategory();
 			}
 		});
 		buttonBox.getChildren().add(newButton);
 		buttonBox.getChildren().add(updateButton);
 		buttonBox.setAlignment(Pos.CENTER);
 		
-		gp.add(new Label("Contest name:"), 0, 0);
+		gp.add(new Label("Category name:"), 0, 0);
 		gp.add(name, 1, 0);
-		gp.add(buttonBox, 0, 1, 2, 1);
+		gp.add(new Label("Category disciplines:"), 0, 1);
+		gp.add(buttonBox, 0, 2, 2, 1);
 	}
 
-	protected static EditDiscipline getInstance() {
+	protected static EditCategory getInstance() {
 		return instance;
 	}
 	
 	protected static void setClient(Client c) {
-		instance = new EditDiscipline(c);
+		instance = new EditCategory(c);
 	}
 	
 	protected void displayHeader() {
-		int id = currentDisc == null ? 0 : currentDisc.getId();
-		discChoice.setItems(FXCollections.observableArrayList(new ArrayList<Discipline>(c.current.getDisciplines().values())));
-		for(Discipline d : discChoice.getItems()) {
-			if(d.getId() == id) {
-				discChoice.getSelectionModel().select(d);
+		int id = currentCat == null ? 0 : currentCat.getId();
+		catChoice.setItems(FXCollections.observableArrayList(new ArrayList<Category>(c.current.getCategories().values())));
+		for(Category cat : catChoice.getItems()) {
+			if(cat.getId() == id) {
+				catChoice.getSelectionModel().select(cat);
 			}
 		}
-		discChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Discipline>() {
+		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
 			@Override
-			public void changed(ObservableValue<? extends Discipline> arg0, Discipline arg1,
-					Discipline arg2) {
-				currentDisc = arg2;
+			public void changed(ObservableValue<? extends Category> arg0, Category arg1,
+					Category arg2) {
+				currentCat = arg2;
 				fillFields();
 			}
 		});
-		c.mainPanel.setTop(discBox);
+		c.mainPanel.setTop(catBox);
 	}
 
 	private void fillFields() {
-		if(currentDisc == null || !c.current.hasDiscipline(currentDisc.getId())) {
+		if(currentCat == null || !c.current.hasCategory(currentCat.getId())) {
 			name.setText("");
+			discChoice.getCheckModel().clearChecks();
 		}
 		else {
-			name.setText(currentDisc.getName());
+			name.setText(currentCat.getName());
+			discChoice.getCheckModel().clearChecks();
+			for(Discipline d : currentCat.getDisciplines()) {
+				discChoice.getCheckModel().check(d);
+			}
 		}
+	}
+	
+	private void updateItems() {
+		// Need to recreate each time to avoid FX bug - warnings when loading css styles
+		gp.getChildren().remove(discChoice);
+		discChoice = new CheckComboBox<>();
+		discChoice.setPrefWidth(200);
+		discChoice.getItems().setAll(c.current.getDisciplines().values());
+		gp.add(discChoice, 1, 1);
 	}
 	
 	protected void displayAll() {
 		if(c.current == null) return;
+		updateItems();
 		displayHeader();
 		c.mainPanel.setCenter(gp);
 	}
 
-	private void deleteDiscipline() {
-		if(currentDisc == null) {
-			c.ah.showErrorDialog(c, "No discipline selected", "You have not chosen a discipline to delete.");
+	private void deleteCategory() {
+		if(currentCat == null) {
+			c.ah.showErrorDialog(c, "No category selected", "You have not chosen a category to delete.");
 			return;
 		}
-		DeleteTask dt = new DeleteTask(c.current.getId(), currentDisc.getId());
+		DeleteTask dt = new DeleteTask(c.current.getId(), currentCat.getId());
 		dt.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent arg0) {
@@ -161,44 +181,51 @@ final class EditDiscipline {
 		
 		Thread t = new Thread(dt);
 		t.run();
-		c.ah.showSuccessDialog(c, "Discipline deleted", "Discipline " + currentDisc.getName() + " was deleted.");
+		c.ah.showSuccessDialog(c, "Category deleted", "Category " + currentCat.getName() + " was deleted.");
 	}
 	
-	private void newDiscipline() {
-		DisciplinePacket dp = new DisciplinePacket();
-		dp.name = name.getText();
-		if(dp.name == null || dp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid discipline name selected. Please enter a name for the discipline.");
+	private void newCategory() {
+		CategoryPacket cp = new CategoryPacket();
+		cp.name = name.getText();
+		for(Discipline d : discChoice.getCheckModel().getCheckedItems()) {
+			cp.disciplines.add(d.getId());
+		}
+		if(cp.name == null || cp.name.equals("")) {
+			c.ah.showErrorDialog(c, "Field error", "An invalid category name selected. Please enter a name for the category.");
 			return;
 		}
-		dp.id = 0;
-		dp.conId = c.current.getId();
-		NewEditTask net = new NewEditTask(dp);
+		cp.id = 0;
+		cp.conId = c.current.getId();
+		NewEditTask net = new NewEditTask(cp);
 		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent arg0) {
 				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
 			}
 		});
+		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "New discipline added", "You have successfully sent a request for a new discipline.");
+		c.ah.showSuccessDialog(c, "New category added", "You have successfully sent a request for a new category.");
 	}
 	
-	private void updateDiscipline() {
-		if(currentDisc == null) {
-			c.ah.showErrorDialog(c, "No discipline selected", "You have not chosen a discipline.");
+	private void updateCategory() {
+		if(currentCat == null) {
+			c.ah.showErrorDialog(c, "No category selected", "You have not chosen a category.");
 			return;
 		}
-		DisciplinePacket dp = new DisciplinePacket();
-		dp.name = name.getText();
-		if(dp.name == null || dp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid discipline name selected. Please enter a name for the discipline.");
+		CategoryPacket cp = new CategoryPacket();
+		cp.name = name.getText();
+		for(Discipline d : discChoice.getCheckModel().getCheckedItems()) {
+			cp.disciplines.add(d.getId());
+		}
+		if(cp.name == null || cp.name.equals("")) {
+			c.ah.showErrorDialog(c, "Field error", "An invalid category name selected. Please enter a name for the category.");
 			return;
 		}
-		dp.conId = c.current.getId();
-		dp.id = currentDisc.getId();
-		NewEditTask net = new NewEditTask(dp);
+		cp.id = currentCat.getId();
+		cp.conId = c.current.getId();
+		NewEditTask net = new NewEditTask(cp);
 		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent arg0) {
@@ -213,15 +240,15 @@ final class EditDiscipline {
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "Discipline update requested", "You have successfully sent a request for a discipline update.");
+		c.ah.showSuccessDialog(c, "Category update requested", "You have successfully sent a request for a category update.");
 	}
 	
 	private class NewEditTask extends Task<Boolean> {
 		
-		private DisciplinePacket dp;
+		private CategoryPacket cp;
 		
-		protected NewEditTask(DisciplinePacket dp) {
-			this.dp = dp;
+		protected NewEditTask(CategoryPacket cp) {
+			this.cp = cp;
 		}
 		
 		@Override
@@ -232,8 +259,8 @@ final class EditDiscipline {
 		        socket.connect(addr);
 		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
 		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.DISCIPLINE_EDIT.toByte());
-		        send.writeObject(dp);
+		        send.writeByte(Packet.CATEGORY_EDIT.toByte());
+		        send.writeObject(cp);
 		        send.flush();
 		        boolean ret = get.readBoolean();
 		        socket.close();
@@ -254,12 +281,12 @@ final class EditDiscipline {
 	
 	private class DeleteTask extends Task<Boolean> {
 
-		private int discId;
+		private int catId;
 		private int conId;
 		
-		protected DeleteTask(int conId, int discId) {
+		protected DeleteTask(int conId, int catId) {
 			this.conId = conId;
-			this.discId = discId;
+			this.catId = catId;
 		}
 		
 		@Override
@@ -270,9 +297,9 @@ final class EditDiscipline {
 		        socket.connect(addr);
 		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
 		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.DISCIPLINE_DELETE.toByte());
+		        send.writeByte(Packet.CATEGORY_DELETE.toByte());
 		        send.writeInt(conId);
-		        send.writeInt(discId);
+		        send.writeInt(catId);
 		        send.flush();
 		        boolean ret = get.readBoolean();
 		        socket.close();

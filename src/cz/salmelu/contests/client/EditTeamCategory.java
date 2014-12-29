@@ -48,7 +48,7 @@ final class EditTeamCategory {
 		this.c = c;
 		
 		tcBox = new HBox(16);
-		tcBox.setAlignment(Pos.TOP_LEFT);
+		tcBox.setAlignment(Pos.CENTER);
 		tcLabel = new Label("Choose a team category: ");
 		tcChoice = new ChoiceBox<>();
 		tcChoice.setPrefWidth(180);
