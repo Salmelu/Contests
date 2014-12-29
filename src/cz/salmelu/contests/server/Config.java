@@ -7,7 +7,6 @@ import cz.salmelu.contests.util.ConfigParser;
 /**
  * A class with final static fields used for remembering configuration settings
  * @author salmelu
- *
  */
 public class Config {
 		

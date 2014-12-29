@@ -78,9 +78,12 @@ final class CategoryScore {
 	}
 	
 	protected void displayHeader() {
+		int id = currentCat == null ? 0 : currentCat.getId();
 		catChoice.setItems(FXCollections.observableArrayList(new ArrayList<Category>(c.current.getCategories().values())));
-		if(catChoice.getItems().contains(currentCat)) {
-			catChoice.getSelectionModel().select(currentCat);
+		for(Category cat : catChoice.getItems()) {
+			if(cat.getId() == id) {
+				catChoice.getSelectionModel().select(cat);
+			}
 		}
 		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
 			@Override

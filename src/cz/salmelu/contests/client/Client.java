@@ -132,6 +132,7 @@ public class Client extends Application {
 	}
 	
 	protected void handleMenuAction(MenuAction ma) {
+		MenuAction prevMa = currentMenu;
 		currentMenu = ma;
 		switch(ma) {
 		case MAIN_CONTESTS:
@@ -142,6 +143,7 @@ public class Client extends Application {
 			ah.reloadContestList(this, false);
 			if(current != null) {
 				ah.loadContest(this, current.getId());
+				handleMenuAction(prevMa);
 			}
 			else {
 				ah.showNoContestWarning(this);

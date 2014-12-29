@@ -114,9 +114,12 @@ final class ContestEdit {
 	}
 	
 	protected void displayHeader() {
+		int id = currentContest == null ? 0 : currentContest.getId();
 		contestChoice.setItems(FXCollections.observableArrayList(new ArrayList<ContestInfo>(c.contests.values())));
-		if(contestChoice.getItems().contains(currentContest)) {
-			contestChoice.getSelectionModel().select(currentContest);
+		for(ContestInfo ci : contestChoice.getItems()) {
+			if(ci.getId() == id) {
+				contestChoice.getSelectionModel().select(ci);
+			}
 		}
 		contestChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ContestInfo>() {
 			@Override

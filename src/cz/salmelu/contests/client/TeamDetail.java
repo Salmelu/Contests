@@ -123,13 +123,16 @@ final class TeamDetail {
 	}
 	
 	protected void displayHeader() {
+		int id = currentTeam == null ? 0 : currentTeam.getId();
 		ArrayList<Team> teamList = new ArrayList<>();
 		for(TeamCategory tc : c.current.getTeamCategories().values()) {
 			teamList.addAll(c.current.getTeams(tc).values());
 		}
 		teamChoice.setItems(FXCollections.observableArrayList(teamList));
-		if(teamChoice.getItems().contains(currentTeam)) {
-			teamChoice.getSelectionModel().select(currentTeam);
+		for(Team t : teamChoice.getItems()) {
+			if(t.getId() == id) {
+				teamChoice.getSelectionModel().select(t);
+			}
 		}
 		teamChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Team>() {
 			@Override

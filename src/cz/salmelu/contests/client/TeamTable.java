@@ -121,9 +121,12 @@ final class TeamTable {
 	}
 	
 	protected void displayHeader() {
+		int id = currentCat == null ? 0 : currentCat.getId();
 		catChoice.setItems(FXCollections.observableArrayList(new ArrayList<TeamCategory>(c.current.getTeamCategories().values())));
-		if(catChoice.getItems().contains(currentCat)) {
-			catChoice.getSelectionModel().select(currentCat);
+		for(TeamCategory tc : catChoice.getItems()) {
+			if(tc.getId() == id) {
+				catChoice.getSelectionModel().select(tc);
+			}
 		}
 		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TeamCategory>() {
 			@Override
