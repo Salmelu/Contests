@@ -1,6 +1,7 @@
 package cz.salmelu.contests.server;
 
 import cz.salmelu.contests.model.DataLoader;
+import cz.salmelu.contests.model.LoaderException;
 import cz.salmelu.contests.util.Logger;
 import cz.salmelu.contests.util.LoggerSeverity;
 
@@ -10,7 +11,7 @@ import cz.salmelu.contests.util.LoggerSeverity;
  * all the data required.
  * @author salmelu
  */
-public class AutoSaver extends Thread {
+class AutoSaver extends Thread {
 
 	/** Reference to DataHolder, which stores all the data */
 	private DataHolder dh;
@@ -22,7 +23,7 @@ public class AutoSaver extends Thread {
 	 * @param dh DataHolder to be used to extract the data
 	 * @param dl DataLoader used to save the data
 	 */
-	public AutoSaver(DataHolder dh, DataLoader dl) {
+	protected AutoSaver(DataHolder dh, DataLoader dl) {
 		this.dh = dh;
 		this.dl = dl;
 	}

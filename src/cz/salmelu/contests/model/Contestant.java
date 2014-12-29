@@ -1,6 +1,7 @@
 package cz.salmelu.contests.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,6 +45,7 @@ public class Contestant implements Serializable {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.cat = cat;
+		this.score = new HashMap<>();
 	}
 
 	/**

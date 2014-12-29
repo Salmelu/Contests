@@ -193,6 +193,16 @@ class ActionHandler {
 		TeamDetail.getInstance().displayAll();
 	}
 	
+	protected void updateCategoryScore(Client c) {
+		if(c.current == null) {
+			showNoContestWarning(c);
+		}
+		if(CategoryScore.getInstance() == null) {
+			CategoryScore.setClient(c);
+		}
+		CategoryScore.getInstance().displayAll();
+	}
+	
 	protected void showNoContestWarning(Client c) {
 		Dialogs.create()
 			.owner(c.mainStage)
@@ -209,6 +219,15 @@ class ActionHandler {
 			.masthead("Unable to connect to host")
 			.message("The program was unable to connect to host " + Config.INET_ADDR 
 					+ ". Please check that you are using a valid hostname and try again.")
+	    	.showError();
+	}
+	
+	protected void showErrorDialog(Client c, String sm, String lm) {
+		Dialogs.create()
+			.owner(c.mainStage)
+			.title("Error!")
+			.masthead(sm)
+			.message(lm)
 	    	.showError();
 	}
 	

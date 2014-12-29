@@ -16,6 +16,8 @@ import java.util.Date;
 import cz.salmelu.contests.model.Category;
 import cz.salmelu.contests.model.Contest;
 import cz.salmelu.contests.model.DataLoader;
+import cz.salmelu.contests.model.Discipline;
+import cz.salmelu.contests.model.LoaderException;
 import cz.salmelu.contests.model.ScoreMode;
 import cz.salmelu.contests.model.Team;
 import cz.salmelu.contests.model.TeamCategory;
@@ -47,8 +49,18 @@ public class Server {
 				Logger.getInstance().log(e.getLocalizedMessage(), LoggerSeverity.WARNING);
 				// TODO - remove, testing stuff
 				Contest c = new Contest("Hello");
+				Discipline d1 = new Discipline("Pozdrav");
+				Discipline d2 = new Discipline("Utok");
+				Discipline d3 = new Discipline("Obrana");
+				c.addDiscipline(d1);
+				c.addDiscipline(d2);
+				c.addDiscipline(d3);
 				Category ct1 = new Category("Bla");
+				ct1.addDiscipline(d1);
+				ct1.addDiscipline(d2);
 				Category ct2 = new Category("Dla");
+				ct2.addDiscipline(d2);
+				ct2.addDiscipline(d3);
 				c.addCategory(ct1);
 				c.addCategory(ct2);
 				TeamContestant p1 = new TeamContestant("Lama", "Lamut", ct1);

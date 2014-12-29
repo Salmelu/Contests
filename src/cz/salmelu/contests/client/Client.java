@@ -46,7 +46,7 @@ public class Client extends Application {
 		arg0.show();
 	}
 	
-	public MenuBar loadMenus() {
+	private MenuBar loadMenus() {
 		MenuBar mbar = new MenuBar();
 		
 		Menu main = new Menu("Main");
@@ -128,7 +128,7 @@ public class Client extends Application {
 		mainPanel.setCenter(null);
 	}
 	
-	public void handleMenuAction(MenuAction ma) {
+	protected void handleMenuAction(MenuAction ma) {
 		currentMenu = ma;
 		switch(ma) {
 		case MAIN_CONTESTS:
@@ -159,10 +159,15 @@ public class Client extends Application {
 			clearPanel();
 			ah.showTeamDetail(this);
 			break;
+		case SCORE_CATEGORY:
+			clearPanel();
+			ah.updateCategoryScore(this);
+			break;
 		default:
 				
 		}
 	}
+	
 	public static void main(String args[]) {
 		launch(args);
 	}

@@ -1,6 +1,6 @@
 package cz.salmelu.contests.client;
 
-public enum MenuAction {
+enum MenuAction {
 	MAIN_CONTESTS,
 	MAIN_RELOAD,
 	MAIN_EXIT,

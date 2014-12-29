@@ -9,16 +9,17 @@ import java.util.Map.Entry;
 import cz.salmelu.contests.model.*;
 import cz.salmelu.contests.net.Packet;
 import cz.salmelu.contests.net.ServerError;
+import cz.salmelu.contests.net.UpdateScorePacket;
 
-public class PacketProcesser {
+class PacketProcesser {
 	
 	private DataHolder dh;
 	
-	public PacketProcesser(DataHolder dh) {
+	protected PacketProcesser(DataHolder dh) {
 		this.dh = dh;
 	}
 
-	public boolean processPacket(Packet p, ObjectInputStream in, ObjectOutputStream out) throws IOException {
+	protected boolean processPacket(Packet p, ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		if(p == null) {
 			writeServerError(out, ServerError.InvalidPacket);
 			return false;
@@ -69,6 +70,10 @@ public class PacketProcesser {
 				break;
 			case TEAM_LEAVE_CONTESTANT:
 				break;
+			case SCORE_UPDATE:
+				if(updateScore(in, out))
+					return true;
+				break;
 			default:
 				break;
 			}
@@ -86,27 +91,33 @@ public class PacketProcesser {
 	
 	private boolean getAllNames(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		HashMap<String, ContestInfo> names = new HashMap<>();
+		dh.lock();
 		for(Entry<Integer, Contest> e : dh.getAllContests().entrySet()) {
 			names.put(e.getValue().getName(), e.getValue().getContestInfo());
 		}
 		out.writeBoolean(true);
 		out.writeObject(names);
+		dh.unlock();
 		return true;
 	}
 	
 	private boolean getContest(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		int contestId;
 		contestId = in.readInt();
+		dh.lock();
 		Contest cs = dh.getContest(contestId);
 		if(cs == null) {
 			writeServerError(out, ServerError.ContestNotFound);
+			dh.unlock();
 			return false;
 		}
 		out.writeBoolean(true);
 		out.writeObject(cs);
+		dh.unlock();
 		return true;
 	}
 	
+	// FIXME: usage & make safe
 	private boolean addContest(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
 		String contestName;
 		contestName = (String) in.readObject();
@@ -116,6 +127,7 @@ public class PacketProcesser {
 		return true;
 	}
 	
+	// FIXME: usage & make safe
 	private boolean getTeamCategory(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		int contestId, tcId;
 		contestId = in.readInt();
@@ -130,6 +142,7 @@ public class PacketProcesser {
 		return true;
 	}
 	
+	// FIXME: usage & make safe
 	private boolean addTeamCategory(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 		String tcName;
 		ScoreMode sm;
@@ -151,6 +164,7 @@ public class PacketProcesser {
 		return true;
 	}
 	
+	// FIXME: usage & make safe
 	private boolean editTeamCategoryName(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 		int contestId, tcId;
 		String newName;
@@ -171,6 +185,7 @@ public class PacketProcesser {
 		return true;
 	}
 	
+	// FIXME: usage & make safe
 	private boolean editTeamCategoryMode(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 		int contestId, tcId;
 		ScoreMode sm;
@@ -191,6 +206,7 @@ public class PacketProcesser {
 		return true;
 	}
 	
+	// FIXME: usage & make safe
 	private boolean getTeam(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 		int contestId, tcId, teamId;
 		teamId = in.readInt();
@@ -206,6 +222,7 @@ public class PacketProcesser {
 		return true;
 	}
 	
+	// FIXME: usage & make safe
 	private boolean addTeam(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 		int contestId, tcId;
 		String name;
@@ -227,6 +244,31 @@ public class PacketProcesser {
 		}
 		Team t = new Team(name, bonus);
 		dh.addTeam(t, tc, cs);
+		out.writeBoolean(true);
+		return true;
+	}
+	
+	private boolean updateScore(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+		int conId = in.readInt();
+		int size = in.readInt();
+		dh.lock();
+		Contest con = dh.getContest(conId);
+		if(con == null) {
+			writeServerError(out, ServerError.ContestNotFound);
+			dh.unlock();
+			return false;
+		}
+		for(int i=0; i<size; i++) {
+			UpdateScorePacket usp = (UpdateScorePacket) in.readObject();
+			if(!dh.updateScore(con, usp.catId, usp.conId, usp.discId, usp.score)) {
+				writeServerError(out, ServerError.InvalidDataState);
+				dh.clearUpdateScores();
+				dh.unlock();
+				return false;
+			}
+		}
+		dh.commitUpdateScores();
+		dh.unlock();
 		out.writeBoolean(true);
 		return true;
 	}

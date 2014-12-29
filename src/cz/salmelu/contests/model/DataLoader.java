@@ -10,8 +10,6 @@ import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.TreeMap;
 
-import cz.salmelu.contests.server.LoaderException;
-
 /**
  * A helper class loading the data for the server
  * @author salmelu

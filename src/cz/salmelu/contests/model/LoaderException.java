@@ -1,4 +1,4 @@
-package cz.salmelu.contests.server;
+package cz.salmelu.contests.model;
 
 import java.io.IOException;
 

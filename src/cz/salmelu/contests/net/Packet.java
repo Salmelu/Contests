@@ -21,8 +21,9 @@ public enum Packet {
 	TEAM_EDIT_NAME((byte) 0x32),	// Edit a team name (string name, team id, category id, contest id)
 	TEAM_EDIT_BONUS((byte) 0x33),	// Edit a team bonus (double bonus, team id, category id, contest id)	
 	TEAM_JOIN_CONTESTANT((byte) 0x34),	// Add an existing contestant to team
-	TEAM_LEAVE_CONTESTANT((byte) 0x35);	// Remove an existing contestant from a team
+	TEAM_LEAVE_CONTESTANT((byte) 0x35),	// Remove an existing contestant from a team
 	//TEAM_ADD_CONTESTANT((byte) 0x34);
+	SCORE_UPDATE((byte) 0x50);  // Updates score (double, size, UpdateScorePackets)
 	
 	/** Byte value of the packet */
 	private byte order;
