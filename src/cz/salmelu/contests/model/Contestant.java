@@ -130,6 +130,17 @@ public class Contestant implements Serializable {
 		}
 		return total;
 	}
+	
+	/**
+	 * Removes a discipline entry from the contestant. 
+	 * Used from Contest after removing a discipline.
+	 * @param d Removed discipline
+	 */
+	protected void clearDisciplineScore(Discipline d) {
+		if(score.containsKey(d)) {
+			score.remove(d);
+		}
+	}
 
 	/**
 	 * Changes a score of the contestant

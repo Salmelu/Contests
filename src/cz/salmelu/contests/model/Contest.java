@@ -219,7 +219,15 @@ public class Contest implements Serializable {
 	 * @param discId id of the removed discipline
 	 */
 	public void removeDiscipline(int discId) {
-		disciplines.remove(discId);
+		Discipline d = disciplines.remove(discId);
+		for(Category c : categories.values()) {
+			if(c.getDisciplines().contains(d)) {
+				c.getDisciplines().remove(d);
+				for(Contestant cs : contestants.get(c).values()) {
+					cs.clearDisciplineScore(d);
+				}
+			}
+		}
 	}
 	
 	/**
