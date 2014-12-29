@@ -16,8 +16,6 @@ public class ContestInfo implements Serializable {
 	private final int id;
 	/** Display name of the contest */
 	private String name;
-	/** Score mode of the contest */
-	private ScoreMode sm;
 	/** Number of contestants in the contest */
 	private int contestants = 0;
 	/** Number of teams in the contest */
@@ -28,10 +26,9 @@ public class ContestInfo implements Serializable {
 	 * @param id unique id of the represented contest
 	 * @param name display name of the represented contest
 	 */
-	protected ContestInfo(int id, String name, ScoreMode sm) {
+	protected ContestInfo(int id, String name) {
 		this.id = id;
 		this.name = name;
-		this.sm = sm;
 	}
 	
 	/**
@@ -40,14 +37,6 @@ public class ContestInfo implements Serializable {
 	 */
 	protected void setName(String name) {
 		this.name = name;
-	}
-	
-	/**
-	 * Updates the contest's score mode
-	 * @param sm new contest's Score mode
-	 */
-	protected void setScoreMode(ScoreMode sm) {
-		this.sm = sm;
 	}
 	
 	/**
@@ -96,14 +85,6 @@ public class ContestInfo implements Serializable {
 	 */
 	public String getName() {
 		return name;
-	}
-	
-	/**
-	 * Gets a score mode of the represented contest
-	 * @return score mode
-	 */
-	public ScoreMode getScoreMode() {
-		return sm;
 	}
 	
 	@Override

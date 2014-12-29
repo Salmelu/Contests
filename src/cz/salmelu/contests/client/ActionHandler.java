@@ -116,6 +116,10 @@ class ActionHandler {
 	}
 	
 	protected void loadContest(Client c, Integer id) {
+		loadContest(c, id, true);
+	}
+	
+	protected void loadContest(Client c, Integer id, boolean display) {
 		Task<Boolean> load = new Task<Boolean>() {
 			@Override
 			protected Boolean call() {			
@@ -152,10 +156,7 @@ class ActionHandler {
 		load.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent arg0) {
-				showSuccessDialog(c, "Contest was loaded", "Contest " + c.current.getName() + " was successfully loaded.");				
-				if(c.currentMenu == MenuAction.SHOW_CONTESTANTS || c.currentMenu == MenuAction.SHOW_TEAMS) {
-					c.handleMenuAction(c.currentMenu);
-				}
+				if(display) showSuccessDialog(c, "Contest was loaded", "Contest " + c.current.getName() + " was successfully loaded.");				
 			}
 		});
 		Thread t = new Thread(load);
@@ -208,10 +209,32 @@ class ActionHandler {
 	}
 	
 	protected void updateContest(Client c) {
-		if(ContestEdit.getInstance() == null) {
-			ContestEdit.setClient(c);
+		if(EditContest.getInstance() == null) {
+			EditContest.setClient(c);
 		}
-		ContestEdit.getInstance().displayAll();
+		EditContest.getInstance().displayAll();
+	}
+	
+	protected void updateDiscipline(Client c) {
+		if(c.current == null) {
+			showNoContestWarning(c);
+			return;
+		}
+		if(EditDiscipline.getInstance() == null) {
+			EditDiscipline.setClient(c);
+		}
+		EditDiscipline.getInstance().displayAll();
+	}
+	
+	protected void updateTeamCategory(Client c) {
+		if(c.current == null) {
+			showNoContestWarning(c);
+			return;
+		}
+		if(EditTeamCategory.getInstance() == null) {
+			EditTeamCategory.setClient(c);
+		}
+		EditTeamCategory.getInstance().displayAll();
 	}
 	
 	protected void showNoContestWarning(Client c) {

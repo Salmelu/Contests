@@ -75,6 +75,54 @@ class DataHolder {
 		return true;
 	}
 	
+	/**
+	 * Adds a new discipline to the contest
+	 * @param conId id of the affected contest
+	 * @param d added discipline
+	 * @return true, if the discipline was added, false, if it couldn't be added
+	 */
+	protected boolean addDiscipline(int conId, Discipline d) {
+		Contest cs = getContest(conId);
+		if(cs == null) {
+			return false;
+		}
+		cs.addDiscipline(d);
+		return true;
+	}
+	
+	protected boolean deleteDiscipline(int conId, int discId) {
+		Contest cs = getContest(conId);
+		if(cs == null) {
+			return false;
+		}
+		if(!cs.hasDiscipline(discId)) {
+			return false;
+		}
+		cs.removeDiscipline(discId);
+		return true;
+	}
+	
+	protected boolean addTeamCategory(int conId, TeamCategory tc) {
+		Contest cs = getContest(conId);
+		if(cs == null) {
+			return false;
+		}
+		cs.addTeamCategory(tc);
+		return true;
+	}
+	
+	protected boolean deleteTeamCategory(int conId, int tcId) {
+		Contest cs = getContest(conId);
+		if(cs == null) {
+			return false;
+		}
+		if(!cs.hasTeamCategory(tcId)) {
+			return false;
+		}
+		cs.removeTeamCategory(tcId);
+		return true;
+	}
+	
 	protected TeamCategory getTeamCategory(int tcId, int contestId) {
 		Contest cs = contests.get(contestId);
 		if(cs == null)

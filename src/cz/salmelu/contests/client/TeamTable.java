@@ -38,12 +38,13 @@ final class TeamTable {
 		this.c = c;
 		
 		// Top panel
-		catBox = new HBox();
-		catBox.setAlignment(Pos.TOP_LEFT);
+		catBox = new HBox(16);
+		catBox.setAlignment(Pos.CENTER);
 		catLabel = new Label("Choose a team category: ");
 		catChoice = new ChoiceBox<>();
+		catChoice.setPrefWidth(200);
 		catBox.getChildren().addAll(catLabel, catChoice);
-		catBox.setPadding(new Insets(0,15,15,15));
+		catBox.setPadding(new Insets(0,15,40,15));
 		
 		// Center
 		noCategory = new Label("Please, select a category");

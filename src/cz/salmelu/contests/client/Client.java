@@ -62,10 +62,12 @@ public class Client extends Application {
 		MenuItem ishow1 = new MenuItem("Contestants");
 		MenuItem ishow2 = new MenuItem("Teams");
 		MenuItem ishow3 = new MenuItem("Team Detail");
-		
+
 		MenuItem iscore1 = new MenuItem("Update Category");
-		
+
 		MenuItem iedit1 = new MenuItem("Update/New Contest");
+		MenuItem iedit2 = new MenuItem("Update/New Discipline");
+		MenuItem iedit3 = new MenuItem("Update/New Team category");
 		
 		imain1.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -113,14 +115,26 @@ public class Client extends Application {
 		iedit1.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.UPDATE_CONTEST);;
+				handleMenuAction(MenuAction.UPDATE_CONTEST);
+			}
+		});
+		iedit2.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				handleMenuAction(MenuAction.UPDATE_DISCIPLINE);
+			}
+		});
+		iedit3.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				handleMenuAction(MenuAction.UPDATE_TCATEGORY);
 			}
 		});
 		
 		main.getItems().addAll(imain1, imain2, imain3);
 		show.getItems().addAll(ishow1, ishow2, ishow3);
 		score.getItems().addAll(iscore1);
-		edit.getItems().addAll(iedit1);
+		edit.getItems().addAll(iedit1, iedit2, iedit3);
 		mbar.getMenus().addAll(main, show, score, edit);
 		
 		return mbar;
@@ -134,15 +148,18 @@ public class Client extends Application {
 	protected void handleMenuAction(MenuAction ma) {
 		MenuAction prevMa = currentMenu;
 		currentMenu = ma;
+		boolean nonQuietReload = false;
 		switch(ma) {
 		case MAIN_CONTESTS:
 			clearPanel();
 			ah.showContestList(this);
 			break;
 		case MAIN_RELOAD:
+			nonQuietReload = true;
+		case MAIN_RELOAD_QUIET:
 			ah.reloadContestList(this, false);
 			if(current != null) {
-				ah.loadContest(this, current.getId());
+				ah.loadContest(this, current.getId(), nonQuietReload);
 				handleMenuAction(prevMa);
 			}
 			else {
@@ -171,6 +188,14 @@ public class Client extends Application {
 		case UPDATE_CONTEST:
 			clearPanel();
 			ah.updateContest(this);
+			break;
+		case UPDATE_DISCIPLINE:
+			clearPanel();
+			ah.updateDiscipline(this);
+			break;
+		case UPDATE_TCATEGORY:
+			clearPanel();
+			ah.updateTeamCategory(this);
 			break;
 		default:
 				

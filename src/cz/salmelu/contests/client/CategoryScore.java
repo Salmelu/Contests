@@ -53,12 +53,13 @@ final class CategoryScore {
 		this.c = c;
 		
 		// Top panel
-		catBox = new HBox();
-		catBox.setAlignment(Pos.TOP_LEFT);
+		catBox = new HBox(16);
+		catBox.setAlignment(Pos.CENTER);
 		catLabel = new Label("Choose a category: ");
 		catChoice = new ChoiceBox<>();
+		catChoice.setPrefWidth(200);
 		catBox.getChildren().addAll(catLabel, catChoice);
-		catBox.setPadding(new Insets(0,15,15,15));
+		catBox.setPadding(new Insets(0,15,40,15));
 		
 		// Center labels
 		noCategory = new Label("Please, select a category");
@@ -74,6 +75,7 @@ final class CategoryScore {
 		table = new GridPane();
 		table.setHgap(8);
 		table.setVgap(12);
+		table.setAlignment(Pos.CENTER);
 		scoreFields = new HashMap<>();
 	}
 	
@@ -121,6 +123,7 @@ final class CategoryScore {
 			int col = 2;
 			for(Discipline disc : currentCat.getDisciplines()) {
 				TextField tf = new TextField();
+				tf.setPrefWidth(80);
 				tf.setText(String.valueOf(con.getScore(disc)));
 				scoreFields.get(con).put(disc, tf);
 				table.add(tf, col, row);

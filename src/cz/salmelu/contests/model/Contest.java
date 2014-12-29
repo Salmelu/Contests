@@ -26,8 +26,6 @@ public class Contest implements Serializable {
 	private Map<Integer, Discipline> disciplines;
 	/** A map of team categories sorted by their id */
 	private Map<Integer, TeamCategory> teamCategories;
-	/** A score mode of this contest for team competitions */
-	private ScoreMode mode = null;
 	
 	/** Unique id of this contest */
 	private final int id;
@@ -41,13 +39,12 @@ public class Contest implements Serializable {
 	public Contest(String name) {
 		this.id = IdFactory.getInstance().getNewId(this);
 		this.name = name;
-		this.mode = ScoreMode.AverageFull;
 		this.categories = new HashMap<>();
 		this.disciplines = new HashMap<>();
 		this.teamCategories = new HashMap<>();
 		this.contestants = new HashMap<>();
 		this.teams = new HashMap<>();
-		this.infos = new ContestInfo(id, name, mode);
+		this.infos = new ContestInfo(id, name);
 	}
 	
 	/**
@@ -72,22 +69,6 @@ public class Contest implements Serializable {
 	 */
 	public String getName() {
 		return name;
-	}
-	
-	/**
-	 * Changes contest's score mode
-	 * @param mode new mode
-	 */
-	public void setScoreMode(ScoreMode mode) {
-		this.mode = mode;
-	}
-	
-	/**
-	 * Gets contest's score mode
-	 * @return score mode
-	 */
-	public ScoreMode getScoreMode() {
-		return mode;
 	}
 	
 	/**
@@ -164,6 +145,41 @@ public class Contest implements Serializable {
 	}
 	
 	/**
+	 * Checks if the contest contains a team category
+	 * @param tcId the id of the contained team category
+	 * @return true, if the contest has team category with id tcId
+	 */
+	public boolean hasTeamCategory(int tcId) {
+		return teamCategories.containsKey(tcId);
+	}
+	
+	/**
+	 * Checks if the contest contains a team category
+	 * @param tc the team category
+	 * @return true, if the contest has team category tc
+	 */
+	public boolean hasTeamCategory(TeamCategory tc) {
+		return teamCategories.containsValue(tc);
+	}
+	
+	/**
+	 * Removes a team category
+	 * @param tcId id of the removed team category
+	 */
+	public void removeTeamCategory(int tcId) {
+		teamCategories.remove(tcId);
+	}
+
+	/**
+	 * Gets a team category in the contest
+	 * @param tcId id of the wanted team category
+	 * @return the team category, or null, if it doesn't exist
+	 */
+	public TeamCategory getTeamCategory(int tcId) {
+		return teamCategories.get(tcId);
+	}
+	
+	/**
 	 * Adds a new category
 	 * @param c new category
 	 */
@@ -178,6 +194,41 @@ public class Contest implements Serializable {
 	 */
 	public void addDiscipline(Discipline d) {
 		disciplines.put(d.getId(), d);
+	}
+
+	/**
+	 * Checks if the contest contains a discipline
+	 * @param discId id of the contained discipline
+	 * @return true, if the contest has a discipline with id discId
+	 */
+	public boolean hasDiscipline(int discId) {
+		return disciplines.containsKey(discId);
+	}
+	
+	/**
+	 * Checks if the contest contains a discipline
+	 * @param d the discipline
+	 * @return true, if the contest has discipline d
+	 */
+	public boolean hasDiscipline(Discipline d) {
+		return disciplines.containsValue(d);
+	}
+	
+	/**
+	 * Removes a discipline
+	 * @param discId id of the removed discipline
+	 */
+	public void removeDiscipline(int discId) {
+		disciplines.remove(discId);
+	}
+	
+	/**
+	 * Gets a discipline in the contest
+	 * @param discId id of the wanted discipline
+	 * @return the discipline, or null, if it doesn't exist
+	 */
+	public Discipline getDiscipline(int discId) {
+		return disciplines.get(discId);
 	}
 	
 	/**
@@ -208,7 +259,6 @@ public class Contest implements Serializable {
 	 */
 	private void updateInfo() {
 		infos.setName(name);
-		infos.setScoreMode(mode);
 		int count = 0;
 		for(Entry<Category, Map<Integer, Contestant>> e : contestants.entrySet()) {
 			if(e.getValue() != null) count += e.getValue().size();

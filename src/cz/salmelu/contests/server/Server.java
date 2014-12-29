@@ -123,7 +123,12 @@ public class Server {
 					Logger.getInstance().log("Received packet with id " + (byte) packetCode, LoggerSeverity.VERBOSE);
 					if(packetCode != -1) {
 						Packet p = Packet.getPacket((byte) packetCode);
-						processer.processPacket(p, input, output);
+						if(processer.processPacket(p, input, output)) {
+							Logger.getInstance().log("Packet " + (byte) packetCode + " processed successfully", LoggerSeverity.VERBOSE);
+						}
+						else {
+							Logger.getInstance().log("Packet " + (byte) packetCode + " received error", LoggerSeverity.VERBOSE);
+						}
 					}
 					else {
 						try {

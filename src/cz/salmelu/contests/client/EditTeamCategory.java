@@ -9,10 +9,10 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import cz.salmelu.contests.model.ContestInfo;
 import cz.salmelu.contests.model.ScoreMode;
-import cz.salmelu.contests.net.ContestPacket;
+import cz.salmelu.contests.model.TeamCategory;
 import cz.salmelu.contests.net.Packet;
+import cz.salmelu.contests.net.TeamCategoryPacket;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -29,37 +29,40 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-final class ContestEdit {
+final class EditTeamCategory {
 	
 	private Client c;
-	private static ContestEdit instance = null;
+	private static EditTeamCategory instance = null;
 	
-	private ChoiceBox<ContestInfo> contestChoice = null;
-	private Label contestLabel = null;
-	private HBox contestBox = null;
-	private ContestInfo currentContest = null;
+	private ChoiceBox<TeamCategory> tcChoice = null;
+	private Label tcLabel = null;
+	private HBox tcBox = null;
+	private TeamCategory currentTc = null;
 	private Button deleteButton = null;
 	
 	private GridPane gp = null;
 	private TextField name = null;
 	private ChoiceBox<ScoreMode> sm = null;
 	
-	private ContestEdit(Client c) {
+	private EditTeamCategory(Client c) {
 		this.c = c;
 		
-		contestBox = new HBox();
-		contestBox.setAlignment(Pos.TOP_LEFT);
-		contestLabel = new Label("Choose a contest: ");
-		contestChoice = new ChoiceBox<>();
-		deleteButton = new Button("Delete contest");
+		tcBox = new HBox(16);
+		tcBox.setAlignment(Pos.TOP_LEFT);
+		tcLabel = new Label("Choose a team category: ");
+		tcChoice = new ChoiceBox<>();
+		tcChoice.setPrefWidth(180);
+		deleteButton = new Button("Delete team category");
+		deleteButton.setPadding(new Insets(5,5,5,5));
+		deleteButton.setPrefWidth(200);
 		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				deleteContest();
+				deleteTeamCategory();
 			}
 		});
-		contestBox.getChildren().addAll(contestLabel, contestChoice);
-		contestBox.setPadding(new Insets(0,15,15,15));
+		tcBox.setPadding(new Insets(0,15,40,15));
+		tcBox.getChildren().addAll(tcLabel, tcChoice, deleteButton);
 		
 		createTable();
 	}
@@ -71,153 +74,156 @@ final class ContestEdit {
 		gp.setVgap(6);
 		
 		name = new TextField();
-		name.setPromptText("Enter contest name");
-		
+		name.setPromptText("Enter team category name");
+		name.setPrefWidth(200);
+
 		sm = new ChoiceBox<>();
 		sm.setItems(FXCollections.observableArrayList(ScoreMode.values()));
+		sm.setPrefWidth(200);
 		
-		HBox buttonBox = new HBox(5);
-		Button newButton = new Button("New contest");
+		HBox buttonBox = new HBox(10);
+		Button newButton = new Button("New team category");
 		newButton.setPadding(new Insets(5,5,5,5));
-		Button updateButton = new Button("Update contest");
+		newButton.setPrefWidth(200);
+		Button updateButton = new Button("Update team category");
 		updateButton.setPadding(new Insets(5,5,5,5));
+		updateButton.setPrefWidth(200);
 		
 		newButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				newContest();
+				newTeamCategory();
 			}
 		});
 		updateButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				updateContest();
+				updateTeamCategory();
 			}
 		});
 		buttonBox.getChildren().add(newButton);
 		buttonBox.getChildren().add(updateButton);
 		buttonBox.setAlignment(Pos.CENTER);
 		
-		gp.add(new Label("Contest name:"), 0, 0);
+		gp.add(new Label("Team category name:"), 0, 0);
 		gp.add(name, 1, 0);
-		gp.add(new Label("Contest score mode:"), 0, 1);
+		gp.add(new Label("Team category score mode:"), 0, 1);
 		gp.add(sm, 1, 1);
 		gp.add(buttonBox, 0, 2, 2, 1);
 	}
 
-	protected static ContestEdit getInstance() {
+	protected static EditTeamCategory getInstance() {
 		return instance;
 	}
 	
 	protected static void setClient(Client c) {
-		instance = new ContestEdit(c);
+		instance = new EditTeamCategory(c);
 	}
 	
 	protected void displayHeader() {
-		int id = currentContest == null ? 0 : currentContest.getId();
-		contestChoice.setItems(FXCollections.observableArrayList(new ArrayList<ContestInfo>(c.contests.values())));
-		for(ContestInfo ci : contestChoice.getItems()) {
-			if(ci.getId() == id) {
-				contestChoice.getSelectionModel().select(ci);
+		int id = currentTc == null ? 0 : currentTc.getId();
+		tcChoice.setItems(FXCollections.observableArrayList(new ArrayList<TeamCategory>(c.current.getTeamCategories().values())));
+		for(TeamCategory tc : tcChoice.getItems()) {
+			if(tc.getId() == id) {
+				tcChoice.getSelectionModel().select(tc);
 			}
 		}
-		contestChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ContestInfo>() {
+		tcChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TeamCategory>() {
 			@Override
-			public void changed(ObservableValue<? extends ContestInfo> arg0, ContestInfo arg1,
-					ContestInfo arg2) {
-				currentContest = arg2;
+			public void changed(ObservableValue<? extends TeamCategory> arg0, TeamCategory arg1,
+					TeamCategory arg2) {
+				currentTc = arg2;
 				fillFields();
 			}
 		});
-		c.mainPanel.setTop(contestBox);
+		c.mainPanel.setTop(tcBox);
 	}
 
 	private void fillFields() {
-		if(currentContest == null || !c.contests.containsValue(currentContest)) {
+		if(currentTc == null || !c.current.hasTeamCategory(currentTc.getId())) {
 			name.setText("");
 		}
 		else {
-			name.setText(currentContest.getName());
-			sm.getSelectionModel().select(currentContest.getScoreMode());
+			name.setText(currentTc.getName());
+			sm.getSelectionModel().select(currentTc.getScoreMode());
 		}
 	}
 	
 	protected void displayAll() {
+		if(c.current == null) return;
 		displayHeader();
 		c.mainPanel.setCenter(gp);
 	}
 
-	private void deleteContest() {
-		if(currentContest == null) {
-			c.ah.showErrorDialog(c, "No contest selected", "You have not chosen a contest.");
+	private void deleteTeamCategory() {
+		if(currentTc == null) {
+			c.ah.showErrorDialog(c, "No team category selected", "You have not chosen a team category to delete.");
 			return;
 		}
-		DeleteTask dt = new DeleteTask(currentContest.getId());
+		DeleteTask dt = new DeleteTask(c.current.getId(), currentTc.getId());
 		dt.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent arg0) {
-				c.ah.reloadContestList(c, false);
+				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
 			}
 		});
 		
 		Thread t = new Thread(dt);
 		t.run();
-		c.ah.showSuccessDialog(c, "Contest deleted", "Contest " + currentContest.getName() + " was deleted.");
+		c.ah.showSuccessDialog(c, "Team category deleted", "Team category " + currentTc.getName() + " was deleted.");
 	}
 	
-	private void newContest() {
-		ContestPacket cp = new ContestPacket();
-		cp.name = name.getText();
-		if(cp.name == null || cp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid contest name selected. Please enter a name for the contest.");
+	private void newTeamCategory() {
+		TeamCategoryPacket tcp = new TeamCategoryPacket();
+		tcp.name = name.getText();
+		tcp.sm = sm.getSelectionModel().getSelectedItem();
+		if(tcp.name == null || tcp.name.equals("")) {
+			c.ah.showErrorDialog(c, "Field error", "An invalid team category name selected. Please enter a name for the team category.");
 			return;
 		}
-		cp.sm = sm.getSelectionModel().getSelectedItem();
-		if(cp.sm == null) {
-			c.ah.showErrorDialog(c, "Field error", "Please select a score mode for the contest");
+		if(tcp.sm == null) {
+			c.ah.showErrorDialog(c, "Field error", "An invalid score mode selected. Please enter a score mode for the team category.");
 			return;
 		}
-		cp.id = 0;
-		NewEditTask net = new NewEditTask(cp);
+		tcp.id = 0;
+		tcp.conId = c.current.getId();
+		NewEditTask net = new NewEditTask(tcp);
 		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent arg0) {
-				c.ah.reloadContestList(c, false);
+				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
 			}
 		});
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "New contest added", "You have successfully sent a request for a new contest.");
+		c.ah.showSuccessDialog(c, "New team category added", "You have successfully sent a request for a new team category.");
 	}
 	
-	private void updateContest() {
-		if(currentContest == null) {
-			c.ah.showErrorDialog(c, "No contest selected", "You have not chosen a contest.");
+	private void updateTeamCategory() {
+		if(currentTc == null) {
+			c.ah.showErrorDialog(c, "No team category selected", "You have not chosen a team category.");
 			return;
 		}
-		ContestPacket cp = new ContestPacket();
-		cp.name = name.getText();
-		if(cp.name == null || cp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid contest name selected. Please enter a name for the contest.");
+		TeamCategoryPacket tcp = new TeamCategoryPacket();
+		tcp.name = name.getText();
+		tcp.sm = sm.getSelectionModel().getSelectedItem();
+		if(tcp.name == null || tcp.name.equals("")) {
+			c.ah.showErrorDialog(c, "Field error", "An invalid team category name selected. Please enter a name for the team category.");
 			return;
 		}
-		cp.sm = sm.getSelectionModel().getSelectedItem();
-		if(cp.sm == null) {
-			c.ah.showErrorDialog(c, "Field error", "Please select a score mode for the contest");
+		if(tcp.sm == null) {
+			c.ah.showErrorDialog(c, "Field error", "An invalid score mode selected. Please enter a score mode for the team category.");
 			return;
 		}
-		cp.id = currentContest.getId();
-		NewEditTask net = new NewEditTask(cp);
+		tcp.conId = c.current.getId();
+		tcp.id = currentTc.getId();
+		NewEditTask net = new NewEditTask(tcp);
 		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent arg0) {
-				if(net.getValue())
-				{
-					c.ah.reloadContestList(c, false);
-					if(c.current != null && c.current.getId() == cp.id) {
-						c.ah.loadContest(c, cp.id);
-					}
+				if(net.getValue()) {
+					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
 				}
 				else {
 					c.ah.showConnectionError(c);
@@ -227,15 +233,15 @@ final class ContestEdit {
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "Contest update requested", "You have successfully sent a request for a contest update.");
+		c.ah.showSuccessDialog(c, "Team category update requested", "You have successfully sent a request for a team category update.");
 	}
 	
 	private class NewEditTask extends Task<Boolean> {
 		
-		private ContestPacket cp;
+		private TeamCategoryPacket tcp;
 		
-		protected NewEditTask(ContestPacket cp) {
-			this.cp = cp;
+		protected NewEditTask(TeamCategoryPacket tcp) {
+			this.tcp = tcp;
 		}
 		
 		@Override
@@ -246,8 +252,8 @@ final class ContestEdit {
 		        socket.connect(addr);
 		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
 		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.CONTEST_EDIT.toByte());
-		        send.writeObject(cp);
+		        send.writeByte(Packet.TCATEGORY_EDIT.toByte());
+		        send.writeObject(tcp);
 		        send.flush();
 		        boolean ret = get.readBoolean();
 		        socket.close();
@@ -267,11 +273,13 @@ final class ContestEdit {
 	}
 	
 	private class DeleteTask extends Task<Boolean> {
-		
+
+		private int tcId;
 		private int conId;
 		
-		protected DeleteTask(int conId) {
+		protected DeleteTask(int conId, int tcId) {
 			this.conId = conId;
+			this.tcId = tcId;
 		}
 		
 		@Override
@@ -282,8 +290,9 @@ final class ContestEdit {
 		        socket.connect(addr);
 		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
 		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.CONTEST_DELETE.toByte());
+		        send.writeByte(Packet.TCATEGORY_DELETE.toByte());
 		        send.writeInt(conId);
+		        send.writeInt(tcId);
 		        send.flush();
 		        boolean ret = get.readBoolean();
 		        socket.close();

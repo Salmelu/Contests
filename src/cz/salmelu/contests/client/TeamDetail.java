@@ -39,12 +39,13 @@ final class TeamDetail {
 		this.c = c;
 		
 		// Top panel
-		teamBox = new HBox();
-		teamBox.setAlignment(Pos.TOP_LEFT);
+		teamBox = new HBox(16);
+		teamBox.setAlignment(Pos.CENTER);
 		teamLabel = new Label("Choose a team: ");
 		teamChoice = new ChoiceBox<>();
+		teamChoice.setPrefWidth(200);
 		teamBox.getChildren().addAll(teamLabel, teamChoice);
-		teamBox.setPadding(new Insets(0,15,15,15));
+		teamBox.setPadding(new Insets(0,15,40,15));
 		
 		// Center
 		noTeam = new Label("Please, select a team");
