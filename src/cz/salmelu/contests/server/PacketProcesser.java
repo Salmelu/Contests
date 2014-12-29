@@ -7,19 +7,36 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import cz.salmelu.contests.model.*;
+import cz.salmelu.contests.net.ContestPacket;
 import cz.salmelu.contests.net.Packet;
 import cz.salmelu.contests.net.ServerError;
 import cz.salmelu.contests.net.UpdateScorePacket;
 
+/**
+ * Class dealing with all the packets and the actions done by them
+ * @author salmelu
+ */
 class PacketProcesser {
 	
+	/** Associated data holder for accessing the server data */
 	private DataHolder dh;
 	
+	/** 
+	 * Constructs packet processer, which will use the supplied data holder.
+	 * @param dh data holder to be used
+	 */
 	protected PacketProcesser(DataHolder dh) {
 		this.dh = dh;
 	}
 
-	protected boolean processPacket(Packet p, ObjectInputStream in, ObjectOutputStream out) throws IOException {
+	/**
+	 * Processes a supplied packet. 
+	 * @param p processed packet
+	 * @param in ObjectInputStream received by the socket
+	 * @param out ObjectOutputStream received by the socket
+	 * @return true, if the packet was successfully processed, false otherwise
+	 */
+	protected boolean processPacket(Packet p, ObjectInputStream in, ObjectOutputStream out) {
 		if(p == null) {
 			writeServerError(out, ServerError.InvalidPacket);
 			return false;
@@ -34,8 +51,12 @@ class PacketProcesser {
 				if(getContest(in, out))
 					return true;
 				break;
-			case CONTEST_ADD:
-				if(addContest(in, out))
+			case CONTEST_EDIT:
+				if(editAddContest(in, out))
+					return true;
+				break;
+			case CONTEST_DELETE:
+				if(deleteContest(in, out))
 					return true;
 				break;
 			case TCATEGORY_GET:
@@ -89,9 +110,19 @@ class PacketProcesser {
 		return false;
 	}
 	
+	/**
+	 * Pushes a Map of ContestInfo objects into out stream
+	 * @param in ObjectInputStream received by the socket
+	 * @param out ObjectOutputStream received by the socket
+	 * @return true, if the packet was successfully processed, false otherwise
+	 * @throws IOException if the streams are corrupted
+	 */
 	private boolean getAllNames(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		HashMap<String, ContestInfo> names = new HashMap<>();
-		dh.lock();
+		if(!dh.lock()) {
+			writeServerError(out, ServerError.UnableToLock);
+			return false;
+		}
 		for(Entry<Integer, Contest> e : dh.getAllContests().entrySet()) {
 			names.put(e.getValue().getName(), e.getValue().getContestInfo());
 		}
@@ -101,10 +132,20 @@ class PacketProcesser {
 		return true;
 	}
 	
+	/**
+	 * Pushes a Contest (with all the data inside it) into the out stream
+	 * @param in ObjectInputStream received by the socket
+	 * @param out ObjectOutputStream received by the socket
+	 * @return true, if the packet was successfully processed, false otherwise
+	 * @throws IOException if the streams are corrupted
+	 */
 	private boolean getContest(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		int contestId;
 		contestId = in.readInt();
-		dh.lock();
+		if(!dh.lock()) {
+			writeServerError(out, ServerError.UnableToLock);
+			return false;
+		}
 		Contest cs = dh.getContest(contestId);
 		if(cs == null) {
 			writeServerError(out, ServerError.ContestNotFound);
@@ -117,12 +158,69 @@ class PacketProcesser {
 		return true;
 	}
 	
-	// FIXME: usage & make safe
-	private boolean addContest(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
-		String contestName;
-		contestName = (String) in.readObject();
-		Contest cs = new Contest(contestName);
-		dh.addContest(cs);
+	/**
+	 * Processes an update/edit contest packet
+	 * @param in ObjectInputStream received by the socket
+	 * @param out ObjectOutputStream received by the socket
+	 * @return true, if the packet was successfully processed, false otherwise
+	 * @throws ClassNotFoundException when the classes couldn't be loaded
+	 * @throws IOException if the streams are corrupted
+	 */
+	private boolean editAddContest(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
+		ContestPacket cp = (ContestPacket) in.readObject();
+		if(cp.id == -1 || cp.name == null || cp.name == "" || cp.sm == null) {
+			writeServerError(out, ServerError.InvalidInput);
+			return false;
+		}
+		if(cp.id == 0) {
+			Contest cs = new Contest(cp.name);
+			cs.setScoreMode(cp.sm);
+			if(!dh.lock()) {
+				writeServerError(out, ServerError.UnableToLock);
+				return false;
+			}
+			dh.addContest(cs);
+			dh.unlock();
+			out.writeBoolean(true);
+			return true;
+		}
+		else {
+			if(!dh.lock()) {
+				writeServerError(out, ServerError.UnableToLock);
+				return false;
+			}
+			if(dh.getContest(cp.id) == null) {
+				writeServerError(out, ServerError.ContestNotFound);
+				return false;
+			}
+			Contest cs = dh.getContest(cp.id);
+			cs.setName(cp.name);
+			cs.setScoreMode(cp.sm);
+			dh.unlock();
+			out.writeBoolean(true);
+			return true;
+		}
+	}
+	
+	/**
+	 * Processes a delete contest request.
+	 * @param in ObjectInputStream received by the socket
+	 * @param out ObjectOutputStream received by the socket
+	 * @return true, if the packet was successfully processed, false otherwise
+	 * @throws IOException if the streams are corrupted
+	 */
+	private boolean deleteContest(ObjectInputStream in, ObjectOutputStream out) throws IOException {
+		int conId = in.readInt();
+		if(!dh.lock()) {
+			writeServerError(out, ServerError.UnableToLock);
+			return false;
+		}
+		if(!dh.deleteContest(conId)) {
+			writeServerError(out, ServerError.ContestNotFound);
+			dh.unlock();
+			return false;
+		}
+		dh.unlock();
 		out.writeBoolean(true);
 		return true;
 	}
@@ -248,10 +346,21 @@ class PacketProcesser {
 		return true;
 	}
 	
+	/**
+	 * Processes an updateScore packet.
+	 * @param in ObjectInputStream received by the socket
+	 * @param out ObjectOutputStream received by the socket
+	 * @return true, if the packet was successfully processed, false otherwise
+	 * @throws ClassNotFoundException when the classes couldn't be loaded
+	 * @throws IOException if the streams are corrupted
+	 */
 	private boolean updateScore(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 		int conId = in.readInt();
 		int size = in.readInt();
-		dh.lock();
+		if(!dh.lock()) {
+			writeServerError(out, ServerError.UnableToLock);
+			return false;
+		}
 		Contest con = dh.getContest(conId);
 		if(con == null) {
 			writeServerError(out, ServerError.ContestNotFound);
@@ -273,6 +382,11 @@ class PacketProcesser {
 		return true;
 	}
 
+	/**
+	 * Writes a server error to the out stream. 
+	 * @param out stream to write the error to
+	 * @param message message to be sent to client
+	 */
 	private void writeServerError(ObjectOutputStream out, ServerError message) {
 		try {
 			out.writeBoolean(false);

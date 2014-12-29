@@ -12,7 +12,7 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 
-class ContestTable {
+final class ContestTable {
 	
 	private Client c;
 	private static ContestTable instance = null;

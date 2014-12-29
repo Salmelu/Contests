@@ -20,7 +20,7 @@ import javafx.util.Callback;
 import cz.salmelu.contests.model.Team;
 import cz.salmelu.contests.model.TeamCategory;
 
-class TeamTable {
+final class TeamTable {
 	
 	private Client c = null;
 	private static TeamTable instance = null;

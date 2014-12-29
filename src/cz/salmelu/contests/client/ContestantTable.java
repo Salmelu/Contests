@@ -21,7 +21,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
-class ContestantTable {
+final class ContestantTable {
 
 	private Client c = null;
 	private static ContestantTable instance = null;

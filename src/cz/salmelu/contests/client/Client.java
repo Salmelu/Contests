@@ -43,6 +43,7 @@ public class Client extends Application {
 		Scene mainScene = new Scene(mainBox, 800, 600);
 		arg0.setScene(mainScene);
 		
+		ah.reloadContestList(this, false);
 		arg0.show();
 	}
 	
@@ -62,8 +63,9 @@ public class Client extends Application {
 		MenuItem ishow2 = new MenuItem("Teams");
 		MenuItem ishow3 = new MenuItem("Team Detail");
 		
-		MenuItem iscore1 = new MenuItem("Update Contestant");
-		MenuItem iscore2 = new MenuItem("Update Category");
+		MenuItem iscore1 = new MenuItem("Update Category");
+		
+		MenuItem iedit1 = new MenuItem("Update/New Contest");
 		
 		imain1.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -105,19 +107,20 @@ public class Client extends Application {
 		iscore1.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.SCORE_CONTESTANT);
+				handleMenuAction(MenuAction.SCORE_CATEGORY);
 			}
 		});
-		iscore2.setOnAction(new EventHandler<ActionEvent>() {
+		iedit1.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.SCORE_CATEGORY);
+				handleMenuAction(MenuAction.UPDATE_CONTEST);;
 			}
 		});
 		
 		main.getItems().addAll(imain1, imain2, imain3);
 		show.getItems().addAll(ishow1, ishow2, ishow3);
-		score.getItems().addAll(iscore1, iscore2);
+		score.getItems().addAll(iscore1);
+		edit.getItems().addAll(iedit1);
 		mbar.getMenus().addAll(main, show, score, edit);
 		
 		return mbar;
@@ -162,6 +165,10 @@ public class Client extends Application {
 		case SCORE_CATEGORY:
 			clearPanel();
 			ah.updateCategoryScore(this);
+			break;
+		case UPDATE_CONTEST:
+			clearPanel();
+			ah.updateContest(this);
 			break;
 		default:
 				

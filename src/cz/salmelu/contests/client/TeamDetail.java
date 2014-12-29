@@ -21,7 +21,7 @@ import cz.salmelu.contests.model.Team;
 import cz.salmelu.contests.model.TeamCategory;
 import cz.salmelu.contests.model.TeamContestant;
 
-class TeamDetail {
+final class TeamDetail {
 	
 	private Client c = null;
 	private static TeamDetail instance = null;

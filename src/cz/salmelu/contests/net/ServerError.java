@@ -10,5 +10,6 @@ public enum ServerError {
 	ContestNotFound,
 	InvalidDataState,	// Data structure is different on client and server
 	TeamCategoryNotFound,
-	TeamNotFound
+	TeamNotFound,
+	UnableToLock;
 }

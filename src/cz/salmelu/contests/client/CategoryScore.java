@@ -33,7 +33,7 @@ import cz.salmelu.contests.model.Discipline;
 import cz.salmelu.contests.net.Packet;
 import cz.salmelu.contests.net.UpdateScorePacket;
 
-class CategoryScore {
+final class CategoryScore {
 	private Client c = null;
 	private static CategoryScore instance = null;
 	private Category currentCat = null;

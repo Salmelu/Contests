@@ -27,12 +27,22 @@ import cz.salmelu.contests.net.ServerError;
 import cz.salmelu.contests.util.Logger;
 import cz.salmelu.contests.util.LoggerSeverity;
 
+/**
+ * A main class used by server. Creates a socket, listens on it and hands all the packets to processer.
+ * @author salmelu
+ */
 public class Server {
 
+	/** Instance of DataLoader to be used for loading/saving data */
 	private DataLoader dl;
+	/** Instance of DataHolder to store the data */
 	private DataHolder dh;
+	/** Instance of PacketProcesser to process the packets */
 	private PacketProcesser processer;
 	
+	/**
+	 * Creates a new server instance
+	 */
 	public Server() {
 		dh = new DataHolder();
 		processer = new PacketProcesser(dh);
@@ -90,9 +100,11 @@ public class Server {
 			Thread autoSaver = new Thread(new AutoSaver(dh, dl));
 			autoSaver.start();
 		}
-		
 	}
 	
+	/**
+	 * Starts the server by opening a server socket and starting to listen
+	 */
 	public void start() {
 		// Get client
 		ServerSocket sckt = null;
@@ -151,6 +163,10 @@ public class Server {
 		}
 	}
 	
+	/**
+	 * Entry point of the program
+	 * @param args command-line arguments
+	 */
 	public static void main(String[] args) {
 		// Start logging
 		String logs[] = Config.LOGGING.split("-");

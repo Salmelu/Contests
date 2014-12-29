@@ -27,7 +27,7 @@ public class Contest implements Serializable {
 	/** A map of team categories sorted by their id */
 	private Map<Integer, TeamCategory> teamCategories;
 	/** A score mode of this contest for team competitions */
-	private ScoreMode mode;
+	private ScoreMode mode = null;
 	
 	/** Unique id of this contest */
 	private final int id;
@@ -41,12 +41,13 @@ public class Contest implements Serializable {
 	public Contest(String name) {
 		this.id = IdFactory.getInstance().getNewId(this);
 		this.name = name;
+		this.mode = ScoreMode.AverageFull;
 		this.categories = new HashMap<>();
 		this.disciplines = new HashMap<>();
 		this.teamCategories = new HashMap<>();
 		this.contestants = new HashMap<>();
 		this.teams = new HashMap<>();
-		this.infos = new ContestInfo(id, name);
+		this.infos = new ContestInfo(id, name, mode);
 	}
 	
 	/**
@@ -206,6 +207,8 @@ public class Contest implements Serializable {
 	 * Updates ContestInfo of this contest with new values
 	 */
 	private void updateInfo() {
+		infos.setName(name);
+		infos.setScoreMode(mode);
 		int count = 0;
 		for(Entry<Category, Map<Integer, Contestant>> e : contestants.entrySet()) {
 			if(e.getValue() != null) count += e.getValue().size();

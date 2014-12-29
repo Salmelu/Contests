@@ -166,6 +166,7 @@ class ActionHandler {
 	protected void showContestantTable(Client c) {
 		if(c.current == null) {
 			showNoContestWarning(c);
+			return;
 		}
 		if(ContestantTable.getInstance() == null) {
 			ContestantTable.setClient(c);
@@ -176,6 +177,7 @@ class ActionHandler {
 	protected void showTeamTable(Client c) {
 		if(c.current == null) {
 			showNoContestWarning(c);
+			return;
 		}
 		if(TeamTable.getInstance() == null) {
 			TeamTable.setClient(c);
@@ -186,6 +188,7 @@ class ActionHandler {
 	protected void showTeamDetail(Client c) {
 		if(c.current == null) {
 			showNoContestWarning(c);
+			return;
 		}
 		if(TeamDetail.getInstance() == null) {
 			TeamDetail.setClient(c);
@@ -196,11 +199,19 @@ class ActionHandler {
 	protected void updateCategoryScore(Client c) {
 		if(c.current == null) {
 			showNoContestWarning(c);
+			return;
 		}
 		if(CategoryScore.getInstance() == null) {
 			CategoryScore.setClient(c);
 		}
 		CategoryScore.getInstance().displayAll();
+	}
+	
+	protected void updateContest(Client c) {
+		if(ContestEdit.getInstance() == null) {
+			ContestEdit.setClient(c);
+		}
+		ContestEdit.getInstance().displayAll();
 	}
 	
 	protected void showNoContestWarning(Client c) {
