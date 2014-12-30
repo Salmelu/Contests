@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
 import javafx.concurrent.Task;
@@ -255,6 +257,16 @@ class ActionHandler {
 			.masthead("No contest selected")
 			.message("No contest is currently chosen. Please set your current contest in the main menu.")
 	    	.showWarning();
+	}
+	
+	protected boolean showPromptDialog(Client c, String sm, String lm) {
+		Action response = Dialogs.create()
+		        .owner(c.mainStage)
+		        .title("Really?")
+		        .masthead(sm)
+		        .message(lm)
+		        .showConfirm();
+		return response == Dialog.ACTION_YES;
 	}
 	
 	protected void showConnectionError(Client c) {

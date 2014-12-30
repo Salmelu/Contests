@@ -2,6 +2,7 @@ package cz.salmelu.contests.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -78,7 +79,9 @@ public class Team implements Serializable {
 	 * @param tc new team category
 	 */
 	public void setCategory(TeamCategory tc) {
-		this.cat = tc;
+		if(cat != null) cat.removeTeam(this);
+		cat = tc;
+		if(cat != null) tc.getAllTeams().add(this);
 	}
 	
 	/**
@@ -138,6 +141,17 @@ public class Team implements Serializable {
 	public void removeContestant(TeamContestant tc) {
 		contestants.remove(tc);
 		tc.setTeam(null);
+	}
+	
+	/**
+	 * Removes all contestants from the team
+	 */
+	public void removeAllContestants() {
+		for(Iterator<TeamContestant> itc = contestants.iterator(); itc.hasNext(); ) {
+			TeamContestant tc = itc.next();
+			tc.setTeam(null);
+			itc.remove();
+		}
 	}
 	
 	/* UNUSED

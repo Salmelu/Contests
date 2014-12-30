@@ -171,6 +171,10 @@ final class EditCategory {
 			c.ah.showErrorDialog(c, "No category selected", "You have not chosen a category to delete.");
 			return;
 		}
+		if(!c.ah.showPromptDialog(c, "Are you sure?",
+				"Do you really want to remove the category and all the contestants in it?")) {
+			return;
+		}
 		DeleteTask dt = new DeleteTask(c.current.getId(), currentCat.getId());
 		dt.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override

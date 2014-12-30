@@ -150,6 +150,10 @@ final class EditContest {
 			c.ah.showErrorDialog(c, "No contest selected", "You have not chosen a contest.");
 			return;
 		}
+		if(!c.ah.showPromptDialog(c, "Are you sure?",
+				"Do you really want to remove the contest and all the related data?")) {
+			return;
+		}
 		DeleteTask dt = new DeleteTask(currentContest.getId());
 		dt.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override

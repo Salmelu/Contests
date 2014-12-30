@@ -163,11 +163,16 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Removes a team category
+	 * Removes a team category<br>
+	 * <b>Warning:</b> Removes all the teams in the category.
 	 * @param tcId id of the removed team category
 	 */
 	public void removeTeamCategory(int tcId) {
-		teamCategories.remove(tcId);
+		TeamCategory cat = teamCategories.remove(tcId);
+		for(Team t : cat.getAllTeams()) {
+			t.removeAllContestants();
+		}
+		teams.remove(cat);
 	}
 
 	/**
@@ -207,8 +212,8 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Removes a category.
-	 * Warning: Removes all the contestants in the current category.
+	 * Removes a category. <br>
+	 * <b>Warning:</b> Removes all the contestants in the category.
 	 * @param catId id of the removed category
 	 */
 	public void removeCategory(int catId) {

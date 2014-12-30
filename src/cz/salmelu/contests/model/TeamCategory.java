@@ -1,6 +1,8 @@
 package cz.salmelu.contests.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a team category, in which the teams compete among each other
@@ -16,6 +18,8 @@ public class TeamCategory implements Serializable {
 	private String name;
 	/** Score mode of the category, used for calculating team score */
 	private ScoreMode sm;
+	/** Holds all the teams in this category */
+	private List<Team> teams;
 	
 	/**
 	 * Constructs a new TeamCategory
@@ -26,6 +30,7 @@ public class TeamCategory implements Serializable {
 		this.id = IdFactory.getInstance().getNewId(this);
 		this.name = name;
 		this.sm = sm;
+		this.teams = new ArrayList<>();
 	}
 	
 	/**
@@ -71,5 +76,31 @@ public class TeamCategory implements Serializable {
 	 */
 	public ScoreMode getScoreMode() {
 		return sm;
+	}
+	
+	/**
+	 * Adds a team to the category
+	 * @param t added team
+	 */
+	public void addTeam(Team t) {
+		if(!teams.contains(t)) teams.add(t);
+		t.setCategory(this);
+	}
+	
+	/**
+	 * Removes a team from the category
+	 * @param t removed team
+	 */
+	public void removeTeam(Team t) {
+		teams.remove(t);
+		t.setCategory(null);
+	}
+	
+	/**
+	 * Gets a list of all teams in the category
+	 * @return a list of teams
+	 */
+	public List<Team> getAllTeams() {
+		return teams;
 	}
 }

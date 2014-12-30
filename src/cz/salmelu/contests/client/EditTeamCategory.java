@@ -160,6 +160,10 @@ final class EditTeamCategory {
 			c.ah.showErrorDialog(c, "No team category selected", "You have not chosen a team category to delete.");
 			return;
 		}
+		if(!c.ah.showPromptDialog(c, "Are you sure?",
+				"Do you really want to remove the team category and all the teams in it?")) {
+			return;
+		}
 		DeleteTask dt = new DeleteTask(c.current.getId(), currentTc.getId());
 		dt.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override

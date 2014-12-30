@@ -151,6 +151,10 @@ final class EditDiscipline {
 			c.ah.showErrorDialog(c, "No discipline selected", "You have not chosen a discipline to delete.");
 			return;
 		}
+		if(!c.ah.showPromptDialog(c, "Are you sure?",
+				"Do you really want to remove the discipline and all the scores associated with it?")) {
+			return;
+		}
 		DeleteTask dt = new DeleteTask(c.current.getId(), currentDisc.getId());
 		dt.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override

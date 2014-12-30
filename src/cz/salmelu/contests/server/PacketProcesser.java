@@ -94,10 +94,10 @@ class PacketProcesser {
 				if(getTeam(in, out))
 					return true;
 				break;
-			case TEAM_ADD:
-				if(addTeam(in, out))
-					return true;
-				break;
+			//case TEAM_ADD:
+				//if(addTeam(in, out))
+				//	return true;
+				//break;
 			case SCORE_UPDATE:
 				if(updateScore(in, out))
 					return true;
@@ -358,7 +358,8 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Processes a delete team category request.
+	 * Processes a delete team category request. <br>
+	 * <b>Warning:</b> Removes all the teams in the category.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -465,7 +466,8 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Processes a delete category request.
+	 * Processes a delete category request. <br>
+	 * <b>Warning:</b> Removes all the contestants in the category.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -501,32 +503,6 @@ class PacketProcesser {
 		}
 		out.writeBoolean(true);
 		out.writeObject(t);
-		return true;
-	}
-	
-	// FIXME: usage & make safe
-	private boolean addTeam(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
-		int contestId, tcId;
-		String name;
-		double bonus;
-		
-		name = (String) in.readObject();
-		bonus = in.readDouble();
-		tcId = in.readInt();
-		contestId = in.readInt();
-		Contest cs = dh.getContest(contestId);
-		if(cs == null) {
-			writeServerError(out, ServerError.ContestNotFound);
-			return false;
-		}
-		TeamCategory tc = dh.getTeamCategory(contestId, tcId);
-		if(tc == null) {
-			writeServerError(out, ServerError.TeamCategoryNotFound);
-			return false;
-		}
-		Team t = new Team(name, bonus);
-		dh.addTeam(t, tc, cs);
-		out.writeBoolean(true);
 		return true;
 	}
 	

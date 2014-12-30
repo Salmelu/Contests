@@ -90,6 +90,12 @@ class DataHolder {
 		return true;
 	}
 	
+	/**
+	 * Removes a discipline from the contest
+	 * @param conId id of the affected contest
+	 * @param discId id of the removed discipline
+	 * @return true, if something was removed, false, if the discipline or the contest was not found
+	 */
 	protected boolean deleteDiscipline(int conId, int discId) {
 		Contest cs = getContest(conId);
 		if(cs == null) {
@@ -102,6 +108,12 @@ class DataHolder {
 		return true;
 	}
 	
+	/**
+	 * Adds a new team category to the contest
+	 * @param conId id of the affected contest
+	 * @param tc added team category
+	 * @return true, if the contest was found and category added, false otherwise
+	 */
 	protected boolean addTeamCategory(int conId, TeamCategory tc) {
 		Contest cs = getContest(conId);
 		if(cs == null) {
@@ -111,6 +123,13 @@ class DataHolder {
 		return true;
 	}
 	
+	/**
+	 * Removes a team category from the contest. <br>
+	 * <b>Warning:</b> Removes all the teams in the category!
+	 * @param conId id of the affected contest
+	 * @param tcId id of the removed team category
+	 * @return true, if the category was removed, false, if the category or the contest was not found
+	 */
 	protected boolean deleteTeamCategory(int conId, int tcId) {
 		Contest cs = getContest(conId);
 		if(cs == null) {
@@ -123,6 +142,12 @@ class DataHolder {
 		return true;
 	}
 	
+	/**
+	 * Adds a new category to the contest
+	 * @param conId id of the affected contest
+	 * @param cat added category
+	 * @return true, if the contest was found and category added, false otherwise
+	 */
 	protected boolean addCategory(int conId, Category cat) {
 		Contest cs = getContest(conId);
 		if(cs == null) {
@@ -132,6 +157,13 @@ class DataHolder {
 		return true;
 	}
 
+	/**
+	 * Removes a category from the contest <br>
+	 * <b>Warning:</b> Removes all the contestants in the category!
+	 * @param conId id of the affected contest
+	 * @param catId id of the removed category
+	 * @return true, if the category was deleted, false, if the category or the contest was not found
+	 */
 	protected boolean deleteCategory(int conId, int catId) {
 		Contest cs = getContest(conId);
 		if(cs == null) {
@@ -142,17 +174,6 @@ class DataHolder {
 		}
 		cs.removeCategory(catId);
 		return true;
-	}
-	
-	protected TeamCategory getTeamCategory(int tcId, int contestId) {
-		Contest cs = contests.get(contestId);
-		if(cs == null)
-			return null;
-		return contests.get(contestId).getTeamCategories().get(tcId);
-	}
-	
-	protected void addTeamCategory(TeamCategory tc, Contest c) {
-		c.addTeamCategory(tc);
 	}
 	
 	protected Team getTeam(int teamId, int tcId, int contestId) {

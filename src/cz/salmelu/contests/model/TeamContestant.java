@@ -47,7 +47,8 @@ public class TeamContestant extends Contestant {
 	}
 	
 	/**
-	 * Changes contestant's team. Doesn't affect the setting in the team, must be changed there too.
+	 * Changes contestant's team. This action doesn't affect the setting in the team
+	 * due to cyclic dependencies, must be changed there manually too.
 	 * @param t new team
 	 */
 	public void setTeam(Team t) {
