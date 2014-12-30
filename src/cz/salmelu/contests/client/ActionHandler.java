@@ -3,7 +3,6 @@ package cz.salmelu.contests.client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -62,7 +61,7 @@ class ActionHandler {
 			protected Boolean call() {				
 				// Get the stuff from server
 				try {
-					InetSocketAddress addr = new InetSocketAddress(Inet4Address.getLocalHost(), Config.INET_PORT);
+					InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
 			        Socket socket = new Socket();
 			        socket.connect(addr);
 			        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
@@ -132,7 +131,7 @@ class ActionHandler {
 			@Override
 			protected Boolean call() {			
 				try {
-					InetSocketAddress addr = new InetSocketAddress(Inet4Address.getLocalHost(), Config.INET_PORT);
+					InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
 			        Socket socket = new Socket();
 			        socket.connect(addr);
 			        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
