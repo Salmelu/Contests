@@ -44,8 +44,8 @@ final class EditTeamCategory {
 	private TextField name = null;
 	private ChoiceBox<ScoreMode> sm = null;
 	
-	private EditTeamCategory(Client c) {
-		this.c = c;
+	private EditTeamCategory() {
+		this.c = Client.get();
 		
 		tcBox = new HBox(16);
 		tcBox.setAlignment(Pos.CENTER);
@@ -121,11 +121,10 @@ final class EditTeamCategory {
 	}
 
 	protected static EditTeamCategory getInstance() {
+		if(instance == null) {
+			instance = new EditTeamCategory();
+		}
 		return instance;
-	}
-	
-	protected static void setClient(Client c) {
-		instance = new EditTeamCategory(c);
 	}
 	
 	protected void displayHeader() {
@@ -157,10 +156,10 @@ final class EditTeamCategory {
 
 	private void deleteTeamCategory() {
 		if(currentTc == null) {
-			c.ah.showErrorDialog(c, "No team category selected", "You have not chosen a team category to delete.");
+			ActionHandler.get().showErrorDialog("No team category selected", "You have not chosen a team category to delete.");
 			return;
 		}
-		if(!c.ah.showPromptDialog(c, "Are you sure?",
+		if(!ActionHandler.get().showPromptDialog("Are you sure?",
 				"Do you really want to remove the team category and all the teams in it?")) {
 			return;
 		}
@@ -174,7 +173,7 @@ final class EditTeamCategory {
 		
 		Thread t = new Thread(dt);
 		t.run();
-		c.ah.showSuccessDialog(c, "Team category deleted", "Team category " + currentTc.getName() + " was deleted.");
+		ActionHandler.get().showSuccessDialog("Team category deleted", "Team category " + currentTc.getName() + " was deleted.");
 	}
 	
 	private void newTeamCategory() {
@@ -182,11 +181,11 @@ final class EditTeamCategory {
 		tcp.name = name.getText();
 		tcp.sm = sm.getSelectionModel().getSelectedItem();
 		if(tcp.name == null || tcp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid team category name selected. Please enter a name for the team category.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid team category name selected. Please enter a name for the team category.");
 			return;
 		}
 		if(tcp.sm == null) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid score mode selected. Please enter a score mode for the team category.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid score mode selected. Please enter a score mode for the team category.");
 			return;
 		}
 		tcp.id = 0;
@@ -201,23 +200,23 @@ final class EditTeamCategory {
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "New team category added", "You have successfully sent a request for a new team category.");
+		ActionHandler.get().showSuccessDialog("New team category added", "You have successfully sent a request for a new team category.");
 	}
 	
 	private void updateTeamCategory() {
 		if(currentTc == null) {
-			c.ah.showErrorDialog(c, "No team category selected", "You have not chosen a team category.");
+			ActionHandler.get().showErrorDialog("No team category selected", "You have not chosen a team category.");
 			return;
 		}
 		TeamCategoryPacket tcp = new TeamCategoryPacket();
 		tcp.name = name.getText();
 		tcp.sm = sm.getSelectionModel().getSelectedItem();
 		if(tcp.name == null || tcp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid team category name selected. Please enter a name for the team category.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid team category name selected. Please enter a name for the team category.");
 			return;
 		}
 		if(tcp.sm == null) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid score mode selected. Please enter a score mode for the team category.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid score mode selected. Please enter a score mode for the team category.");
 			return;
 		}
 		tcp.conId = c.current.getId();
@@ -230,14 +229,14 @@ final class EditTeamCategory {
 					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
 				}
 				else {
-					c.ah.showConnectionError(c);
+					ActionHandler.get().showConnectionError();
 				}
 			}
 		});
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "Team category update requested", "You have successfully sent a request for a team category update.");
+		ActionHandler.get().showSuccessDialog("Team category update requested", "You have successfully sent a request for a team category update.");
 	}
 	
 	private class NewEditTask extends Task<Boolean> {

@@ -54,8 +54,8 @@ final class EditContestant {
 	private ChoiceBox<Category> cat = null; 
 	private ChoiceBox<Team> team = null; 
 	
-	private EditContestant(Client c) {
-		this.c = c;
+	private EditContestant() {
+		this.c = Client.get();
 		dummy = new Team("No Team");
 		
 		topBox = new HBox(16);
@@ -166,11 +166,10 @@ final class EditContestant {
 	}
 
 	protected static EditContestant getInstance() {
+		if(instance == null) {
+			instance = new EditContestant();
+		}
 		return instance;
-	}
-	
-	protected static void setClient(Client c) {
-		instance = new EditContestant(c);
 	}
 	
 	protected void displayHeader() {
@@ -244,11 +243,11 @@ final class EditContestant {
 
 	private void deleteContestant() {
 		if(currentCat == null || currentCs == null) {
-			c.ah.showErrorDialog(c, "No contestant or category selected",
+			ActionHandler.get().showErrorDialog("No contestant or category selected",
 					"You have not chosen a correct contestant to delete.");
 			return;
 		}
-		if(!c.ah.showPromptDialog(c, "Are you sure?",
+		if(!ActionHandler.get().showPromptDialog("Are you sure?",
 				"Do you really want to remove the contestant?")) {
 			return;
 		}
@@ -262,7 +261,7 @@ final class EditContestant {
 		
 		Thread t = new Thread(dt);
 		t.run();
-		c.ah.showSuccessDialog(c, "Contestant deleted", "Contestant " + currentCs.toString() + " was deleted.");
+		ActionHandler.get().showSuccessDialog("Contestant deleted", "Contestant " + currentCs.toString() + " was deleted.");
 	}
 	
 	private void newContestant() {
@@ -273,20 +272,20 @@ final class EditContestant {
 			cp.bonus = Double.parseDouble(bonus.getText());
 		}
 		catch(NumberFormatException e) {
-			c.ah.showErrorDialog(c, "Invalid value", "Invalid numeric value in bonus field");
+			ActionHandler.get().showErrorDialog("Invalid value", "Invalid numeric value in bonus field");
 			return;
 		}
 		if(cat.getSelectionModel().getSelectedItem() == null) {
-			c.ah.showErrorDialog(c, "Invalid value", "No category is selected.");
+			ActionHandler.get().showErrorDialog("Invalid value", "No category is selected.");
 			return;
 		}
 		cp.catId = cat.getSelectionModel().getSelectedItem().getId();
 		if(cp.fName == null || cp.fName.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid first name selected. Please enter a valid name.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid first name selected. Please enter a valid name.");
 			return;
 		}
 		if(cp.lName == null || cp.lName.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid last name selected. Please enter a valid name.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid last name selected. Please enter a valid name.");
 			return;
 		}
 		if(team.getSelectionModel().getSelectedItem().equals(dummy)) {
@@ -308,12 +307,12 @@ final class EditContestant {
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "New contestant added", "You have successfully sent a request for a new contestant.");
+		ActionHandler.get().showSuccessDialog("New contestant added", "You have successfully sent a request for a new contestant.");
 	}
 	
 	private void updateContestant() {
 		if(currentCat == null || currentCs == null) {
-			c.ah.showErrorDialog(c, "No category or contestant selected", "You have not chosen a contestant and a category.");
+			ActionHandler.get().showErrorDialog("No category or contestant selected", "You have not chosen a contestant and a category.");
 			return;
 		}
 		ContestantPacket cp = new ContestantPacket();
@@ -323,21 +322,21 @@ final class EditContestant {
 			cp.bonus = Double.parseDouble(bonus.getText());
 		}
 		catch(NumberFormatException e) {
-			c.ah.showErrorDialog(c, "Invalid value", "Invalid numeric value in bonus field");
+			ActionHandler.get().showErrorDialog("Invalid value", "Invalid numeric value in bonus field");
 			return;
 		}
 		if(cat.getSelectionModel().getSelectedItem() == null) {
-			c.ah.showErrorDialog(c, "Invalid value", "No category is selected.");
+			ActionHandler.get().showErrorDialog("Invalid value", "No category is selected.");
 			return;
 		}
 		cp.catId = cat.getSelectionModel().getSelectedItem().getId();
 		cp.oldCatId = currentCs.getCategory().getId();
 		if(cp.fName == null || cp.fName.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid first name selected. Please enter a valid name.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid first name selected. Please enter a valid name.");
 			return;
 		}
 		if(cp.lName == null || cp.lName.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid last name selected. Please enter a valid name.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid last name selected. Please enter a valid name.");
 			return;
 		}
 		if(team.getSelectionModel().getSelectedItem().equals(dummy)) {
@@ -357,14 +356,14 @@ final class EditContestant {
 					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
 				}
 				else {
-					c.ah.showConnectionError(c);
+					ActionHandler.get().showConnectionError();
 				}
 			}
 		});
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "Contestant update requested", "You have successfully sent a request for a contestant update.");
+		ActionHandler.get().showSuccessDialog("Contestant update requested", "You have successfully sent a request for a contestant update.");
 	}
 	
 	private class NewEditTask extends Task<Boolean> {

@@ -42,8 +42,8 @@ final class EditDiscipline {
 	private GridPane gp = null;
 	private TextField name = null;
 	
-	private EditDiscipline(Client c) {
-		this.c = c;
+	private EditDiscipline() {
+		this.c = Client.get();
 		
 		discBox = new HBox(16);
 		discBox.setAlignment(Pos.CENTER);
@@ -113,11 +113,10 @@ final class EditDiscipline {
 	}
 
 	protected static EditDiscipline getInstance() {
+		if(instance == null) {
+			instance = new EditDiscipline();
+		}
 		return instance;
-	}
-	
-	protected static void setClient(Client c) {
-		instance = new EditDiscipline(c);
 	}
 	
 	protected void displayHeader() {
@@ -148,10 +147,10 @@ final class EditDiscipline {
 
 	private void deleteDiscipline() {
 		if(currentDisc == null) {
-			c.ah.showErrorDialog(c, "No discipline selected", "You have not chosen a discipline to delete.");
+			ActionHandler.get().showErrorDialog("No discipline selected", "You have not chosen a discipline to delete.");
 			return;
 		}
-		if(!c.ah.showPromptDialog(c, "Are you sure?",
+		if(!ActionHandler.get().showPromptDialog("Are you sure?",
 				"Do you really want to remove the discipline and all the scores associated with it?")) {
 			return;
 		}
@@ -165,14 +164,14 @@ final class EditDiscipline {
 		
 		Thread t = new Thread(dt);
 		t.run();
-		c.ah.showSuccessDialog(c, "Discipline deleted", "Discipline " + currentDisc.getName() + " was deleted.");
+		ActionHandler.get().showSuccessDialog("Discipline deleted", "Discipline " + currentDisc.getName() + " was deleted.");
 	}
 	
 	private void newDiscipline() {
 		DisciplinePacket dp = new DisciplinePacket();
 		dp.name = name.getText();
 		if(dp.name == null || dp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid discipline name selected. Please enter a name for the discipline.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid discipline name selected. Please enter a name for the discipline.");
 			return;
 		}
 		dp.id = 0;
@@ -186,18 +185,18 @@ final class EditDiscipline {
 		});
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "New discipline added", "You have successfully sent a request for a new discipline.");
+		ActionHandler.get().showSuccessDialog("New discipline added", "You have successfully sent a request for a new discipline.");
 	}
 	
 	private void updateDiscipline() {
 		if(currentDisc == null) {
-			c.ah.showErrorDialog(c, "No discipline selected", "You have not chosen a discipline.");
+			ActionHandler.get().showErrorDialog("No discipline selected", "You have not chosen a discipline.");
 			return;
 		}
 		DisciplinePacket dp = new DisciplinePacket();
 		dp.name = name.getText();
 		if(dp.name == null || dp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid discipline name selected. Please enter a name for the discipline.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid discipline name selected. Please enter a name for the discipline.");
 			return;
 		}
 		dp.conId = c.current.getId();
@@ -210,14 +209,14 @@ final class EditDiscipline {
 					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
 				}
 				else {
-					c.ah.showConnectionError(c);
+					ActionHandler.get().showConnectionError();
 				}
 			}
 		});
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "Discipline update requested", "You have successfully sent a request for a discipline update.");
+		ActionHandler.get().showSuccessDialog("Discipline update requested", "You have successfully sent a request for a discipline update.");
 	}
 	
 	private class NewEditTask extends Task<Boolean> {

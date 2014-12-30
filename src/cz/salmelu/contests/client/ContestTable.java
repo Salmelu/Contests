@@ -19,8 +19,8 @@ final class ContestTable {
 	
 	private GridPane gp;
 	
-	private ContestTable(Client c) {
-		this.c = c;
+	private ContestTable() {
+		this.c = Client.get();
 		gp = new GridPane();
 		gp.setAlignment(Pos.CENTER);
 		gp.setHgap(10);
@@ -28,11 +28,10 @@ final class ContestTable {
 	}
 	
 	protected static ContestTable getInstance() {
+		if(instance == null) {
+			instance = new ContestTable();
+		}
 		return instance;
-	}
-	
-	protected static void setClient(Client c) {
-		instance = new ContestTable(c);
 	}
 	
 	protected void display() {
@@ -69,7 +68,7 @@ final class ContestTable {
 				String name = choiceGroup.getSelectedToggle().getUserData().toString();
 				for(String s : c.contests.keySet()) {
 					if(s.equals(name)) {
-						c.ah.loadContest(c, c.contests.get(s).getId());
+						ActionHandler.get().loadContest(c.contests.get(s).getId());
 						return;
 					}
 				}

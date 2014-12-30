@@ -49,8 +49,8 @@ final class CategoryScore {
 	private GridPane table = null;
 	private Map<Contestant, Map<Discipline,TextField>> scoreFields;
 	
-	private CategoryScore(Client c) {
-		this.c = c;
+	private CategoryScore() {
+		this.c = Client.get();
 		
 		// Top panel
 		catBox = new HBox(16);
@@ -168,12 +168,12 @@ final class CategoryScore {
 			}
 		}
 		catch (NumberFormatException e) {
-			c.ah.showErrorDialog(c, "Error parsing fields", 
+			ActionHandler.get().showErrorDialog("Error parsing fields", 
 					"There was an error while parsing the values in the text field. Please verify that those are valid numbers.");
 			return;
 		} 
 		catch (NoSuchFieldException e) {
-			c.ah.showErrorDialog(c, "Field error", 
+			ActionHandler.get().showErrorDialog("Field error", 
 					"The program was unable to find the text fields. Please reload the list.");
 			return;
 		}
@@ -186,7 +186,7 @@ final class CategoryScore {
 		ur.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			public void handle(WorkerStateEvent arg0) {
 				if(!ur.getValue()) {
-					c.ah.showErrorDialog(c, "Error updating score", 
+					ActionHandler.get().showErrorDialog("Error updating score", 
 							"Server didn't accept the update request. "
 							+ "The possible reason is that some of the contestants or disciplines were removed. "
 							+ "Please, reload the contest data and try the update again.");
@@ -195,17 +195,16 @@ final class CategoryScore {
 		});
 		Thread t = new Thread(ur);
 		t.run();
-		c.ah.showSuccessDialog(c, "Data updated.", "Score data was updated and a request to server update was sent");
+		ActionHandler.get().showSuccessDialog("Data updated.",
+				"Score data was updated and a request to server update was sent");
 	}
 	
 	protected static CategoryScore getInstance() {
+		if(instance == null) {
+			instance = new CategoryScore();
+		}
 		return instance;
 	}
-	
-	protected static void setClient(Client c) {
-		instance = new CategoryScore(c);
-	}
-	
 	private class UpdateRequest extends Task<Boolean> {
 		
 		private ArrayList<UpdateScorePacket> updates = null;

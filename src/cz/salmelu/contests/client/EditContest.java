@@ -42,8 +42,8 @@ final class EditContest {
 	private GridPane gp = null;
 	private TextField name = null;
 	
-	private EditContest(Client c) {
-		this.c = c;
+	private EditContest() {
+		this.c = Client.get();
 		
 		contestBox = new HBox(16);
 		contestBox.setAlignment(Pos.CENTER);
@@ -113,11 +113,10 @@ final class EditContest {
 	}
 
 	protected static EditContest getInstance() {
+		if(instance == null) {
+			instance = new EditContest();
+		}
 		return instance;
-	}
-	
-	protected static void setClient(Client c) {
-		instance = new EditContest(c);
 	}
 	
 	protected void displayHeader() {
@@ -147,10 +146,10 @@ final class EditContest {
 
 	private void deleteContest() {
 		if(currentContest == null) {
-			c.ah.showErrorDialog(c, "No contest selected", "You have not chosen a contest.");
+			ActionHandler.get().showErrorDialog("No contest selected", "You have not chosen a contest.");
 			return;
 		}
-		if(!c.ah.showPromptDialog(c, "Are you sure?",
+		if(!ActionHandler.get().showPromptDialog("Are you sure?",
 				"Do you really want to remove the contest and all the related data?")) {
 			return;
 		}
@@ -164,14 +163,14 @@ final class EditContest {
 		
 		Thread t = new Thread(dt);
 		t.run();
-		c.ah.showSuccessDialog(c, "Contest deleted", "Contest " + currentContest.getName() + " was deleted.");
+		ActionHandler.get().showSuccessDialog("Contest deleted", "Contest " + currentContest.getName() + " was deleted.");
 	}
 	
 	private void newContest() {
 		ContestPacket cp = new ContestPacket();
 		cp.name = name.getText();
 		if(cp.name == null || cp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid contest name selected. Please enter a name for the contest.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid contest name selected. Please enter a name for the contest.");
 			return;
 		}
 		cp.id = 0;
@@ -185,18 +184,18 @@ final class EditContest {
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "New contest added", "You have successfully sent a request for a new contest.");
+		ActionHandler.get().showSuccessDialog("New contest added", "You have successfully sent a request for a new contest.");
 	}
 	
 	private void updateContest() {
 		if(currentContest == null) {
-			c.ah.showErrorDialog(c, "No contest selected", "You have not chosen a contest.");
+			ActionHandler.get().showErrorDialog("No contest selected", "You have not chosen a contest.");
 			return;
 		}
 		ContestPacket cp = new ContestPacket();
 		cp.name = name.getText();
 		if(cp.name == null || cp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid contest name selected. Please enter a name for the contest.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid contest name selected. Please enter a name for the contest.");
 			return;
 		}
 		cp.id = currentContest.getId();
@@ -208,14 +207,14 @@ final class EditContest {
 					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
 				}
 				else {
-					c.ah.showConnectionError(c);
+					ActionHandler.get().showConnectionError();
 				}
 			}
 		});
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "Contest update requested", "You have successfully sent a request for a contest update.");
+		ActionHandler.get().showSuccessDialog("Contest update requested", "You have successfully sent a request for a contest update.");
 	}
 	
 	private class NewEditTask extends Task<Boolean> {

@@ -35,8 +35,8 @@ final class ContestantTable {
 	private Label noContestant = null;
 	private TableView<Contestant> table = null;
 	
-	private ContestantTable(Client c) {
-		this.c = c;
+	private ContestantTable() {
+		this.c = Client.get();
 		
 		// Top panel
 		catBox = new HBox(16);
@@ -126,11 +126,10 @@ final class ContestantTable {
 	}
 	
 	protected static ContestantTable getInstance() {
+		if(instance == null) {
+			instance = new ContestantTable();
+		}
 		return instance;
-	}
-	
-	protected static void setClient(Client c) {
-		instance = new ContestantTable(c);
 	}
 	
 	protected void displayHeader() {

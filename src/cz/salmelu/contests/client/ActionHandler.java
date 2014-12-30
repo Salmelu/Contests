@@ -25,31 +25,37 @@ import cz.salmelu.contests.net.Packet;
 @SuppressWarnings("deprecation")
 class ActionHandler {
 	
-	protected ActionHandler() {
+	private static ActionHandler instance = null;
+	
+	private ActionHandler() {
 		
 	}
 	
-	protected void showContestList(Client c) {
-		if(c.contests == null) {
-			c.contests = new HashMap<>();
-			reloadContestList(c, true);
+	protected static ActionHandler get() {
+		if(instance == null) {
+			instance = new ActionHandler();
+		}
+		return instance;
+	}
+	
+	protected void showContestList() {
+		if(Client.get().contests == null) {
+			Client.get().contests = new HashMap<>();
+			reloadContestList(true);
 			Label inform = new Label("Loading contest list from the server, please wait");
 			inform.setAlignment(Pos.CENTER);
-			c.mainPanel.setCenter(inform);
+			Client.get().mainPanel.setCenter(inform);
 			return;
 		}
-		if(c.contests.isEmpty()) {
+		if(Client.get().contests.isEmpty()) {
 			Label done = new Label("There are no contests found on the server. Create a new contest using the menu.");
 			done.setAlignment(Pos.CENTER);
-			c.mainPanel.setCenter(done);
-		}
-		if(ContestTable.getInstance() == null) {
-			ContestTable.setClient(c);
+			Client.get().mainPanel.setCenter(done);
 		}
 		ContestTable.getInstance().display();
 	}
 	
-	protected void reloadContestList(Client c, boolean display) {
+	protected void reloadContestList(boolean display) {
 		Task<Boolean> load = new Task<Boolean>() {			
 			@SuppressWarnings("unchecked")
 			@Override
@@ -67,11 +73,11 @@ class ActionHandler {
 			        if(!ret) {
 						Label error = new Label("Error loading contest list from server!"); 
 						error.setAlignment(Pos.CENTER);
-						c.mainPanel.setCenter(error);
+						Client.get().mainPanel.setCenter(error);
 						socket.close();
 						return false;
 			        }
-			        c.contests = (HashMap<String, ContestInfo>) get.readObject();
+			        Client.get().contests = (HashMap<String, ContestInfo>) get.readObject();
 			        socket.close();
 			        return true;
 				}
@@ -92,11 +98,11 @@ class ActionHandler {
 				@Override
 				public void handle(WorkerStateEvent arg0) {
 					if(load.getValue()) {
-						showContestList(c);
+						showContestList();
 					}
 					else {
-						showConnectionError(c);
-						c.contests = null;
+						showConnectionError();
+						Client.get().contests = null;
 					}
 				}
 			});
@@ -106,8 +112,8 @@ class ActionHandler {
 				@Override
 				public void handle(WorkerStateEvent arg0) {
 					if(!load.getValue()) {
-						showConnectionError(c);
-						c.contests = null;
+						showConnectionError();
+						Client.get().contests = null;
 					}
 				}
 			});
@@ -117,11 +123,11 @@ class ActionHandler {
 		t.run();
 	}
 	
-	protected void loadContest(Client c, Integer id) {
-		loadContest(c, id, true);
+	protected void loadContest(Integer id) {
+		loadContest(id, true);
 	}
 	
-	protected void loadContest(Client c, Integer id, boolean display) {
+	protected void loadContest(Integer id, boolean display) {
 		Task<Boolean> load = new Task<Boolean>() {
 			@Override
 			protected Boolean call() {			
@@ -139,7 +145,7 @@ class ActionHandler {
 						socket.close();
 						return false;
 			        }
-			        c.current = (Contest) get.readObject();
+			        Client.get().current = (Contest) get.readObject();
 			        socket.close();
 			        return true;
 				}
@@ -158,7 +164,8 @@ class ActionHandler {
 		load.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent arg0) {
-				if(display) showSuccessDialog(c, "Contest was loaded", "Contest " + c.current.getName() + " was successfully loaded.");				
+				if(display) showSuccessDialog("Contest was loaded", 
+						"Contest " + Client.get().current.getName() + " was successfully loaded.");				
 			}
 		});
 		Thread t = new Thread(load);
@@ -166,125 +173,95 @@ class ActionHandler {
 		t.run();	
 	}
 	
-	protected void showContestantTable(Client c) {
-		if(c.current == null) {
-			showNoContestWarning(c);
+	protected void showContestantTable() {
+		if(!Client.contestSelected()) {
+			showNoContestWarning();
 			return;
-		}
-		if(ContestantTable.getInstance() == null) {
-			ContestantTable.setClient(c);
 		}
 		ContestantTable.getInstance().displayAll();
 	}
 	
-	protected void showTeamTable(Client c) {
-		if(c.current == null) {
-			showNoContestWarning(c);
+	protected void showTeamTable() {
+		if(!Client.contestSelected()) {
+			showNoContestWarning();
 			return;
-		}
-		if(TeamTable.getInstance() == null) {
-			TeamTable.setClient(c);
 		}
 		TeamTable.getInstance().displayAll();
 	}
 	
-	protected void showTeamDetail(Client c) {
-		if(c.current == null) {
-			showNoContestWarning(c);
+	protected void showTeamDetail() {
+		if(!Client.contestSelected()) {
+			showNoContestWarning();
 			return;
-		}
-		if(TeamDetail.getInstance() == null) {
-			TeamDetail.setClient(c);
 		}
 		TeamDetail.getInstance().displayAll();
 	}
 	
-	protected void updateCategoryScore(Client c) {
-		if(c.current == null) {
-			showNoContestWarning(c);
+	protected void updateCategoryScore() {
+		if(!Client.contestSelected()) {
+			showNoContestWarning();
 			return;
-		}
-		if(CategoryScore.getInstance() == null) {
-			CategoryScore.setClient(c);
 		}
 		CategoryScore.getInstance().displayAll();
 	}
 	
-	protected void updateContest(Client c) {
-		if(EditContest.getInstance() == null) {
-			EditContest.setClient(c);
-		}
+	protected void updateContest() {
 		EditContest.getInstance().displayAll();
 	}
 	
-	protected void updateDiscipline(Client c) {
-		if(c.current == null) {
-			showNoContestWarning(c);
+	protected void updateDiscipline() {
+		if(!Client.contestSelected()) {
+			showNoContestWarning();
 			return;
-		}
-		if(EditDiscipline.getInstance() == null) {
-			EditDiscipline.setClient(c);
 		}
 		EditDiscipline.getInstance().displayAll();
 	}
 	
-	protected void updateTeamCategory(Client c) {
-		if(c.current == null) {
-			showNoContestWarning(c);
+	protected void updateTeamCategory() {
+		if(!Client.contestSelected()) {
+			showNoContestWarning();
 			return;
-		}
-		if(EditTeamCategory.getInstance() == null) {
-			EditTeamCategory.setClient(c);
 		}
 		EditTeamCategory.getInstance().displayAll();
 	}
 	
-	protected void updateCategory(Client c) {
-		if(c.current == null) {
-			showNoContestWarning(c);
+	protected void updateCategory() {
+		if(!Client.contestSelected()) {
+			showNoContestWarning();
 			return;
-		}
-		if(EditCategory.getInstance() == null) {
-			EditCategory.setClient(c);
 		}
 		EditCategory.getInstance().displayAll();
 	}
 	
-	protected void updateTeam(Client c) {
-		if(c.current == null) {
-			showNoContestWarning(c);
+	protected void updateTeam() {
+		if(!Client.contestSelected()) {
+			showNoContestWarning();
 			return;
-		}
-		if(EditTeam.getInstance() == null) {
-			EditTeam.setClient(c);
 		}
 		EditTeam.getInstance().displayAll();
 	}
 
 	
-	protected void updateContestant(Client c) {
-		if(c.current == null) {
-			showNoContestWarning(c);
+	protected void updateContestant() {
+		if(!Client.contestSelected()) {
+			showNoContestWarning();
 			return;
-		}
-		if(EditContestant.getInstance() == null) {
-			EditContestant.setClient(c);
 		}
 		EditContestant.getInstance().displayAll();
 	}
 	
-	protected void showNoContestWarning(Client c) {
+	protected void showNoContestWarning() {
 		Dialogs.create()
-			.owner(c.mainStage)
+			.owner(Client.get().mainStage)
 			.title("Warning!")
 			.masthead("No contest selected")
 			.message("No contest is currently chosen. Please set your current contest in the main menu.")
 	    	.showWarning();
 	}
 	
-	protected boolean showPromptDialog(Client c, String sm, String lm) {
+	protected boolean showPromptDialog(String sm, String lm) {
 		Action response = Dialogs.create()
-		        .owner(c.mainStage)
+		        .owner(Client.get().mainStage)
 		        .title("Really?")
 		        .masthead(sm)
 		        .message(lm)
@@ -292,9 +269,9 @@ class ActionHandler {
 		return response == Dialog.ACTION_YES;
 	}
 	
-	protected void showConnectionError(Client c) {
+	protected void showConnectionError() {
 		Dialogs.create()
-			.owner(c.mainStage)
+			.owner(Client.get().mainStage)
 			.title("Connection Error")
 			.masthead("Unable to connect to host")
 			.message("The program was unable to connect to host " + Config.INET_ADDR 
@@ -302,18 +279,18 @@ class ActionHandler {
 	    	.showError();
 	}
 	
-	protected void showErrorDialog(Client c, String sm, String lm) {
+	protected void showErrorDialog(String sm, String lm) {
 		Dialogs.create()
-			.owner(c.mainStage)
+			.owner(Client.get().mainStage)
 			.title("Error!")
 			.masthead(sm)
 			.message(lm)
 	    	.showError();
 	}
 	
-	protected void showSuccessDialog(Client c, String sm, String lm) {
+	protected void showSuccessDialog(String sm, String lm) {
 		Dialogs.create()
-			.owner(c.mainStage)
+			.owner(Client.get().mainStage)
 			.title("Success!")
 			.masthead(sm)
 			.message(lm)

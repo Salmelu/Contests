@@ -35,8 +35,8 @@ final class TeamDetail {
 	private Label emptyTeam = null;
 	private TableView<TeamContestant> table = null;
 	
-	private TeamDetail(Client c) {
-		this.c = c;
+	private TeamDetail() {
+		this.c = Client.get();
 		
 		// Top panel
 		teamBox = new HBox(16);
@@ -124,11 +124,10 @@ final class TeamDetail {
 	}
 	
 	protected static TeamDetail getInstance() {
+		if(instance == null) {
+			instance = new TeamDetail();
+		}
 		return instance;
-	}
-	
-	protected static void setClient(Client c) {
-		instance = new TeamDetail(c);
 	}
 	
 	protected void displayHeader() {

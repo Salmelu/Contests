@@ -19,17 +19,26 @@ import javafx.stage.Stage;
 
 public class Client extends Application {
 
+	private static Client instance;
+	
 	protected HashMap<String, ContestInfo> contests = null;
 	protected VBox mainBox;
 	protected Stage mainStage;
 	protected BorderPane mainPanel;
 	protected Contest current;
-	protected ActionHandler ah;
 	protected MenuAction currentMenu;
+	
+	public static Client get() {
+		return instance;
+	}
+	
+	public static boolean contestSelected() {
+		return !(instance.current == null);
+	}
 	
 	@Override
 	public void start(Stage arg0) throws Exception {
-		ah = new ActionHandler();
+		instance = this;
 		mainStage = arg0;
 		
 		mainBox = new VBox();
@@ -43,7 +52,7 @@ public class Client extends Application {
 		Scene mainScene = new Scene(mainBox, 800, 600);
 		arg0.setScene(mainScene);
 		
-		ah.reloadContestList(this, false);
+		ActionHandler.get().reloadContestList(false);
 		arg0.show();
 	}
 	
@@ -173,18 +182,18 @@ public class Client extends Application {
 		switch(ma) {
 		case MAIN_CONTESTS:
 			clearPanel();
-			ah.showContestList(this);
+			ActionHandler.get().showContestList();
 			break;
 		case MAIN_RELOAD:
 			nonQuietReload = true;
 		case MAIN_RELOAD_QUIET:
-			ah.reloadContestList(this, false);
+			ActionHandler.get().reloadContestList(false);
 			if(current != null) {
-				ah.loadContest(this, current.getId(), nonQuietReload);
+				ActionHandler.get().loadContest(current.getId(), nonQuietReload);
 				handleMenuAction(prevMa);
 			}
 			else {
-				ah.showNoContestWarning(this);
+				ActionHandler.get().showNoContestWarning();
 			}
 			break;
 		case MAIN_EXIT:
@@ -192,43 +201,43 @@ public class Client extends Application {
 			break;
 		case SHOW_CONTESTANTS:
 			clearPanel();
-			ah.showContestantTable(this);
+			ActionHandler.get().showContestantTable();
 			break;
 		case SHOW_TEAMS:
 			clearPanel();
-			ah.showTeamTable(this);
+			ActionHandler.get().showTeamTable();
 			break;
 		case SHOW_ONE_TEAM:
 			clearPanel();
-			ah.showTeamDetail(this);
+			ActionHandler.get().showTeamDetail();
 			break;
 		case SCORE_CATEGORY:
 			clearPanel();
-			ah.updateCategoryScore(this);
+			ActionHandler.get().updateCategoryScore();
 			break;
 		case UPDATE_CONTEST:
 			clearPanel();
-			ah.updateContest(this);
+			ActionHandler.get().updateContest();
 			break;
 		case UPDATE_DISCIPLINE:
 			clearPanel();
-			ah.updateDiscipline(this);
+			ActionHandler.get().updateDiscipline();
 			break;
 		case UPDATE_TCATEGORY:
 			clearPanel();
-			ah.updateTeamCategory(this);
+			ActionHandler.get().updateTeamCategory();
 			break;
 		case UPDATE_CATEGORY:
 			clearPanel();
-			ah.updateCategory(this);
+			ActionHandler.get().updateCategory();
 			break;
 		case UPDATE_TEAM:
 			clearPanel();
-			ah.updateTeam(this);
+			ActionHandler.get().updateTeam();
 			break;
 		case UPDATE_CONTESTANT:
 			clearPanel();
-			ah.updateContestant(this);
+			ActionHandler.get().updateContestant();
 			break;
 		default:
 				

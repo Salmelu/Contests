@@ -46,8 +46,8 @@ final class EditCategory {
 	private TextField name = null;
 	private CheckComboBox<Discipline> discChoice; 
 	
-	private EditCategory(Client c) {
-		this.c = c;
+	private EditCategory() {
+		this.c = Client.get();
 		
 		catBox = new HBox(16);
 		catBox.setAlignment(Pos.CENTER);
@@ -118,11 +118,10 @@ final class EditCategory {
 	}
 
 	protected static EditCategory getInstance() {
+		if(instance == null) {
+			instance = new EditCategory();
+		}
 		return instance;
-	}
-	
-	protected static void setClient(Client c) {
-		instance = new EditCategory(c);
 	}
 	
 	protected void displayHeader() {
@@ -168,10 +167,10 @@ final class EditCategory {
 
 	private void deleteCategory() {
 		if(currentCat == null) {
-			c.ah.showErrorDialog(c, "No category selected", "You have not chosen a category to delete.");
+			ActionHandler.get().showErrorDialog("No category selected", "You have not chosen a category to delete.");
 			return;
 		}
-		if(!c.ah.showPromptDialog(c, "Are you sure?",
+		if(!ActionHandler.get().showPromptDialog("Are you sure?",
 				"Do you really want to remove the category and all the contestants in it?")) {
 			return;
 		}
@@ -185,7 +184,7 @@ final class EditCategory {
 		
 		Thread t = new Thread(dt);
 		t.run();
-		c.ah.showSuccessDialog(c, "Category deleted", "Category " + currentCat.getName() + " was deleted.");
+		ActionHandler.get().showSuccessDialog("Category deleted", "Category " + currentCat.getName() + " was deleted.");
 	}
 	
 	private void newCategory() {
@@ -195,7 +194,7 @@ final class EditCategory {
 			cp.disciplines.add(d.getId());
 		}
 		if(cp.name == null || cp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid category name selected. Please enter a name for the category.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid category name selected. Please enter a name for the category.");
 			return;
 		}
 		cp.id = 0;
@@ -210,12 +209,12 @@ final class EditCategory {
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "New category added", "You have successfully sent a request for a new category.");
+		ActionHandler.get().showSuccessDialog("New category added", "You have successfully sent a request for a new category.");
 	}
 	
 	private void updateCategory() {
 		if(currentCat == null) {
-			c.ah.showErrorDialog(c, "No category selected", "You have not chosen a category.");
+			ActionHandler.get().showErrorDialog("No category selected", "You have not chosen a category.");
 			return;
 		}
 		CategoryPacket cp = new CategoryPacket();
@@ -224,7 +223,7 @@ final class EditCategory {
 			cp.disciplines.add(d.getId());
 		}
 		if(cp.name == null || cp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid category name selected. Please enter a name for the category.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid category name selected. Please enter a name for the category.");
 			return;
 		}
 		cp.id = currentCat.getId();
@@ -237,14 +236,14 @@ final class EditCategory {
 					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
 				}
 				else {
-					c.ah.showConnectionError(c);
+					ActionHandler.get().showConnectionError();
 				}
 			}
 		});
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "Category update requested", "You have successfully sent a request for a category update.");
+		ActionHandler.get().showSuccessDialog("Category update requested", "You have successfully sent a request for a category update.");
 	}
 	
 	private class NewEditTask extends Task<Boolean> {

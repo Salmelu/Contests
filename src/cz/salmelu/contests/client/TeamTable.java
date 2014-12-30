@@ -34,8 +34,8 @@ final class TeamTable {
 	private Label noTeams = null;
 	private TableView<Team> table = null;
 	
-	private TeamTable(Client c) {
-		this.c = c;
+	private TeamTable() {
+		this.c = Client.get();
 		
 		// Top panel
 		catBox = new HBox(16);
@@ -122,11 +122,10 @@ final class TeamTable {
 	}
 	
 	protected static TeamTable getInstance() {
+		if(instance == null) {
+			instance = new TeamTable();
+		}
 		return instance;
-	}
-	
-	protected static void setClient(Client c) {
-		instance = new TeamTable(c);
 	}
 	
 	protected void displayHeader() {

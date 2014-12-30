@@ -47,8 +47,8 @@ final class EditTeam {
 	private TextField bonus = null;
 	private ChoiceBox<TeamCategory> teamCat = null; 
 	
-	private EditTeam(Client c) {
-		this.c = c;
+	private EditTeam() {
+		this.c = Client.get();
 		
 		topBox = new HBox(16);
 		topBox.setAlignment(Pos.CENTER);
@@ -141,11 +141,10 @@ final class EditTeam {
 	}
 
 	protected static EditTeam getInstance() {
+		if(instance == null) {
+			instance = new EditTeam();
+		}
 		return instance;
-	}
-	
-	protected static void setClient(Client c) {
-		instance = new EditTeam(c);
 	}
 	
 	protected void displayHeader() {
@@ -198,11 +197,11 @@ final class EditTeam {
 
 	private void deleteTeam() {
 		if(currentCat == null || currentTeam == null) {
-			c.ah.showErrorDialog(c, "No team or team category selected",
+			ActionHandler.get().showErrorDialog("No team or team category selected",
 					"You have not chosen a correct team to delete.");
 			return;
 		}
-		if(!c.ah.showPromptDialog(c, "Are you sure?",
+		if(!ActionHandler.get().showPromptDialog("Are you sure?",
 				"Do you really want to remove the team?")) {
 			return;
 		}
@@ -216,7 +215,7 @@ final class EditTeam {
 		
 		Thread t = new Thread(dt);
 		t.run();
-		c.ah.showSuccessDialog(c, "Team deleted", "Team " + currentTeam.getName() + " was deleted.");
+		ActionHandler.get().showSuccessDialog("Team deleted", "Team " + currentTeam.getName() + " was deleted.");
 	}
 	
 	private void newTeam() {
@@ -226,16 +225,16 @@ final class EditTeam {
 			tp.bonus = Double.parseDouble(bonus.getText());
 		}
 		catch(NumberFormatException e) {
-			c.ah.showErrorDialog(c, "Invalid value", "Invalid numeric value in bonus field");
+			ActionHandler.get().showErrorDialog("Invalid value", "Invalid numeric value in bonus field");
 			return;
 		}
 		if(teamCat.getSelectionModel().getSelectedItem() == null) {
-			c.ah.showErrorDialog(c, "Invalid value", "No team category is selected.");
+			ActionHandler.get().showErrorDialog("Invalid value", "No team category is selected.");
 			return;
 		}
 		tp.tcId = teamCat.getSelectionModel().getSelectedItem().getId();
 		if(tp.name == null || tp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid team name selected. Please enter a name for the team.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid team name selected. Please enter a name for the team.");
 			return;
 		}
 		tp.id = 0;
@@ -250,12 +249,12 @@ final class EditTeam {
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "New team added", "You have successfully sent a request for a new team.");
+		ActionHandler.get().showSuccessDialog("New team added", "You have successfully sent a request for a new team.");
 	}
 	
 	private void updateTeam() {
 		if(currentCat == null || currentTeam == null) {
-			c.ah.showErrorDialog(c, "No team or team category selected", "You have not chosen a team and team category.");
+			ActionHandler.get().showErrorDialog("No team or team category selected", "You have not chosen a team and team category.");
 			return;
 		}
 		TeamPacket tp = new TeamPacket();
@@ -264,13 +263,13 @@ final class EditTeam {
 			tp.bonus = Double.parseDouble(bonus.getText());
 		}
 		catch(NumberFormatException e) {
-			c.ah.showErrorDialog(c, "Invalid value", "Invalid numeric value in bonus field");
+			ActionHandler.get().showErrorDialog("Invalid value", "Invalid numeric value in bonus field");
 			return;
 		}
 		tp.tcId = teamCat.getSelectionModel().getSelectedItem().getId();
 		tp.oldTcId = currentTeam.getCategory().getId();
 		if(tp.name == null || tp.name.equals("")) {
-			c.ah.showErrorDialog(c, "Field error", "An invalid team name selected. Please enter a name for the team.");
+			ActionHandler.get().showErrorDialog("Field error", "An invalid team name selected. Please enter a name for the team.");
 			return;
 		}
 		tp.id = currentTeam.getId();
@@ -283,14 +282,14 @@ final class EditTeam {
 					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
 				}
 				else {
-					c.ah.showConnectionError(c);
+					ActionHandler.get().showConnectionError();
 				}
 			}
 		});
 		
 		Thread t = new Thread(net);
 		t.run();
-		c.ah.showSuccessDialog(c, "Team update requested", "You have successfully sent a request for a team update.");
+		ActionHandler.get().showSuccessDialog("Team update requested", "You have successfully sent a request for a team update.");
 	}
 	
 	private class NewEditTask extends Task<Boolean> {
