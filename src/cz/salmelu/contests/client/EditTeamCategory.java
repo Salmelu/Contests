@@ -7,7 +7,6 @@ import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 import cz.salmelu.contests.model.ScoreMode;
 import cz.salmelu.contests.model.TeamCategory;
@@ -129,7 +128,7 @@ final class EditTeamCategory {
 	
 	protected void displayHeader() {
 		int id = currentTc == null ? 0 : currentTc.getId();
-		tcChoice.setItems(FXCollections.observableArrayList(new ArrayList<TeamCategory>(c.current.getTeamCategories().values())));
+		tcChoice.setItems(FXCollections.observableArrayList(c.current.getTeamCategories().values()));
 		for(TeamCategory tc : tcChoice.getItems()) {
 			if(tc.getId() == id) {
 				tcChoice.getSelectionModel().select(tc);

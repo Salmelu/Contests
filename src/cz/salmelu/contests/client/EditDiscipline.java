@@ -7,7 +7,6 @@ import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 import cz.salmelu.contests.model.Discipline;
 import cz.salmelu.contests.net.DisciplinePacket;
@@ -121,7 +120,7 @@ final class EditDiscipline {
 	
 	protected void displayHeader() {
 		int id = currentDisc == null ? 0 : currentDisc.getId();
-		discChoice.setItems(FXCollections.observableArrayList(new ArrayList<Discipline>(c.current.getDisciplines().values())));
+		discChoice.setItems(FXCollections.observableArrayList(c.current.getDisciplines().values()));
 		for(Discipline d : discChoice.getItems()) {
 			if(d.getId() == id) {
 				discChoice.getSelectionModel().select(d);

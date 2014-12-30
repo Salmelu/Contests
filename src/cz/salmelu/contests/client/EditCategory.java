@@ -7,7 +7,6 @@ import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 import org.controlsfx.control.CheckComboBox;
 
@@ -126,7 +125,7 @@ final class EditCategory {
 	
 	protected void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
-		catChoice.setItems(FXCollections.observableArrayList(new ArrayList<Category>(c.current.getCategories().values())));
+		catChoice.setItems(FXCollections.observableArrayList(c.current.getCategories().values()));
 		for(Category cat : catChoice.getItems()) {
 			if(cat.getId() == id) {
 				catChoice.getSelectionModel().select(cat);

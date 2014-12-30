@@ -7,7 +7,6 @@ import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 import cz.salmelu.contests.model.ContestInfo;
 import cz.salmelu.contests.net.ContestPacket;
@@ -121,7 +120,7 @@ final class EditContest {
 	
 	protected void displayHeader() {
 		int id = currentContest == null ? 0 : currentContest.getId();
-		contestChoice.setItems(FXCollections.observableArrayList(new ArrayList<ContestInfo>(c.contests.values())));
+		contestChoice.setItems(FXCollections.observableArrayList(c.contests.values()));
 		for(ContestInfo ci : contestChoice.getItems()) {
 			if(ci.getId() == id) {
 				contestChoice.getSelectionModel().select(ci);

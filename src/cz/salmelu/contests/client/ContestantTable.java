@@ -1,7 +1,5 @@
 package cz.salmelu.contests.client;
 
-import java.util.ArrayList;
-
 import cz.salmelu.contests.model.Category;
 import cz.salmelu.contests.model.Contestant;
 import cz.salmelu.contests.model.Discipline;
@@ -134,7 +132,7 @@ final class ContestantTable {
 	
 	protected void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
-		catChoice.setItems(FXCollections.observableArrayList(new ArrayList<Category>(c.current.getCategories().values())));
+		catChoice.setItems(FXCollections.observableArrayList(c.current.getCategories().values()));
 		for(Category cat : catChoice.getItems()) {
 			if(cat.getId() == id) {
 				catChoice.getSelectionModel().select(cat);

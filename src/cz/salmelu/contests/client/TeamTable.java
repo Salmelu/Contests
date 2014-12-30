@@ -1,7 +1,5 @@
 package cz.salmelu.contests.client;
 
-import java.util.ArrayList;
-
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -130,7 +128,7 @@ final class TeamTable {
 	
 	protected void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
-		catChoice.setItems(FXCollections.observableArrayList(new ArrayList<TeamCategory>(c.current.getTeamCategories().values())));
+		catChoice.setItems(FXCollections.observableArrayList(c.current.getTeamCategories().values()));
 		for(TeamCategory tc : catChoice.getItems()) {
 			if(tc.getId() == id) {
 				catChoice.getSelectionModel().select(tc);
