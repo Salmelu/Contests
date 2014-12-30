@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 /**
  * Represents each Contest
@@ -141,7 +140,7 @@ public class Contest implements Serializable {
 	 */
 	public void addTeamCategory(TeamCategory tc) {
 		teamCategories.put(tc.getId(), tc);
-		teams.put(tc, new TreeMap<>());
+		teams.put(tc, new HashMap<>());
 	}
 	
 	/**
@@ -190,7 +189,7 @@ public class Contest implements Serializable {
 	 */
 	public void addCategory(Category c) {
 		categories.put(c.getId(), c);
-		contestants.put(c, new TreeMap<>());
+		contestants.put(c, new HashMap<>());
 	}
 
 	/**
@@ -299,17 +298,155 @@ public class Contest implements Serializable {
 			return;
 		}
 		teams.get(tc).put(t.getId(), t);
+		t.setCategory(tc);
+	}
+	
+	/**
+	 * Checks if the contest contains a team in a category
+	 * @param tcId id of the containing team category
+	 * @param teamId id of the checked team
+	 * @return true, if the contest has a team with id teamId
+	 */
+	public boolean hasTeam(int tcId, int teamId) {
+		return teamCategories.containsKey(tcId) 
+				&& teams.get(teamCategories.get(tcId)).containsKey(teamId);
+	}
+	
+	/**
+	 * Checks if the contest contains a team
+	 * @param t checked team
+	 * @return true, if the contest has team t
+	 */
+	public boolean hasTeam(Team t) {
+		return t.getCategory() != null && 
+				teamCategories.containsValue(t.getCategory()) && teams.get(t.getCategory()).containsValue(t);
+	}
+	
+	/**
+	 * Removes a team from the contest and all its contestants from the team
+	 * @param tcId id of containing team category
+	 * @param teamId id of the removed team
+	 */
+	public void removeTeam(int tcId, int teamId) {
+		if(teamCategories.containsKey(tcId)) {
+			TeamCategory tc = teamCategories.get(tcId);
+			Team t = teams.get(tc).get(teamId);
+			if(t != null) {
+				tc.removeTeam(t);
+				teams.get(tc).remove(teamId);
+				t.removeAllContestants();
+			}
+		}
+	}
+	
+	/**
+	 * Changes a team's category. Does all the required data transfers
+	 * @param t affected team
+	 * @param newTc new team category
+	 */
+	public void changeTeamCategory(Team t, TeamCategory newTc) {
+		if(t.getCategory() != null) {
+			teams.get(t.getCategory()).remove(t.getId());
+		}
+		t.setCategory(newTc);
+		teams.get(newTc).put(t.getId(), t);
+	}
+	
+	/**
+	 * Gets a team by its id and its category id
+	 * @param tcId id of the containing category
+	 * @param teamId id of the requested team
+	 * @return a team with id teamId, or null, if it couldn't be found
+	 */
+	public Team getTeam(int tcId, int teamId) {
+		if(teamCategories.containsKey(tcId)) {
+			TeamCategory tc = teamCategories.get(tcId);
+			Team t = teams.get(tc).get(teamId);
+			return t;
+		}
+		return null;
 	}
 	
 	/**
 	 * Adds a new contestant. If this contest doesn't contain the contestant's category, no contestant is added
 	 * @param c new contestant
 	 */
-	public void addContestant(Contestant c) {
-		if(!contestants.containsKey(c.getCategory())) {
+	public void addContestant(Category cat, Contestant c) {
+		if(!contestants.containsKey(cat)) {
 			return;
 		}
-		contestants.get(c.getCategory()).put(c.getId(), c);
+		contestants.get(cat).put(c.getId(), c);
+		c.setCategory(cat);
+	}
+	
+	/**
+	 * Checks if the contest contains a contestant in a category
+	 * @param catId id of the containing category
+	 * @param id id of the checked contestant
+	 * @return true, if the contest has a contestant with id id
+	 */
+	public boolean hasContestant(int catId, int id) {
+		return categories.containsKey(catId) 
+				&& contestants.get(categories.get(catId)).containsKey(id);
+	}
+	
+	/**
+	 * Checks if the contest contains a contestant
+	 * @param c checked contestant
+	 * @return true, if the contest has contestant c
+	 */
+	public boolean hasContestant(Contestant c) {
+		return c.getCategory() != null && 
+				categories.containsValue(c.getCategory()) && contestants.get(c.getCategory()).containsValue(c);
+	}
+	
+	/**
+	 * Removes a team from the contest and all its contestants from the team
+	 * @param catId id of containing category
+	 * @param id id of the removed contestant
+	 */
+	public void removeContestant(int catId, int id) {
+		if(categories.containsKey(catId)) {
+			Category cat = categories.get(catId);
+			Contestant cs = contestants.get(cat).get(id);
+			if(cs != null) {
+				contestants.get(cat).remove(id);
+				if(cs instanceof TeamContestant) {
+					TeamContestant tcs = (TeamContestant) cs;
+					if(tcs.getTeam() != null) {
+						tcs.getTeam().removeContestant(tcs);
+					}
+				}	
+			}
+		}
+	}
+	
+	/**
+	 * Changes a contestant's category. Does all the required data transfers
+	 * @param cs affected contestant
+	 * @param cat new category
+	 */
+	public void changeContestantCategory(Contestant cs, Category cat) {
+		if(cs.getCategory() != null) {
+			contestants.get(cs.getCategory()).remove(cs.getId());
+		}
+		cs.setCategory(cat);
+		contestants.get(cat).put(cs.getId(), cs);
+	}
+	
+	/**
+	 * Gets a contestant by its id and its category id
+	 * @param catId id of the containing category
+	 * @param id id of the requested contestant
+	 * @return a contestant with id id, or null, if it couldn't be found
+	 */
+	public Contestant getContestant(int catId, int id) {
+		if(categories.containsKey(catId)) {
+			Category cat = categories.get(catId);
+			Contestant cs = contestants.get(cat).get(id);
+			return cs;
+		}
+		return null;
 	}
 	
 	/**

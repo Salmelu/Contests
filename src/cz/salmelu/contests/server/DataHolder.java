@@ -176,20 +176,87 @@ class DataHolder {
 		return true;
 	}
 	
-	protected Team getTeam(int teamId, int tcId, int contestId) {
-		Contest cs = contests.get(contestId);
-		if(cs == null)
-			return null;
-		TeamCategory tc = cs.getTeamCategories().get(tcId);
-		if(tc == null)
-			return null;
-		Team t = cs.getTeams(tc).get(teamId);
-		return t;
+	/**
+	 * Adds a new team to the contest
+	 * @param conId id of the affected contest
+	 * @param tc team category of the added team
+	 * @param t added team
+	 * @return true, if the contest was found and team added, false otherwise
+	 */
+	protected boolean addTeam(int conId, TeamCategory tc, Team t) {
+		Contest cs = getContest(conId);
+		if(cs == null) {
+			return false;
+		}
+		if(!cs.getTeamCategories().containsValue(tc)) {
+			return false;
+		}
+		tc.addTeam(t); // Links the team with category
+		cs.addTeam(tc, t); // Adds the team
+		return true;
 	}
 	
-	protected void addTeam(Team t, TeamCategory tc, Contest cs) {
-		cs.addTeam(tc, t);
-		t.setCategory(tc);
+	/**
+	 * Removes a team from the contest
+	 * @param conId id of the affected contest
+	 * @param tcId id of the affected team category
+	 * @param teamId removed team
+	 * @return true, if the team was deleted, false, if the team, team category or the contest was not found
+	 */
+	protected boolean deleteTeam(int conId, int tcId, int teamId) {
+		Contest cs = getContest(conId);
+		if(cs == null) {
+			return false;
+		}
+		if(!cs.hasTeamCategory(tcId)) {
+			return false;
+		}
+		if(cs.getTeam(tcId, teamId) == null) {
+			return false;
+		}
+		cs.removeTeam(tcId, teamId);
+		return true;
+	}
+	
+	/**
+	 * Adds a new contestant to the contest
+	 * @param conId id of the affected contest
+	 * @param cat category of the added team
+	 * @param cs added contestant
+	 * @return true, if the contest was found and contestant added, false otherwise
+	 */
+	protected boolean addContestant(int conId, Category cat, Contestant cs) {
+		Contest c = getContest(conId);
+		if(c == null) {
+			return false;
+		}
+		if(!c.getCategories().containsValue(cat)) {
+			return false;
+		}
+		c.addContestant(cat, cs);
+		return true;
+	}
+	
+	/**
+	 * Removes a team from the contest
+	 * @param conId id of the affected contest
+	 * @param catId id of the affected category
+	 * @param id removed contestant
+	 * @return true, if the contestant was deleted, false, if the contestant, category or the contest was not found
+	 */
+	protected boolean deleteContestant(int conId, int catId, int id) {
+		Contest cs = getContest(conId);
+		if(cs == null) {
+			return false;
+		}
+		if(!cs.hasCategory(catId)) {
+			return false;
+		}
+		if(cs.getContestant(catId, id) == null) {
+			return false;
+		}
+		cs.removeContestant(catId, id);
+		return true;
 	}
 	
 	/**

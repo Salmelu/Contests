@@ -19,10 +19,11 @@ public enum Packet {
 	TCATEGORY_EDIT((byte) 0x26), // Edits/Adds a new team category
 	CATEGORY_DELETE((byte) 0x30), // Deletes a category (contest id, category id)
 	CATEGORY_EDIT((byte) 0x31), // Edits/Adds a new category
-	TEAM_GET((byte) 0x40),	// Get a team by Id (team id, category id, contest id)
-	TEAM_ADD((byte) 0x41),	// Add a new team (string name, double bonus, category id, contest id)
-	//TEAM_ADD_CONTESTANT((byte) 0x34);
-	SCORE_UPDATE((byte) 0x50); // Updates score (double, size, UpdateScorePackets)
+	TEAM_DELETE((byte) 0x40), // Deletes a team (contest id, team category id, team id)
+	TEAM_EDIT((byte) 0x41), // Edits/Adds a new team
+	CONTESTANT_DELETE((byte) 0x50), // Deletes a contestant (contest id, category id, contestant id)
+	CONTESTANT_EDIT((byte) 0x51), // Edits/Adds a contestant
+	SCORE_UPDATE((byte) 0x60); // Updates score (double, size, UpdateScorePackets)
 	
 	/** Byte value of the packet */
 	private byte order;

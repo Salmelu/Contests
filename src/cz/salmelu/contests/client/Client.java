@@ -69,6 +69,8 @@ public class Client extends Application {
 		MenuItem iedit2 = new MenuItem("Update/New Discipline");
 		MenuItem iedit3 = new MenuItem("Update/New Team Category");
 		MenuItem iedit4 = new MenuItem("Update/New Category");
+		MenuItem iedit5 = new MenuItem("Update/New Team");
+		MenuItem iedit6 = new MenuItem("Update/New Contestant");
 		
 		imain1.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -137,11 +139,23 @@ public class Client extends Application {
 				handleMenuAction(MenuAction.UPDATE_CATEGORY);
 			}
 		});
+		iedit5.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				handleMenuAction(MenuAction.UPDATE_TEAM);
+			}
+		});
+		iedit6.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				handleMenuAction(MenuAction.UPDATE_CONTESTANT);
+			}
+		});
 		
 		main.getItems().addAll(imain1, imain2, imain3);
 		show.getItems().addAll(ishow1, ishow2, ishow3);
 		score.getItems().addAll(iscore1);
-		edit.getItems().addAll(iedit1, iedit2, iedit3, iedit4);
+		edit.getItems().addAll(iedit1, iedit2, iedit3, iedit4, iedit5, iedit6);
 		mbar.getMenus().addAll(main, show, score, edit);
 		
 		return mbar;
@@ -207,6 +221,14 @@ public class Client extends Application {
 		case UPDATE_CATEGORY:
 			clearPanel();
 			ah.updateCategory(this);
+			break;
+		case UPDATE_TEAM:
+			clearPanel();
+			ah.updateTeam(this);
+			break;
+		case UPDATE_CONTESTANT:
+			clearPanel();
+			ah.updateContestant(this);
 			break;
 		default:
 				

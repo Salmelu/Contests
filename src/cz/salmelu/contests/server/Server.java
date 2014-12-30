@@ -83,10 +83,10 @@ public class Server {
 				t2.addContestant(p2);
 				t1.addContestant(p3);
 				t2.addContestant(p4);
-				c.addContestant(p1);
-				c.addContestant(p2);
-				c.addContestant(p3);
-				c.addContestant(p4);
+				c.addContestant(ct1, p1);
+				c.addContestant(ct1, p2);
+				c.addContestant(ct1, p3);
+				c.addContestant(ct2, p4);
 				TeamCategory tc = new TeamCategory("Main cat", ScoreMode.Additive);
 				c.addTeamCategory(tc);
 				c.addTeam(tc, t1);

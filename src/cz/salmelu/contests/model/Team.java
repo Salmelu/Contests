@@ -81,7 +81,7 @@ public class Team implements Serializable {
 	public void setCategory(TeamCategory tc) {
 		if(cat != null) cat.removeTeam(this);
 		cat = tc;
-		if(cat != null) tc.getAllTeams().add(this);
+		if(cat != null) tc.addTeam(this);
 	}
 	
 	/**

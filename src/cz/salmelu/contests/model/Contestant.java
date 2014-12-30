@@ -102,6 +102,14 @@ public class Contestant implements Serializable {
 	}
 	
 	/**
+	 * Changes contestant's category
+	 * @param cat new category
+	 */
+	public void setCategory(Category cat) {
+		this.cat = cat;
+	}
+	
+	/**
 	 * Gets contestant's category
 	 * @return category
 	 */

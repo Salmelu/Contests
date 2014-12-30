@@ -79,21 +79,19 @@ public class TeamCategory implements Serializable {
 	}
 	
 	/**
-	 * Adds a team to the category
+	 * Adds a team to the category. Doesn't affect the team itself
 	 * @param t added team
 	 */
 	public void addTeam(Team t) {
 		if(!teams.contains(t)) teams.add(t);
-		t.setCategory(this);
 	}
 	
 	/**
-	 * Removes a team from the category
+	 * Removes a team from the category. Doesn't affect the team itself
 	 * @param t removed team
 	 */
 	public void removeTeam(Team t) {
 		teams.remove(t);
-		t.setCategory(null);
 	}
 	
 	/**
