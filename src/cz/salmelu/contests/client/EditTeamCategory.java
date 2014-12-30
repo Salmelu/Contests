@@ -52,6 +52,14 @@ final class EditTeamCategory {
 		tcLabel = new Label("Choose a team category: ");
 		tcChoice = new ChoiceBox<>();
 		tcChoice.setPrefWidth(180);
+		tcChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TeamCategory>() {
+			@Override
+			public void changed(ObservableValue<? extends TeamCategory> arg0, TeamCategory arg1,
+					TeamCategory arg2) {
+				currentTc = arg2;
+				fillFields();
+			}
+		});
 		deleteButton = new Button("Delete team category");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(200);
@@ -128,14 +136,6 @@ final class EditTeamCategory {
 				tcChoice.getSelectionModel().select(tc);
 			}
 		}
-		tcChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TeamCategory>() {
-			@Override
-			public void changed(ObservableValue<? extends TeamCategory> arg0, TeamCategory arg1,
-					TeamCategory arg2) {
-				currentTc = arg2;
-				fillFields();
-			}
-		});
 		c.mainPanel.setTop(tcBox);
 	}
 

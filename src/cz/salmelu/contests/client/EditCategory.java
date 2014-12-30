@@ -54,6 +54,14 @@ final class EditCategory {
 		catLabel = new Label("Choose a category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(180);
+		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
+			@Override
+			public void changed(ObservableValue<? extends Category> arg0, Category arg1,
+					Category arg2) {
+				currentCat = arg2;
+				fillFields();
+			}
+		});
 		deleteButton = new Button("Delete category");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(200);
@@ -125,14 +133,6 @@ final class EditCategory {
 				catChoice.getSelectionModel().select(cat);
 			}
 		}
-		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
-			@Override
-			public void changed(ObservableValue<? extends Category> arg0, Category arg1,
-					Category arg2) {
-				currentCat = arg2;
-				fillFields();
-			}
-		});
 		c.mainPanel.setTop(catBox);
 	}
 

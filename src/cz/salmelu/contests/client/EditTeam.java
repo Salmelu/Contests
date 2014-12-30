@@ -55,9 +55,25 @@ final class EditTeam {
 		catLabel = new Label("Choose a team category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(160);
+		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TeamCategory>() {
+			@Override
+			public void changed(ObservableValue<? extends TeamCategory> arg0, TeamCategory arg1,
+					TeamCategory arg2) {
+				currentCat = arg2;
+				updateTeamList();
+			}
+		});
 		teamLabel = new Label("Choose a team: ");
 		teamChoice = new ChoiceBox<>();
 		teamChoice.setPrefWidth(160);
+		teamChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Team>() {
+			@Override
+			public void changed(ObservableValue<? extends Team> arg0,
+					Team arg1, Team arg2) {
+				currentTeam = arg2;
+				fillFields();
+			}
+		});
 		deleteButton = new Button("Delete team");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(160);
@@ -142,14 +158,6 @@ final class EditTeam {
 				selected = true;
 			}
 		}
-		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TeamCategory>() {
-			@Override
-			public void changed(ObservableValue<? extends TeamCategory> arg0, TeamCategory arg1,
-					TeamCategory arg2) {
-				currentCat = arg2;
-				updateTeamList();
-			}
-		});
 		if(!selected) {
 			currentTeam = null;
 		}
@@ -166,14 +174,6 @@ final class EditTeam {
 				teamChoice.getSelectionModel().select(t);
 			}
 		}
-		teamChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Team>() {
-			@Override
-			public void changed(ObservableValue<? extends Team> arg0,
-					Team arg1, Team arg2) {
-				currentTeam = arg2;
-				fillFields();
-			}
-		});
 	}
 
 	private void fillFields() {

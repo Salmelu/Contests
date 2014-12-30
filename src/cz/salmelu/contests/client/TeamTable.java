@@ -43,6 +43,14 @@ final class TeamTable {
 		catLabel = new Label("Choose a team category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(200);
+		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TeamCategory>() {
+			@Override
+			public void changed(ObservableValue<? extends TeamCategory> arg0, TeamCategory arg1,
+					TeamCategory arg2) {
+				currentCat = arg2;
+				displayTable();
+			}
+		});
 		catBox.getChildren().addAll(catLabel, catChoice);
 		catBox.setPadding(new Insets(0,15,40,15));
 		
@@ -129,14 +137,6 @@ final class TeamTable {
 				catChoice.getSelectionModel().select(tc);
 			}
 		}
-		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TeamCategory>() {
-			@Override
-			public void changed(ObservableValue<? extends TeamCategory> arg0, TeamCategory arg1,
-					TeamCategory arg2) {
-				currentCat = arg2;
-				displayTable();
-			}
-		});
 		c.mainPanel.setTop(catBox);
 	}
 	

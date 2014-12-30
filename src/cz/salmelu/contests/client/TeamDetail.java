@@ -44,6 +44,14 @@ final class TeamDetail {
 		teamLabel = new Label("Choose a team: ");
 		teamChoice = new ChoiceBox<>();
 		teamChoice.setPrefWidth(200);
+		teamChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Team>() {
+			@Override
+			public void changed(ObservableValue<? extends Team> arg0, Team arg1,
+					Team arg2) {
+				currentTeam = arg2;
+				displayTable();
+			}
+		});
 		teamBox.getChildren().addAll(teamLabel, teamChoice);
 		teamBox.setPadding(new Insets(0,15,40,15));
 		
@@ -135,14 +143,6 @@ final class TeamDetail {
 				teamChoice.getSelectionModel().select(t);
 			}
 		}
-		teamChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Team>() {
-			@Override
-			public void changed(ObservableValue<? extends Team> arg0, Team arg1,
-					Team arg2) {
-				currentTeam = arg2;
-				displayTable();
-			}
-		});
 		c.mainPanel.setTop(teamBox);
 	}
 	

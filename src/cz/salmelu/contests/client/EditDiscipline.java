@@ -50,6 +50,14 @@ final class EditDiscipline {
 		discLabel = new Label("Choose a discipline: ");
 		discChoice = new ChoiceBox<>();
 		discChoice.setPrefWidth(180);
+		discChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Discipline>() {
+			@Override
+			public void changed(ObservableValue<? extends Discipline> arg0, Discipline arg1,
+					Discipline arg2) {
+				currentDisc = arg2;
+				fillFields();
+			}
+		});
 		deleteButton = new Button("Delete discipline");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(200);
@@ -120,14 +128,6 @@ final class EditDiscipline {
 				discChoice.getSelectionModel().select(d);
 			}
 		}
-		discChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Discipline>() {
-			@Override
-			public void changed(ObservableValue<? extends Discipline> arg0, Discipline arg1,
-					Discipline arg2) {
-				currentDisc = arg2;
-				fillFields();
-			}
-		});
 		c.mainPanel.setTop(discBox);
 	}
 

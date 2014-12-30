@@ -50,6 +50,14 @@ final class EditContest {
 		contestLabel = new Label("Choose a contest: ");
 		contestChoice = new ChoiceBox<>();
 		contestChoice.setPrefWidth(180);
+		contestChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ContestInfo>() {
+			@Override
+			public void changed(ObservableValue<? extends ContestInfo> arg0, ContestInfo arg1,
+					ContestInfo arg2) {
+				currentContest = arg2;
+				fillFields();
+			}
+		});
 		deleteButton = new Button("Delete contest");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(200);
@@ -120,14 +128,6 @@ final class EditContest {
 				contestChoice.getSelectionModel().select(ci);
 			}
 		}
-		contestChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ContestInfo>() {
-			@Override
-			public void changed(ObservableValue<? extends ContestInfo> arg0, ContestInfo arg1,
-					ContestInfo arg2) {
-				currentContest = arg2;
-				fillFields();
-			}
-		});
 		c.mainPanel.setTop(contestBox);
 	}
 

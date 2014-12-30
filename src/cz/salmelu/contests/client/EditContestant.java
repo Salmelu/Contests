@@ -63,9 +63,25 @@ final class EditContestant {
 		catLabel = new Label("Choose a category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(160);
+		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
+			@Override
+			public void changed(ObservableValue<? extends Category> arg0, Category arg1,
+					Category arg2) {
+				currentCat = arg2;
+				updateCsList();
+			}
+		});
 		csLabel = new Label("Choose a contestant: ");
 		csChoice = new ChoiceBox<>();
 		csChoice.setPrefWidth(160);
+		csChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Contestant>() {
+			@Override
+			public void changed(ObservableValue<? extends Contestant> arg0,
+					Contestant arg1, Contestant arg2) {
+				currentCs = arg2;
+				fillFields();
+			}
+		});
 		deleteButton = new Button("Delete contestant");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(160);
@@ -167,14 +183,6 @@ final class EditContestant {
 				selected = true;
 			}
 		}
-		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
-			@Override
-			public void changed(ObservableValue<? extends Category> arg0, Category arg1,
-					Category arg2) {
-				currentCat = arg2;
-				updateCsList();
-			}
-		});
 		if(!selected) {
 			currentCs = null;
 		}
@@ -191,14 +199,6 @@ final class EditContestant {
 				csChoice.getSelectionModel().select(cs);
 			}
 		}
-		csChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Contestant>() {
-			@Override
-			public void changed(ObservableValue<? extends Contestant> arg0,
-					Contestant arg1, Contestant arg2) {
-				currentCs = arg2;
-				fillFields();
-			}
-		});
 	}
 
 	private void fillFields() {

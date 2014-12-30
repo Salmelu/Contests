@@ -44,6 +44,14 @@ final class ContestantTable {
 		catLabel = new Label("Choose a category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(200);
+		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
+			@Override
+			public void changed(ObservableValue<? extends Category> arg0, Category arg1,
+					Category arg2) {
+				currentCat = arg2;
+				displayTable();
+			}
+		});
 		catBox.getChildren().addAll(catLabel, catChoice);
 		catBox.setPadding(new Insets(0,15,40,15));
 		
@@ -133,14 +141,6 @@ final class ContestantTable {
 				catChoice.getSelectionModel().select(cat);
 			}
 		}
-		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
-			@Override
-			public void changed(ObservableValue<? extends Category> arg0, Category arg1,
-					Category arg2) {
-				currentCat = arg2;
-				displayTable();
-			}
-		});
 		c.mainPanel.setTop(catBox);
 	}
 	
