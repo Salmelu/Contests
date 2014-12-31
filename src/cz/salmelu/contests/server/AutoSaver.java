@@ -17,6 +17,8 @@ class AutoSaver extends Thread {
 	private DataHolder dh;
 	/** Reference to DataLoader used to save the data */
 	private DataLoader dl;
+	/** If set to false, will stop itself */
+	private volatile boolean running = true;
 	
 	/**
 	 * Initializes an autosaver
@@ -27,20 +29,23 @@ class AutoSaver extends Thread {
 		this.dh = dh;
 		this.dl = dl;
 	}
+	
+	public synchronized void stopRunning() {
+		this.running = false;
+	}
 
 	@Override
 	public void run() {
-		this.setDaemon(true);
-		while(true) {
+		while(running) {
 			try {
 				Thread.sleep(Config.SAVE_INTERVAL * 1000);
 			} 
 			catch (InterruptedException e) {
-				Logger.getInstance().log("Saving thread interrupted", LoggerSeverity.ERROR);
-				Logger.getInstance().log(e.getLocalizedMessage(), LoggerSeverity.ERROR);
+				Logger.getInstance().log("Saving thread interrupted", LoggerSeverity.WARNING);
 			}
 			
 			try {
+				
 				if(dh.lock()) {
 					Logger.getInstance().log("Saving data", LoggerSeverity.INFO);
 					dl.save(dh.getAllContests());

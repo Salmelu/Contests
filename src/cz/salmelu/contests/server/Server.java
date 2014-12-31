@@ -35,19 +35,59 @@ import cz.salmelu.contests.util.LoggerSeverity;
 public class Server {
 
 	/** Instance of DataLoader to be used for loading/saving data */
-	private DataLoader dl;
+	protected DataLoader dl;
 	/** Instance of DataHolder to store the data */
 	private DataHolder dh;
 	/** Instance of PacketProcesser to process the packets */
 	private PacketProcesser processer;
 	/** If set to false, server will stop accepting the requests and will end itself */
-	private boolean running = true;
+	private volatile boolean running = true;
 	/** Server thread, important for accessing from shutdown hook */
 	private Thread socketThread;
+	/** AutoSaver thread */
+	private AutoSaver autoSaver = null;
+	
+	// TODO: remove, testing data
+	private void test() {
+		Contest c = new Contest("Hello");
+		Discipline d1 = new Discipline("Pozdrav");
+		Discipline d2 = new Discipline("Utok");
+		Discipline d3 = new Discipline("Obrana");
+		c.addDiscipline(d1);
+		c.addDiscipline(d2);
+		c.addDiscipline(d3);
+		Category ct1 = new Category("Bla");
+		ct1.addDiscipline(d1);
+		ct1.addDiscipline(d2);
+		Category ct2 = new Category("Dla");
+		ct2.addDiscipline(d2);
+		ct2.addDiscipline(d3);
+		c.addCategory(ct1);
+		c.addCategory(ct2);
+		TeamContestant p1 = new TeamContestant("Lama", "Lamut", ct1);
+		TeamContestant p2 = new TeamContestant("Lama2", "Lamut2", ct1);
+		TeamContestant p3 = new TeamContestant("Lama3", "Lamut3", ct1);
+		TeamContestant p4 = new TeamContestant("Lama4", "Lamut4", ct2);
+		Team t1 = new Team("Lamas");
+		Team t2 = new Team("Noobs");
+		t1.addContestant(p1);
+		t2.addContestant(p2);
+		t1.addContestant(p3);
+		t2.addContestant(p4);
+		c.addContestant(ct1, p1);
+		c.addContestant(ct1, p2);
+		c.addContestant(ct1, p3);
+		c.addContestant(ct2, p4);
+		TeamCategory tc = new TeamCategory("Main cat", ScoreMode.Additive);
+		c.addTeamCategory(tc);
+		c.addTeam(tc, t1);
+		c.addTeam(tc, t2);
+		dh.addContest(c);
+	}
 	
 	/**
 	 * Creates a new server instance
-	 */
+	 */	
 	public Server() {
 		dh = new DataHolder();
 		processer = new PacketProcesser(dh);
@@ -63,12 +103,22 @@ public class Server {
 						// Wait for it to finish
 						Thread.sleep(1000);
 					}
-					catch (InterruptedException e) {
-						
+					catch (InterruptedException e) { }
+				}
+				if(autoSaver != null) {
+					autoSaver.stopRunning();
+					autoSaver.interrupt();
+					while(autoSaver.isAlive()) {
+						try {
+							// Wait for it to finish
+							Thread.sleep(1000);
+						}
+						catch (InterruptedException e) { }
 					}
 				}
 			}
 		});
+		// Load data
 		if(Config.SAVE_METHOD_FILE) {
 			File f = new File(Config.SAVE_FILE);
 			try {
@@ -80,48 +130,20 @@ public class Server {
 			catch (LoaderException e) {
 				Logger.getInstance().log("Unable to load save file, starting new instance.", LoggerSeverity.WARNING);
 				Logger.getInstance().log(e.getLocalizedMessage(), LoggerSeverity.WARNING);
-				// TODO - remove, testing stuff
-				Contest c = new Contest("Hello");
-				Discipline d1 = new Discipline("Pozdrav");
-				Discipline d2 = new Discipline("Utok");
-				Discipline d3 = new Discipline("Obrana");
-				c.addDiscipline(d1);
-				c.addDiscipline(d2);
-				c.addDiscipline(d3);
-				Category ct1 = new Category("Bla");
-				ct1.addDiscipline(d1);
-				ct1.addDiscipline(d2);
-				Category ct2 = new Category("Dla");
-				ct2.addDiscipline(d2);
-				ct2.addDiscipline(d3);
-				c.addCategory(ct1);
-				c.addCategory(ct2);
-				TeamContestant p1 = new TeamContestant("Lama", "Lamut", ct1);
-				TeamContestant p2 = new TeamContestant("Lama2", "Lamut2", ct1);
-				TeamContestant p3 = new TeamContestant("Lama3", "Lamut3", ct1);
-				TeamContestant p4 = new TeamContestant("Lama4", "Lamut4", ct2);
-				Team t1 = new Team("Lamas");
-				Team t2 = new Team("Noobs");
-				t1.addContestant(p1);
-				t2.addContestant(p2);
-				t1.addContestant(p3);
-				t2.addContestant(p4);
-				c.addContestant(ct1, p1);
-				c.addContestant(ct1, p2);
-				c.addContestant(ct1, p3);
-				c.addContestant(ct2, p4);
-				TeamCategory tc = new TeamCategory("Main cat", ScoreMode.Additive);
-				c.addTeamCategory(tc);
-				c.addTeam(tc, t1);
-				c.addTeam(tc, t2);
-				dh.addContest(c);
+				test();
 			}
+		}
+		else {
+			throw new UnsupportedOperationException("Saving to database is not supported yet.");
 		}
 		
 		if(Config.AUTO_SAVE && !Config.SAVE_ON_CHANGE) {
 			Logger.getInstance().log("AutoSaver enabled, starting AutoSaver thread", LoggerSeverity.INFO);
-			Thread autoSaver = new Thread(new AutoSaver(dh, dl));
+			autoSaver = new AutoSaver(dh, dl);
 			autoSaver.start();
+		}
+		else if(Config.AUTO_SAVE && Config.SAVE_ON_CHANGE) {
+			throw new UnsupportedOperationException("Saving on change is not supported yet");
 		}
 	}
 	
@@ -136,22 +158,22 @@ public class Server {
 			SocketAddress addr = new InetSocketAddress(Inet4Address.getLocalHost(), Config.INET_PORT);
 			sckt.bind(addr);
 			sckt.setSoTimeout(4000);
-			Logger.getInstance().log("Server socket bound at port " + Config.INET_PORT, LoggerSeverity.INFO);
+			Logger.getInstance().log("Server socket bound at port " + Config.INET_PORT + ".", LoggerSeverity.INFO);
 			while(running) {
 				try {
 					Socket client = sckt.accept();
-					Logger.getInstance().log("Accepted client: " + client.getInetAddress(), LoggerSeverity.VERBOSE);
+					Logger.getInstance().log("Accepted client: " + client.getInetAddress() + ".", LoggerSeverity.VERBOSE);
 					ObjectInputStream input = new ObjectInputStream(client.getInputStream());
 					ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
 					int packetCode = input.read();
-					Logger.getInstance().log("Received packet with id " + (byte) packetCode, LoggerSeverity.VERBOSE);
+					Logger.getInstance().log("Received packet with id " + (byte) packetCode + ".", LoggerSeverity.VERBOSE);
 					if(packetCode != -1) {
 						PacketOrder p = PacketOrder.getPacket((byte) packetCode);
 						if(processer.processPacket(p, input, output)) {
-							Logger.getInstance().log("PacketOrder " + (byte) packetCode + " processed successfully", LoggerSeverity.VERBOSE);
+							Logger.getInstance().log("PacketOrder " + (byte) packetCode + " processed successfully.", LoggerSeverity.VERBOSE);
 						}
 						else {
-							Logger.getInstance().log("PacketOrder " + (byte) packetCode + " received error", LoggerSeverity.VERBOSE);
+							Logger.getInstance().log("PacketOrder " + (byte) packetCode + " received error.", LoggerSeverity.VERBOSE);
 						}
 					}
 					else {
@@ -193,13 +215,16 @@ public class Server {
 				catch (IOException e) {}
 			}
 		}
-		// Save the data
-		try {
-			dl.save(dh.getAllContests());
-		} 
-		catch (LoaderException e) {
-			Logger.getInstance().log("Couldn't save the data", LoggerSeverity.ERROR);
+		// Save the data if it doesn't save automatically
+		if(!Config.AUTO_SAVE) {
+			try {
+				dl.save(dh.getAllContests());
+			} 
+			catch (LoaderException e) {
+				Logger.getInstance().log("Couldn't save the data.", LoggerSeverity.ERROR);
+			}
 		}
+		Logger.getInstance().logAlways("Server ended. Goodbye.");
 	}
 	
 	/**
@@ -235,14 +260,13 @@ public class Server {
 			}	
 		}
 		catch (FileNotFoundException e) {
-			Logger.getInstance().log("Couldn't open log files", LoggerSeverity.ERROR);
+			Logger.getInstance().log("Couldn't open log files.", LoggerSeverity.ERROR);
 			Logger.getInstance().log(e.getLocalizedMessage(), LoggerSeverity.ERROR);
 		}
 		
-		Logger.getInstance().logAlways("Initializing server");
+		Logger.getInstance().logAlways("Initializing server.");
 		Server s = new Server();
-		Logger.getInstance().logAlways("Server initialized, starting server");
+		Logger.getInstance().logAlways("Server initialized, starting server.");
 		s.start();
-		Logger.getInstance().logAlways("Server ended");
 	}
 }
