@@ -156,6 +156,11 @@ final class EditContestant implements Displayable {
 		gp.add(buttonBox, 0, 5, 2, 1);
 	}
 
+	/**
+	 * Implementation of the singleton design pattern. Returns an instance of this class.
+	 * It also creates a new instance, if no instance was previously created.
+	 * @return an instance of EditContestant
+	 */
 	protected static EditContestant getInstance() {
 		if(instance == null) {
 			instance = new EditContestant();
@@ -163,6 +168,10 @@ final class EditContestant implements Displayable {
 		return instance;
 	}
 	
+	/**
+	 * Displays a header with the ChoiceBox for choosing the category and contestant.
+	 * Also resets the list of items, because it may have changed in the meantime
+	 */
 	private void displayHeader() {
 		boolean selected = false;
 		int id = currentCat == null ? 0 : currentCat.getId();

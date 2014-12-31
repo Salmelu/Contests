@@ -17,21 +17,41 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * Main class onwning all the GUI components responsible for creating the main window,
+ *  menu buttons and holding the main BorderPane and Stage
+ * @author salmelu
+ */
 public class Client extends Application {
 
+	/** Implementation of Singleton */
 	private static Client instance;
 	
+	/** List of contest infos, the key is its name */
 	protected HashMap<String, ContestInfo> contests = null;
+	/** The main box containing the mainPanel and the menu */
 	protected VBox mainBox;
+	/** The main stage */
 	protected Stage mainStage;
+	/** The main BorderPane containing all the GUI components */
 	protected BorderPane mainPanel;
-	protected Contest current;
-	protected MenuAction currentMenu;
+	/** The current, loaded contest */
+	protected Contest current = null;
+	/** The current selected menu action */
+	protected MenuAction currentMenu = null;
 	
+	/**
+	 * Gets a current instance of this client
+	 * @return an instance of client
+	 */
 	public static Client get() {
 		return instance;
 	}
 	
+	/**
+	 * Checks, if there is a contest selected
+	 * @return true, if there is a selected and loaded contest
+	 */
 	public static boolean contestSelected() {
 		return !(instance.current == null);
 	}
@@ -56,6 +76,10 @@ public class Client extends Application {
 		arg0.show();
 	}
 	
+	/**
+	 * Creates a MenuBar with all the menus and adds the listeners to them
+	 * @return a MenuBar with all menu options
+	 */
 	private MenuBar loadMenus() {
 		MenuBar mbar = new MenuBar();
 		
@@ -170,6 +194,10 @@ public class Client extends Application {
 		return mbar;
 	}
 	
+	/**
+	 * Handles a MenuAction. This method is called when a menu button is clicked.
+	 * @param ma MenuAction
+	 */
 	protected void handleMenuAction(MenuAction ma) {
 		MenuAction prevMa = currentMenu;
 		currentMenu = ma;
@@ -226,6 +254,10 @@ public class Client extends Application {
 		}
 	}
 	
+	/**
+	 * The entry point of the client part.
+	 * @param args Command line arguments
+	 */
 	public static void main(String args[]) {
 		launch(args);
 	}

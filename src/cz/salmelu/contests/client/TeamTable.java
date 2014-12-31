@@ -18,6 +18,10 @@ import javafx.util.Callback;
 import cz.salmelu.contests.model.Team;
 import cz.salmelu.contests.model.TeamCategory;
 
+/**
+ * A class responsible for displaying a list of all teams in a chosen category and their respective scores.
+ * @author salmelu
+ */
 final class TeamTable implements Displayable {
 	
 	private Client c = null;
@@ -32,6 +36,9 @@ final class TeamTable implements Displayable {
 	private Label noTeams = null;
 	private TableView<Team> table = null;
 	
+	/**
+	 * Constructs a new TeamTable setting all the important variables and creating GUI elements.
+	 */
 	private TeamTable() {
 		this.c = Client.get();
 		
@@ -59,6 +66,9 @@ final class TeamTable implements Displayable {
 		noTeams.setAlignment(Pos.CENTER);
 	}
 	
+	/**
+	 * Creates the GUI table. Sets all the GUI-related properties.
+	 */
 	private void createTable() {
 		if(currentCat == null) return;
 		table = new TableView<>();
@@ -118,7 +128,12 @@ final class TeamTable implements Displayable {
 		table.getColumns().add(bonusCol);
 		table.getColumns().add(totalCol);
 	}
-	
+
+	/**
+	 * Implementation of the singleton design pattern. Returns an instance of this class.
+	 * It also creates a new instance, if no instance was previously created.
+	 * @return an instance of TeamTable
+	 */
 	protected static TeamTable getInstance() {
 		if(instance == null) {
 			instance = new TeamTable();
@@ -126,6 +141,10 @@ final class TeamTable implements Displayable {
 		return instance;
 	}
 	
+	/**
+	 * Displays a header with the ChoiceBox for chosing the team category.
+	 * Also resets the list of items, because it may have changed in the meantime
+	 */
 	private void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
 		catChoice.setItems(FXCollections.observableArrayList(c.current.getTeamCategories().values()));
@@ -137,6 +156,9 @@ final class TeamTable implements Displayable {
 		c.mainPanel.setTop(catBox);
 	}
 	
+	/**
+	 * Displays a table of all teams depending on the team category set
+	 */
 	private void displayTable() {
 		if(currentCat == null) {
 			c.mainPanel.setCenter(noCategory);

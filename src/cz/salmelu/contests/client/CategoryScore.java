@@ -37,6 +37,7 @@ import cz.salmelu.contests.net.PacketUpdateScore;
  * @author salmelu
  */
 final class CategoryScore implements Displayable {
+	
 	private Client c = null;
 	private static CategoryScore instance = null;
 	private Category currentCat = null;
@@ -52,6 +53,11 @@ final class CategoryScore implements Displayable {
 	private GridPane table = null;
 	private Map<Contestant, Map<Discipline,TextField>> scoreFields;
 	
+	private Button updateButton = null;
+	
+	/**
+	 * Constructs all the GUI components for score editing table
+	 */
 	private CategoryScore() {
 		this.c = Client.get();
 		
@@ -88,8 +94,21 @@ final class CategoryScore implements Displayable {
 		table.setVgap(12);
 		table.setAlignment(Pos.CENTER);
 		scoreFields = new HashMap<>();
+		
+		updateButton = new Button("Update score");
+		updateButton.setAlignment(Pos.CENTER);
+		updateButton.setPrefWidth(200);
+		updateButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				updateScore();
+			}
+		});
 	}
 	
+	/**
+	 * Displays the table header, containing a choicebox with for chosing a category
+	 */
 	private void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
 		catChoice.setItems(FXCollections.observableArrayList(c.current.getCategories().values()));
@@ -101,6 +120,9 @@ final class CategoryScore implements Displayable {
 		c.mainPanel.setTop(catBox);
 	}
 	
+	/**
+	 * Displays a table depending on the category set. It shows all the textfields for editing the score
+	 */
 	private void displayTable() {
 		if(currentCat == null) {
 			c.mainPanel.setCenter(noCategory);
@@ -134,15 +156,7 @@ final class CategoryScore implements Displayable {
 			}
 			row++;
 		}
-		Button update = new Button("Update score");
-		update.setAlignment(Pos.CENTER);
-		table.add(update, 0, row, currentCat.getDisciplines().size()+2, 1);
-		update.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				updateScore();
-			}
-		});
+		table.add(updateButton, 0, row, currentCat.getDisciplines().size()+2, 1);
 		c.mainPanel.setCenter(table);
 	}
 	
@@ -152,6 +166,10 @@ final class CategoryScore implements Displayable {
 		displayTable();
 	}
 	
+	/**
+	 * This method is called on clicking update button. It collects all the data from the textfields and 
+	 * sends a request to the server
+	 */
 	private void updateScore() {
 		ArrayList<PacketUpdateScore> updatePackets = new ArrayList<>();
 		HashMap<Contestant, HashMap<Discipline, Double>> updateScores = new HashMap<>();
@@ -202,6 +220,11 @@ final class CategoryScore implements Displayable {
 				"Score data was updated and a request to server update was sent");
 	}
 	
+	/**
+	 * Implementation of the singleton design pattern. Returns an instance of this class.
+	 * It also creates a new instance, if no instance was previously created.
+	 * @return an instance of CategoryScore
+	 */
 	protected static CategoryScore getInstance() {
 		if(instance == null) {
 			instance = new CategoryScore();
@@ -209,11 +232,20 @@ final class CategoryScore implements Displayable {
 		return instance;
 	}
 	
+	/**
+	 * A task run when the client wants to send update score packets to the server
+	 * @author salmelu
+	 */
 	private class UpdateRequest extends Task<Boolean> {
 		
 		private ArrayList<PacketUpdateScore> updates = null;
 		private int conId;
 		
+		/**
+		 * Constructs a new Update request
+		 * @param updates List of PacketUpdateScore instances
+		 * @param conId id of the modified contest
+		 */
 		public UpdateRequest(ArrayList<PacketUpdateScore> updates, int conId) {
 			this.updates = updates;
 			this.conId = conId;

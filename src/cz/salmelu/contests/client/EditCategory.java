@@ -106,6 +106,11 @@ final class EditCategory implements Displayable {
 		gp.add(buttonBox, 0, 2, 2, 1);
 	}
 
+	/**
+	 * Implementation of the singleton design pattern. Returns an instance of this class.
+	 * It also creates a new instance, if no instance was previously created.
+	 * @return an instance of EditCategory
+	 */
 	protected static EditCategory getInstance() {
 		if(instance == null) {
 			instance = new EditCategory();
@@ -113,6 +118,10 @@ final class EditCategory implements Displayable {
 		return instance;
 	}
 	
+	/**
+	 * Displays a header with the ChoiceBox for choosing the category.
+	 * Also resets the list of items, because it may have changed in the meantime
+	 */
 	private void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
 		catChoice.setItems(FXCollections.observableArrayList(c.current.getCategories().values()));

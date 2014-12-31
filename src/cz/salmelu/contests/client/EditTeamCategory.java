@@ -109,6 +109,11 @@ final class EditTeamCategory implements Displayable {
 		gp.add(buttonBox, 0, 2, 2, 1);
 	}
 
+	/**
+	 * Implementation of the singleton design pattern. Returns an instance of this class.
+	 * It also creates a new instance, if no instance was previously created.
+	 * @return an instance of EditTeamCategory
+	 */
 	protected static EditTeamCategory getInstance() {
 		if(instance == null) {
 			instance = new EditTeamCategory();
@@ -116,6 +121,10 @@ final class EditTeamCategory implements Displayable {
 		return instance;
 	}
 	
+	/**
+	 * Displays a header with the ChoiceBox for chosing the team category.
+	 * Also resets the list of items, because it may have changed in the meantime
+	 */
 	private void displayHeader() {
 		int id = currentTc == null ? 0 : currentTc.getId();
 		tcChoice.setItems(FXCollections.observableArrayList(c.current.getTeamCategories().values()));

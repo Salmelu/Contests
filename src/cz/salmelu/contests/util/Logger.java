@@ -148,7 +148,7 @@ class LoggerOutput {
 	 * @param message Message to be logged
 	 * @param s Severity of the message
 	 */
-	public void log(String message, LoggerSeverity s) {
+	public synchronized void log(String message, LoggerSeverity s) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(formatter.format(new Date()));
 		if(s != null) {

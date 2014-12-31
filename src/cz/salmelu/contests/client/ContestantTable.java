@@ -19,6 +19,10 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
+/**
+ * A class responsible for displaying a list of all contestants in a chosen category and their respective scores.
+ * @author salmelu
+ */
 final class ContestantTable implements Displayable  {
 
 	private Client c = null;
@@ -33,6 +37,9 @@ final class ContestantTable implements Displayable  {
 	private Label noContestant = null;
 	private TableView<Contestant> table = null;
 	
+	/**
+	 * Constructs a new ContestantTable setting all the important variables and creating GUI elements.
+	 */
 	private ContestantTable() {
 		this.c = Client.get();
 		
@@ -60,6 +67,11 @@ final class ContestantTable implements Displayable  {
 		noContestant.setAlignment(Pos.CENTER);
 	}
 	
+	/**
+	 * Creates the GUI table. Sets all the GUI-related properties. 
+	 * The table is dynamically recreated each time the category is chosen, 
+	 * because each category contains different disciplines.
+	 */
 	private void createTable() {
 		if(currentCat == null) return;
 		table = new TableView<>();
@@ -122,7 +134,12 @@ final class ContestantTable implements Displayable  {
 		});
 		table.getColumns().add(totalCol);
 	}
-	
+
+	/**
+	 * Implementation of the singleton design pattern. Returns an instance of this class.
+	 * It also creates a new instance, if no instance was previously created.
+	 * @return an instance of ContestantTable
+	 */
 	protected static ContestantTable getInstance() {
 		if(instance == null) {
 			instance = new ContestantTable();
@@ -130,6 +147,10 @@ final class ContestantTable implements Displayable  {
 		return instance;
 	}
 	
+	/**
+	 * Displays a header with the ChoiceBox for choosing the category.
+	 * Also resets the list of items, because it may have changed in the meantime
+	 */
 	private void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
 		catChoice.setItems(FXCollections.observableArrayList(c.current.getCategories().values()));
@@ -141,6 +162,9 @@ final class ContestantTable implements Displayable  {
 		c.mainPanel.setTop(catBox);
 	}
 	
+	/**
+	 * Displays a table of all contestants depending on the category set
+	 */
 	private void displayTable() {
 		if(currentCat == null) {
 			c.mainPanel.setCenter(noCategory);

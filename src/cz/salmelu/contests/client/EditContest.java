@@ -101,6 +101,11 @@ final class EditContest implements Displayable {
 		gp.add(buttonBox, 0, 1, 2, 1);
 	}
 
+	/**
+	 * Implementation of the singleton design pattern. Returns an instance of this class.
+	 * It also creates a new instance, if no instance was previously created.
+	 * @return an instance of EditContest
+	 */
 	protected static EditContest getInstance() {
 		if(instance == null) {
 			instance = new EditContest();
@@ -108,6 +113,10 @@ final class EditContest implements Displayable {
 		return instance;
 	}
 	
+	/**
+	 * Displays a header with the ChoiceBox for choosing the contest.
+	 * Also resets the list of items, because it may have changed in the meantime
+	 */
 	private void displayHeader() {
 		int id = currentContest == null ? 0 : currentContest.getId();
 		contestChoice.setItems(FXCollections.observableArrayList(c.contests.values()));

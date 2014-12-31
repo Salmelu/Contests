@@ -12,6 +12,11 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 
+/**
+ * A class responsible for displaying a table will all contests to allow the user
+ *  to choose a contest to work with.
+ * @author salmelu
+ */
 final class ContestTable implements Displayable  {
 	
 	private Client c;
@@ -19,6 +24,9 @@ final class ContestTable implements Displayable  {
 	
 	private GridPane gp;
 	
+	/**
+	 * Constructs a new ContestTable
+	 */
 	private ContestTable() {
 		this.c = Client.get();
 		gp = new GridPane();
@@ -26,7 +34,12 @@ final class ContestTable implements Displayable  {
 		gp.setHgap(10);
 		gp.setVgap(6);
 	}
-	
+
+	/**
+	 * Implementation of the singleton design pattern. Returns an instance of this class.
+	 * It also creates a new instance, if no instance was previously created.
+	 * @return an instance of ContestTable
+	 */
 	protected static ContestTable getInstance() {
 		if(instance == null) {
 			instance = new ContestTable();
@@ -34,6 +47,9 @@ final class ContestTable implements Displayable  {
 		return instance;
 	}
 	
+	/**
+	 * Displays a table of all contests
+	 */
 	private void display() {
 		gp.getChildren().clear();
 		

@@ -101,6 +101,11 @@ final class EditDiscipline implements Displayable {
 		gp.add(buttonBox, 0, 1, 2, 1);
 	}
 
+	/**
+	 * Implementation of the singleton design pattern. Returns an instance of this class.
+	 * It also creates a new instance, if no instance was previously created.
+	 * @return an instance of EditDiscipline
+	 */
 	protected static EditDiscipline getInstance() {
 		if(instance == null) {
 			instance = new EditDiscipline();
@@ -108,6 +113,10 @@ final class EditDiscipline implements Displayable {
 		return instance;
 	}
 	
+	/**
+	 * Displays a header with the ChoiceBox for choosing the discipline.
+	 * Also resets the list of items, because it may have changed in the meantime
+	 */
 	private void displayHeader() {
 		int id = currentDisc == null ? 0 : currentDisc.getId();
 		discChoice.setItems(FXCollections.observableArrayList(c.current.getDisciplines().values()));

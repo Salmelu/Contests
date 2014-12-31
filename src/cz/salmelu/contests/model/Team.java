@@ -113,8 +113,41 @@ public class Team implements Serializable {
 	 * @return team's total score
 	 */
 	public double getTotalScore() {
-		// FIXME fill a method to count it
-		return 0;
+		if(cat == null) return 0;
+		double score = 0;
+		
+		switch(cat.getScoreMode()) {
+		case Additive:
+			for(TeamContestant tc : contestants) {
+				score += tc.getTotalScore() + tc.getBonus();
+			}
+			score += teamBonus;
+			break;
+		case AddAllBonuses:
+			int bonus = 0;
+			for(TeamContestant tc : contestants) {
+				score += tc.getTotalScore();
+				bonus += tc.getBonus();
+			}
+			score /= contestants.size();
+			score += bonus + teamBonus;
+			break;
+		case AddTeamBonus:
+			for(TeamContestant tc : contestants) {
+				score += tc.getTotalScore() + tc.getBonus();
+			}
+			score /= contestants.size();
+			score += teamBonus;
+			break;
+		case AverageFull:
+			for(TeamContestant tc : contestants) {
+				score += tc.getTotalScore() + tc.getBonus();
+			}
+			score += teamBonus;
+			score /= contestants.size();
+			break;
+		}
+		return score;
 	}
 	
 	/**
