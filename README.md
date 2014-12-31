@@ -15,11 +15,12 @@ This program was created under Eclipse IDE using Java 8. It also used ControlsFX
 
 ## Building
 
-There is an attached buildfile which can be run using `ant`. This builds both the client and the server. Running `ant client`, respectively `ant server` builds only the respective parts.
+There is an attached buildfile which can be run using `ant`. This builds both the client and the server. Running `ant compclient`, respectively `ant compserver` builds only the respective parts.
 
 ## Running
 
-You can run the program using `java -jar packageName.jar`. The entry point and path to the library is set by the buildfile.
+You can run the program using `java -jar packageName.jar`. The runnables are found in the `dist/client` or `dist/server` folders after the compilation. The entry point and path to the library is set by the buildfile.  
+You can also run the program directly from buildfile using `ant client` or `ant server`. Be warned that these commands run the JVM in the background.
 
 ## Releases
 

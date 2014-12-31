@@ -13,11 +13,24 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 
+/**
+ * This class represents the editing task sent to the server.
+ * @author salmelu
+ *
+ * @param <T> Packet type send to the server
+ */
 class TaskNewEdit<T extends Packet> extends Task<Boolean> {
-	
-	PacketOrder packetOrder;
+
+	/** An action code for the server */
+	private PacketOrder packetOrder;
+	/** Packet sent to the server */ 
 	T packet;
 	
+	/**
+	 * Constructs a new task for sending a data update or data insertion to the server.
+	 * @param packetOrder the order sent to the server
+	 * @param packet the transmitted packet
+	 */
 	protected TaskNewEdit(PacketOrder packetOrder, T packet) {
 		this.packetOrder = packetOrder;
 		this.packet = packet;

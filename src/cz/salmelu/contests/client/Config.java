@@ -6,9 +6,15 @@ import java.net.UnknownHostException;
 
 import cz.salmelu.contests.util.ConfigParser;
 
+/**
+ * Holds all the configuration options for the client
+ * @author salmelu
+ */
 public class Config {
 	
+	/** Port used for accessing the server */
 	public static final int INET_PORT;
+	/** Address for connecting to the server */
 	public static final InetAddress INET_ADDR;
 
 	static {
@@ -20,6 +26,13 @@ public class Config {
 	
 	private Config() {}
 
+	/**
+	 * Tries to parse a string address from the config file. 
+	 * If parsing fails, it tries to get the localhost address.
+	 * If the localhost address cannot be received, returns a loopback address.
+	 * @param strAddr read IP address
+	 * @return an InetAddress for accessing the server
+	 */
 	private static InetAddress getAddrFromString(String strAddr) {
 		InetAddress addr = null;
 		try {

@@ -32,6 +32,10 @@ import cz.salmelu.contests.model.Discipline;
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.PacketUpdateScore;
 
+/**
+ * Holds a GUI panel used for updating contestants' score
+ * @author salmelu
+ */
 final class CategoryScore implements Displayable {
 	private Client c = null;
 	private static CategoryScore instance = null;

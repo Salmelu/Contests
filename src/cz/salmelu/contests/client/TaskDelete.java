@@ -12,11 +12,23 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 
+/**
+ * This class represents a task used by the Edit tables 
+ * to remove the data from the server.
+ * @author salmelu
+ */
 class TaskDelete extends Task<Boolean> {
 	
+	/** The ids sent to the server */
 	private int[] ids;
+	/** An action code for the server */
 	private PacketOrder packet;
 	
+	/**
+	 * Constructs a delete task
+	 * @param packet the order sent to the server
+	 * @param ids the ids sent to the server, the order is maintained
+	 */
 	protected TaskDelete(PacketOrder packet, int... ids) {
 		this.packet = packet;
 		this.ids = ids;

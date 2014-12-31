@@ -25,7 +25,7 @@
 		<javac classpathref="classpath" srcdir="${src}" destdir="${build}" includeantruntime="false"/>
 	</target>
 
-	<target name="server" depends="compile" description="packages the server">
+	<target name="compserver" depends="compile" description="packages the server">
 		<copy todir="${dist}/server/config" file="${config}/server.conf"/>
 		<mkdir dir="${dist}/server/${log}"/>
 		<jar destfile="${dist}/server/ContestServer-${version}.jar">
@@ -36,7 +36,7 @@
 		</jar>
 	</target>
 
-	<target name="client" depends="compile" description="packages the client">
+	<target name="compclient" depends="compile" description="packages the client">
 		<copy todir="${dist}/client/config" file="${config}/client.conf"/>
 		<mkdir dir="${dist}/client/libs"/>
 		<copy todir="${dist}/client/libs">
@@ -53,7 +53,15 @@
 		</jar>
 	</target>
 
-	<target name="dist" depends="server,client" description="packages server and client into jars">
+	<target name="dist" depends="compserver,compclient" description="packages server and client into jars">
+	</target>
+	
+	<target name="server" depends="compserver" description="runs the server in the background">
+		<java fork="true" spawn="true" dir="${dist}/server" jar="${dist}/server/ContestServer-${version}.jar"/>
+	</target>
+
+	<target name="client" depends="compclient" description="runs the client in the background">
+		<java fork="true" spawn="true" dir="${dist}/client" jar="${dist}/client/ContestClient-${version}.jar"/>
 	</target>
 
 	<target name="clean" description="removes compiled files">

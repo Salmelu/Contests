@@ -10,6 +10,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -39,6 +40,10 @@ public class Server {
 	private DataHolder dh;
 	/** Instance of PacketProcesser to process the packets */
 	private PacketProcesser processer;
+	/** If set to false, server will stop accepting the requests and will end itself */
+	private boolean running = true;
+	/** Server thread, important for accessing from shutdown hook */
+	private Thread socketThread;
 	
 	/**
 	 * Creates a new server instance
@@ -46,10 +51,28 @@ public class Server {
 	public Server() {
 		dh = new DataHolder();
 		processer = new PacketProcesser(dh);
+		socketThread = Thread.currentThread();
+		// Add a shutdown hook so we don't corrupt the data
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				running = false;
+				Logger.getInstance().logAlways("Received shutdown signal, ending server sockets.");
+				while(socketThread.isAlive()) {
+					try {
+						// Wait for it to finish
+						Thread.sleep(1000);
+					}
+					catch (InterruptedException e) {
+						
+					}
+				}
+			}
+		});
 		if(Config.SAVE_METHOD_FILE) {
 			File f = new File(Config.SAVE_FILE);
 			try {
-				Logger.getInstance().log("Trying to load data from file " + f.getName(), LoggerSeverity.VERBOSE);
+				Logger.getInstance().log("Trying to load data from file " + f.getName(), LoggerSeverity.INFO);
 				dl = new DataLoader(f);
 				dh.replaceContests(dl.load());
 				Logger.getInstance().log("Data successfully loaded from " + f.getName(), LoggerSeverity.INFO);
@@ -112,8 +135,9 @@ public class Server {
 			sckt = new ServerSocket();
 			SocketAddress addr = new InetSocketAddress(Inet4Address.getLocalHost(), Config.INET_PORT);
 			sckt.bind(addr);
+			sckt.setSoTimeout(4000);
 			Logger.getInstance().log("Server socket bound at port " + Config.INET_PORT, LoggerSeverity.INFO);
-			while(true) {
+			while(running) {
 				try {
 					Socket client = sckt.accept();
 					Logger.getInstance().log("Accepted client: " + client.getInetAddress(), LoggerSeverity.VERBOSE);
@@ -149,6 +173,9 @@ public class Server {
 						e1.printStackTrace();
 					}
 				}
+				catch (SocketTimeoutException e) {
+					// Do nothing, just a way to safely handle shutdowns
+				}
 				catch (IOException e) {
 					System.err.println(e.getLocalizedMessage());
 				}
@@ -161,10 +188,17 @@ public class Server {
 			if(sckt != null) {
 				try {
 					sckt.close();
-					Logger.getInstance().log("Server socket closed.", LoggerSeverity.VERBOSE);
+					Logger.getInstance().log("Server socket closed.", LoggerSeverity.INFO);
 				}
 				catch (IOException e) {}
 			}
+		}
+		// Save the data
+		try {
+			dl.save(dh.getAllContests());
+		} 
+		catch (LoaderException e) {
+			Logger.getInstance().log("Couldn't save the data", LoggerSeverity.ERROR);
 		}
 	}
 	
@@ -209,6 +243,6 @@ public class Server {
 		Server s = new Server();
 		Logger.getInstance().logAlways("Server initialized, starting server");
 		s.start();
+		Logger.getInstance().logAlways("Server ended");
 	}
-
 }
