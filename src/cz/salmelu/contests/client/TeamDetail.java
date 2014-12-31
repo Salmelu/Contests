@@ -21,7 +21,7 @@ import cz.salmelu.contests.model.Team;
 import cz.salmelu.contests.model.TeamCategory;
 import cz.salmelu.contests.model.TeamContestant;
 
-final class TeamDetail {
+final class TeamDetail implements Displayable {
 	
 	private Client c = null;
 	private static TeamDetail instance = null;
@@ -130,7 +130,7 @@ final class TeamDetail {
 		return instance;
 	}
 	
-	protected void displayHeader() {
+	private void displayHeader() {
 		int id = currentTeam == null ? 0 : currentTeam.getId();
 		ArrayList<Team> teamList = new ArrayList<>();
 		for(TeamCategory tc : c.current.getTeamCategories().values()) {
@@ -145,7 +145,7 @@ final class TeamDetail {
 		c.mainPanel.setTop(teamBox);
 	}
 	
-	protected void displayTable() {
+	private void displayTable() {
 		if(currentTeam == null) {
 			c.mainPanel.setCenter(noTeam);
 			return;
@@ -158,7 +158,7 @@ final class TeamDetail {
 		c.mainPanel.setCenter(table);
 	}
 	
-	protected void displayAll() {
+	public void displayAll() {
 		if(c.current == null) return;
 		displayHeader();
 		displayTable();

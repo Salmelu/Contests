@@ -1,20 +1,11 @@
 package cz.salmelu.contests.client;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
 import cz.salmelu.contests.model.Discipline;
-import cz.salmelu.contests.net.DisciplinePacket;
-import cz.salmelu.contests.net.Packet;
+import cz.salmelu.contests.net.PacketDiscipline;
+import cz.salmelu.contests.net.PacketOrder;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -26,7 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-final class EditDiscipline {
+final class EditDiscipline implements Displayable {
 	
 	private Client c;
 	private static EditDiscipline instance = null;
@@ -117,7 +108,7 @@ final class EditDiscipline {
 		return instance;
 	}
 	
-	protected void displayHeader() {
+	private void displayHeader() {
 		int id = currentDisc == null ? 0 : currentDisc.getId();
 		discChoice.setItems(FXCollections.observableArrayList(c.current.getDisciplines().values()));
 		for(Discipline d : discChoice.getItems()) {
@@ -137,7 +128,7 @@ final class EditDiscipline {
 		}
 	}
 	
-	protected void displayAll() {
+	public void displayAll() {
 		if(c.current == null) return;
 		displayHeader();
 		c.mainPanel.setCenter(gp);
@@ -152,35 +143,22 @@ final class EditDiscipline {
 				"Do you really want to remove the discipline and all the scores associated with it?")) {
 			return;
 		}
-		DeleteTask dt = new DeleteTask(c.current.getId(), currentDisc.getId());
-		dt.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-			}
-		});
-		
-		Thread t = new Thread(dt);
+		TaskDelete td = new TaskDelete(PacketOrder.DISCIPLINE_DELETE, c.current.getId(), currentDisc.getId());
+		Thread t = new Thread(td);
 		t.run();
 		ActionHandler.get().showSuccessDialog("Discipline deleted", "Discipline " + currentDisc.getName() + " was deleted.");
 	}
 	
 	private void newDiscipline() {
-		DisciplinePacket dp = new DisciplinePacket();
-		dp.name = name.getText();
-		if(dp.name == null || dp.name.equals("")) {
+		PacketDiscipline pd = new PacketDiscipline();
+		pd.name = name.getText();
+		if(pd.name == null || pd.name.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid discipline name selected. Please enter a name for the discipline.");
 			return;
 		}
-		dp.id = 0;
-		dp.conId = c.current.getId();
-		NewEditTask net = new NewEditTask(dp);
-		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-			}
-		});
+		pd.id = 0;
+		pd.conId = c.current.getId();
+		TaskNewEdit<PacketDiscipline> net = new TaskNewEdit<>(PacketOrder.DISCIPLINE_EDIT, pd);		
 		Thread t = new Thread(net);
 		t.run();
 		ActionHandler.get().showSuccessDialog("New discipline added", "You have successfully sent a request for a new discipline.");
@@ -191,104 +169,17 @@ final class EditDiscipline {
 			ActionHandler.get().showErrorDialog("No discipline selected", "You have not chosen a discipline.");
 			return;
 		}
-		DisciplinePacket dp = new DisciplinePacket();
-		dp.name = name.getText();
-		if(dp.name == null || dp.name.equals("")) {
+		PacketDiscipline pd = new PacketDiscipline();
+		pd.name = name.getText();
+		if(pd.name == null || pd.name.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid discipline name selected. Please enter a name for the discipline.");
 			return;
 		}
-		dp.conId = c.current.getId();
-		dp.id = currentDisc.getId();
-		NewEditTask net = new NewEditTask(dp);
-		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				if(net.getValue()) {
-					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-				}
-				else {
-					ActionHandler.get().showConnectionError();
-				}
-			}
-		});
-		
+		pd.conId = c.current.getId();
+		pd.id = currentDisc.getId();
+		TaskNewEdit<PacketDiscipline> net = new TaskNewEdit<>(PacketOrder.DISCIPLINE_EDIT, pd);		
 		Thread t = new Thread(net);
 		t.run();
 		ActionHandler.get().showSuccessDialog("Discipline update requested", "You have successfully sent a request for a discipline update.");
-	}
-	
-	private class NewEditTask extends Task<Boolean> {
-		
-		private DisciplinePacket dp;
-		
-		protected NewEditTask(DisciplinePacket dp) {
-			this.dp = dp;
-		}
-		
-		@Override
-		protected Boolean call() throws Exception {
-			try {
-				InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-		        Socket socket = new Socket();
-		        socket.connect(addr);
-		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.DISCIPLINE_EDIT.toByte());
-		        send.writeObject(dp);
-		        send.flush();
-		        boolean ret = get.readBoolean();
-		        socket.close();
-		        if(!ret) {
-					return false;
-		        }
-		        return true;
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
-	}
-	
-	private class DeleteTask extends Task<Boolean> {
-
-		private int discId;
-		private int conId;
-		
-		protected DeleteTask(int conId, int discId) {
-			this.conId = conId;
-			this.discId = discId;
-		}
-		
-		@Override
-		protected Boolean call() throws Exception {
-			try {
-				InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-		        Socket socket = new Socket();
-		        socket.connect(addr);
-		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.DISCIPLINE_DELETE.toByte());
-		        send.writeInt(conId);
-		        send.writeInt(discId);
-		        send.flush();
-		        boolean ret = get.readBoolean();
-		        socket.close();
-		        if(!ret) {
-					return false;
-		        }
-		        return true;
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
 	}
 }

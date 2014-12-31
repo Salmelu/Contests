@@ -1,21 +1,12 @@
 package cz.salmelu.contests.client;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
 import cz.salmelu.contests.model.ScoreMode;
 import cz.salmelu.contests.model.TeamCategory;
-import cz.salmelu.contests.net.Packet;
-import cz.salmelu.contests.net.TeamCategoryPacket;
+import cz.salmelu.contests.net.PacketOrder;
+import cz.salmelu.contests.net.PacketTeamCategory;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -27,7 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-final class EditTeamCategory {
+final class EditTeamCategory implements Displayable {
 	
 	private Client c;
 	private static EditTeamCategory instance = null;
@@ -125,7 +116,7 @@ final class EditTeamCategory {
 		return instance;
 	}
 	
-	protected void displayHeader() {
+	private void displayHeader() {
 		int id = currentTc == null ? 0 : currentTc.getId();
 		tcChoice.setItems(FXCollections.observableArrayList(c.current.getTeamCategories().values()));
 		for(TeamCategory tc : tcChoice.getItems()) {
@@ -146,7 +137,7 @@ final class EditTeamCategory {
 		}
 	}
 	
-	protected void displayAll() {
+	public void displayAll() {
 		if(c.current == null) return;
 		displayHeader();
 		c.mainPanel.setCenter(gp);
@@ -161,42 +152,28 @@ final class EditTeamCategory {
 				"Do you really want to remove the team category and all the teams in it?")) {
 			return;
 		}
-		DeleteTask dt = new DeleteTask(c.current.getId(), currentTc.getId());
-		dt.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-			}
-		});
-		
-		Thread t = new Thread(dt);
+		TaskDelete td = new TaskDelete(PacketOrder.TCATEGORY_DELETE, c.current.getId(), currentTc.getId());
+		Thread t = new Thread(td);
 		t.run();
 		ActionHandler.get().showSuccessDialog("Team category deleted", "Team category " + currentTc.getName() + " was deleted.");
 	}
 	
 	private void newTeamCategory() {
-		TeamCategoryPacket tcp = new TeamCategoryPacket();
-		tcp.name = name.getText();
-		tcp.sm = sm.getSelectionModel().getSelectedItem();
-		if(tcp.name == null || tcp.name.equals("")) {
+		PacketTeamCategory ptc = new PacketTeamCategory();
+		ptc.name = name.getText();
+		ptc.sm = sm.getSelectionModel().getSelectedItem();
+		if(ptc.name == null || ptc.name.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid team category name selected. Please enter a name for the team category.");
 			return;
 		}
-		if(tcp.sm == null) {
+		if(ptc.sm == null) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid score mode selected. Please enter a score mode for the team category.");
 			return;
 		}
-		tcp.id = 0;
-		tcp.conId = c.current.getId();
-		NewEditTask net = new NewEditTask(tcp);
-		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-			}
-		});
-		
-		Thread t = new Thread(net);
+		ptc.id = 0;
+		ptc.conId = c.current.getId();
+		TaskNewEdit<PacketTeamCategory> tne = new TaskNewEdit<>(PacketOrder.TCATEGORY_EDIT, ptc);
+		Thread t = new Thread(tne);
 		t.run();
 		ActionHandler.get().showSuccessDialog("New team category added", "You have successfully sent a request for a new team category.");
 	}
@@ -206,109 +183,22 @@ final class EditTeamCategory {
 			ActionHandler.get().showErrorDialog("No team category selected", "You have not chosen a team category.");
 			return;
 		}
-		TeamCategoryPacket tcp = new TeamCategoryPacket();
-		tcp.name = name.getText();
-		tcp.sm = sm.getSelectionModel().getSelectedItem();
-		if(tcp.name == null || tcp.name.equals("")) {
+		PacketTeamCategory ptc = new PacketTeamCategory();
+		ptc.name = name.getText();
+		ptc.sm = sm.getSelectionModel().getSelectedItem();
+		if(ptc.name == null || ptc.name.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid team category name selected. Please enter a name for the team category.");
 			return;
 		}
-		if(tcp.sm == null) {
+		if(ptc.sm == null) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid score mode selected. Please enter a score mode for the team category.");
 			return;
 		}
-		tcp.conId = c.current.getId();
-		tcp.id = currentTc.getId();
-		NewEditTask net = new NewEditTask(tcp);
-		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				if(net.getValue()) {
-					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-				}
-				else {
-					ActionHandler.get().showConnectionError();
-				}
-			}
-		});
-		
-		Thread t = new Thread(net);
+		ptc.conId = c.current.getId();
+		ptc.id = currentTc.getId();
+		TaskNewEdit<PacketTeamCategory> tne = new TaskNewEdit<>(PacketOrder.TCATEGORY_EDIT, ptc);
+		Thread t = new Thread(tne);
 		t.run();
 		ActionHandler.get().showSuccessDialog("Team category update requested", "You have successfully sent a request for a team category update.");
-	}
-	
-	private class NewEditTask extends Task<Boolean> {
-		
-		private TeamCategoryPacket tcp;
-		
-		protected NewEditTask(TeamCategoryPacket tcp) {
-			this.tcp = tcp;
-		}
-		
-		@Override
-		protected Boolean call() throws Exception {
-			try {
-				InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-		        Socket socket = new Socket();
-		        socket.connect(addr);
-		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.TCATEGORY_EDIT.toByte());
-		        send.writeObject(tcp);
-		        send.flush();
-		        boolean ret = get.readBoolean();
-		        socket.close();
-		        if(!ret) {
-					return false;
-		        }
-		        return true;
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
-	}
-	
-	private class DeleteTask extends Task<Boolean> {
-
-		private int tcId;
-		private int conId;
-		
-		protected DeleteTask(int conId, int tcId) {
-			this.conId = conId;
-			this.tcId = tcId;
-		}
-		
-		@Override
-		protected Boolean call() throws Exception {
-			try {
-				InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-		        Socket socket = new Socket();
-		        socket.connect(addr);
-		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.TCATEGORY_DELETE.toByte());
-		        send.writeInt(conId);
-		        send.writeInt(tcId);
-		        send.flush();
-		        boolean ret = get.readBoolean();
-		        socket.close();
-		        if(!ret) {
-					return false;
-		        }
-		        return true;
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
 	}
 }

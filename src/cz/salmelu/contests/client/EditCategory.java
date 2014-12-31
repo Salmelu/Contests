@@ -1,23 +1,14 @@
 package cz.salmelu.contests.client;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
 import org.controlsfx.control.CheckComboBox;
 
 import cz.salmelu.contests.model.Discipline;
 import cz.salmelu.contests.model.Category;
-import cz.salmelu.contests.net.Packet;
-import cz.salmelu.contests.net.CategoryPacket;
+import cz.salmelu.contests.net.PacketOrder;
+import cz.salmelu.contests.net.PacketCategory;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -29,7 +20,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-final class EditCategory {
+final class EditCategory implements Displayable {
 	
 	private Client c;
 	private static EditCategory instance = null;
@@ -122,7 +113,7 @@ final class EditCategory {
 		return instance;
 	}
 	
-	protected void displayHeader() {
+	private void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
 		catChoice.setItems(FXCollections.observableArrayList(c.current.getCategories().values()));
 		for(Category cat : catChoice.getItems()) {
@@ -156,7 +147,7 @@ final class EditCategory {
 		gp.add(discChoice, 1, 1);
 	}
 	
-	protected void displayAll() {
+	public void displayAll() {
 		if(c.current == null) return;
 		updateItems();
 		displayHeader();
@@ -172,40 +163,26 @@ final class EditCategory {
 				"Do you really want to remove the category and all the contestants in it?")) {
 			return;
 		}
-		DeleteTask dt = new DeleteTask(c.current.getId(), currentCat.getId());
-		dt.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-			}
-		});
-		
-		Thread t = new Thread(dt);
+		TaskDelete td = new TaskDelete(PacketOrder.CATEGORY_DELETE, c.current.getId(), currentCat.getId());
+		Thread t = new Thread(td);
 		t.run();
 		ActionHandler.get().showSuccessDialog("Category deleted", "Category " + currentCat.getName() + " was deleted.");
 	}
 	
 	private void newCategory() {
-		CategoryPacket cp = new CategoryPacket();
-		cp.name = name.getText();
+		PacketCategory pc = new PacketCategory();
+		pc.name = name.getText();
 		for(Discipline d : discChoice.getCheckModel().getCheckedItems()) {
-			cp.disciplines.add(d.getId());
+			pc.disciplines.add(d.getId());
 		}
-		if(cp.name == null || cp.name.equals("")) {
+		if(pc.name == null || pc.name.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid category name selected. Please enter a name for the category.");
 			return;
 		}
-		cp.id = 0;
-		cp.conId = c.current.getId();
-		NewEditTask net = new NewEditTask(cp);
-		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-			}
-		});
-		
-		Thread t = new Thread(net);
+		pc.id = 0;
+		pc.conId = c.current.getId();
+		TaskNewEdit<PacketCategory> tne = new TaskNewEdit<>(PacketOrder.CATEGORY_EDIT, pc);
+		Thread t = new Thread(tne);
 		t.run();
 		ActionHandler.get().showSuccessDialog("New category added", "You have successfully sent a request for a new category.");
 	}
@@ -215,107 +192,20 @@ final class EditCategory {
 			ActionHandler.get().showErrorDialog("No category selected", "You have not chosen a category.");
 			return;
 		}
-		CategoryPacket cp = new CategoryPacket();
-		cp.name = name.getText();
+		PacketCategory pc = new PacketCategory();
+		pc.name = name.getText();
 		for(Discipline d : discChoice.getCheckModel().getCheckedItems()) {
-			cp.disciplines.add(d.getId());
+			pc.disciplines.add(d.getId());
 		}
-		if(cp.name == null || cp.name.equals("")) {
+		if(pc.name == null || pc.name.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid category name selected. Please enter a name for the category.");
 			return;
 		}
-		cp.id = currentCat.getId();
-		cp.conId = c.current.getId();
-		NewEditTask net = new NewEditTask(cp);
-		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				if(net.getValue()) {
-					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-				}
-				else {
-					ActionHandler.get().showConnectionError();
-				}
-			}
-		});
-		
-		Thread t = new Thread(net);
+		pc.id = currentCat.getId();
+		pc.conId = c.current.getId();
+		TaskNewEdit<PacketCategory> tne = new TaskNewEdit<>(PacketOrder.CATEGORY_EDIT, pc);
+		Thread t = new Thread(tne);
 		t.run();
 		ActionHandler.get().showSuccessDialog("Category update requested", "You have successfully sent a request for a category update.");
-	}
-	
-	private class NewEditTask extends Task<Boolean> {
-		
-		private CategoryPacket cp;
-		
-		protected NewEditTask(CategoryPacket cp) {
-			this.cp = cp;
-		}
-		
-		@Override
-		protected Boolean call() throws Exception {
-			try {
-				InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-		        Socket socket = new Socket();
-		        socket.connect(addr);
-		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.CATEGORY_EDIT.toByte());
-		        send.writeObject(cp);
-		        send.flush();
-		        boolean ret = get.readBoolean();
-		        socket.close();
-		        if(!ret) {
-					return false;
-		        }
-		        return true;
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
-	}
-	
-	private class DeleteTask extends Task<Boolean> {
-
-		private int catId;
-		private int conId;
-		
-		protected DeleteTask(int conId, int catId) {
-			this.conId = conId;
-			this.catId = catId;
-		}
-		
-		@Override
-		protected Boolean call() throws Exception {
-			try {
-				InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-		        Socket socket = new Socket();
-		        socket.connect(addr);
-		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.CATEGORY_DELETE.toByte());
-		        send.writeInt(conId);
-		        send.writeInt(catId);
-		        send.flush();
-		        boolean ret = get.readBoolean();
-		        socket.close();
-		        if(!ret) {
-					return false;
-		        }
-		        return true;
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
 	}
 }

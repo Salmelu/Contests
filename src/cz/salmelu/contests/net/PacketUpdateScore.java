@@ -7,7 +7,7 @@ import java.io.Serializable;
  * All the member fields are public, as this class should only hold some data
  * @author salmelu
  */
-public class UpdateScorePacket implements Serializable {
+public class PacketUpdateScore implements Serializable {
 	 
 	/** Serialization UID */
 	private static final long serialVersionUID = 7503268992906741226L;
@@ -27,7 +27,7 @@ public class UpdateScorePacket implements Serializable {
 	 * @param conId contestant id
 	 * @param score new score
 	 */
-	public UpdateScorePacket(int catId, int discId, int conId, double score) {
+	public PacketUpdateScore(int catId, int discId, int conId, double score) {
 		this.catId = catId;
 		this.discId = discId;
 		this.conId = conId;

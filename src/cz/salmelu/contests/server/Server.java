@@ -22,7 +22,7 @@ import cz.salmelu.contests.model.ScoreMode;
 import cz.salmelu.contests.model.Team;
 import cz.salmelu.contests.model.TeamCategory;
 import cz.salmelu.contests.model.TeamContestant;
-import cz.salmelu.contests.net.Packet;
+import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.ServerError;
 import cz.salmelu.contests.util.Logger;
 import cz.salmelu.contests.util.LoggerSeverity;
@@ -122,12 +122,12 @@ public class Server {
 					int packetCode = input.read();
 					Logger.getInstance().log("Received packet with id " + (byte) packetCode, LoggerSeverity.VERBOSE);
 					if(packetCode != -1) {
-						Packet p = Packet.getPacket((byte) packetCode);
+						PacketOrder p = PacketOrder.getPacket((byte) packetCode);
 						if(processer.processPacket(p, input, output)) {
-							Logger.getInstance().log("Packet " + (byte) packetCode + " processed successfully", LoggerSeverity.VERBOSE);
+							Logger.getInstance().log("PacketOrder " + (byte) packetCode + " processed successfully", LoggerSeverity.VERBOSE);
 						}
 						else {
-							Logger.getInstance().log("Packet " + (byte) packetCode + " received error", LoggerSeverity.VERBOSE);
+							Logger.getInstance().log("PacketOrder " + (byte) packetCode + " received error", LoggerSeverity.VERBOSE);
 						}
 					}
 					else {

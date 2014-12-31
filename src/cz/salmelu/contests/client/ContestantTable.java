@@ -19,7 +19,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 
-final class ContestantTable {
+final class ContestantTable implements Displayable  {
 
 	private Client c = null;
 	private static ContestantTable instance = null;
@@ -130,7 +130,7 @@ final class ContestantTable {
 		return instance;
 	}
 	
-	protected void displayHeader() {
+	private void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
 		catChoice.setItems(FXCollections.observableArrayList(c.current.getCategories().values()));
 		for(Category cat : catChoice.getItems()) {
@@ -141,7 +141,7 @@ final class ContestantTable {
 		c.mainPanel.setTop(catBox);
 	}
 	
-	protected void displayTable() {
+	private void displayTable() {
 		if(currentCat == null) {
 			c.mainPanel.setCenter(noCategory);
 			return;
@@ -155,7 +155,7 @@ final class ContestantTable {
 		c.mainPanel.setCenter(table);
 	}
 	
-	protected void displayAll() {
+	public void displayAll() {
 		if(c.current == null) return;
 		displayHeader();
 		displayTable();

@@ -12,7 +12,7 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 
-final class ContestTable {
+final class ContestTable implements Displayable  {
 	
 	private Client c;
 	private static ContestTable instance = null;
@@ -34,7 +34,7 @@ final class ContestTable {
 		return instance;
 	}
 	
-	protected void display() {
+	private void display() {
 		gp.getChildren().clear();
 		
 		Label headName = new Label("Contest name");
@@ -75,5 +75,9 @@ final class ContestTable {
 			}
 		});
 		c.mainPanel.setCenter(gp);
+	}
+	
+	public void displayAll() {
+		display();
 	}
 }

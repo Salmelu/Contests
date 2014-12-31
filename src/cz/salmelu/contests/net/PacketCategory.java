@@ -8,7 +8,7 @@ import java.util.List;
  * Used for sending category field updates to server 
  * @author salmelu
  */
-public class CategoryPacket implements Serializable {
+public class PacketCategory implements Serializable, Packet {
 
 	private static final long serialVersionUID = 4650829858344324359L;
 	/** Parent contest id; -1 is invalid */
@@ -23,7 +23,7 @@ public class CategoryPacket implements Serializable {
 	/**
 	 * An empty constructor, does nothing
 	 */
-	public CategoryPacket() {
+	public PacketCategory() {
 		disciplines = new ArrayList<>();
 	}
 }

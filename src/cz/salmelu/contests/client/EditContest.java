@@ -1,20 +1,11 @@
 package cz.salmelu.contests.client;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
 import cz.salmelu.contests.model.ContestInfo;
-import cz.salmelu.contests.net.ContestPacket;
-import cz.salmelu.contests.net.Packet;
+import cz.salmelu.contests.net.PacketContest;
+import cz.salmelu.contests.net.PacketOrder;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -26,7 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-final class EditContest {
+final class EditContest implements Displayable {
 	
 	private Client c;
 	private static EditContest instance = null;
@@ -117,7 +108,7 @@ final class EditContest {
 		return instance;
 	}
 	
-	protected void displayHeader() {
+	private void displayHeader() {
 		int id = currentContest == null ? 0 : currentContest.getId();
 		contestChoice.setItems(FXCollections.observableArrayList(c.contests.values()));
 		for(ContestInfo ci : contestChoice.getItems()) {
@@ -137,7 +128,7 @@ final class EditContest {
 		}
 	}
 	
-	protected void displayAll() {
+	public void displayAll() {
 		displayHeader();
 		c.mainPanel.setCenter(gp);
 	}
@@ -151,36 +142,22 @@ final class EditContest {
 				"Do you really want to remove the contest and all the related data?")) {
 			return;
 		}
-		DeleteTask dt = new DeleteTask(currentContest.getId());
-		dt.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-			}
-		});
-		
-		Thread t = new Thread(dt);
+		TaskDelete td = new TaskDelete(PacketOrder.CONTEST_DELETE, currentContest.getId());
+		Thread t = new Thread(td);
 		t.run();
 		ActionHandler.get().showSuccessDialog("Contest deleted", "Contest " + currentContest.getName() + " was deleted.");
 	}
 	
 	private void newContest() {
-		ContestPacket cp = new ContestPacket();
-		cp.name = name.getText();
-		if(cp.name == null || cp.name.equals("")) {
+		PacketContest pc = new PacketContest();
+		pc.name = name.getText();
+		if(pc.name == null || pc.name.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid contest name selected. Please enter a name for the contest.");
 			return;
 		}
-		cp.id = 0;
-		NewEditTask net = new NewEditTask(cp);
-		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-			}
-		});
-		
-		Thread t = new Thread(net);
+		pc.id = 0;
+		TaskNewEdit<PacketContest> tne = new TaskNewEdit<>(PacketOrder.CONTEST_EDIT, pc);
+		Thread t = new Thread(tne);
 		t.run();
 		ActionHandler.get().showSuccessDialog("New contest added", "You have successfully sent a request for a new contest.");
 	}
@@ -190,100 +167,16 @@ final class EditContest {
 			ActionHandler.get().showErrorDialog("No contest selected", "You have not chosen a contest.");
 			return;
 		}
-		ContestPacket cp = new ContestPacket();
-		cp.name = name.getText();
-		if(cp.name == null || cp.name.equals("")) {
+		PacketContest pc = new PacketContest();
+		pc.name = name.getText();
+		if(pc.name == null || pc.name.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid contest name selected. Please enter a name for the contest.");
 			return;
 		}
-		cp.id = currentContest.getId();
-		NewEditTask net = new NewEditTask(cp);
-		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				if(net.getValue()) {
-					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-				}
-				else {
-					ActionHandler.get().showConnectionError();
-				}
-			}
-		});
-		
-		Thread t = new Thread(net);
+		pc.id = currentContest.getId();
+		TaskNewEdit<PacketContest> tne = new TaskNewEdit<>(PacketOrder.CONTEST_EDIT, pc);
+		Thread t = new Thread(tne);
 		t.run();
 		ActionHandler.get().showSuccessDialog("Contest update requested", "You have successfully sent a request for a contest update.");
-	}
-	
-	private class NewEditTask extends Task<Boolean> {
-		
-		private ContestPacket cp;
-		
-		protected NewEditTask(ContestPacket cp) {
-			this.cp = cp;
-		}
-		
-		@Override
-		protected Boolean call() throws Exception {
-			try {
-				InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-		        Socket socket = new Socket();
-		        socket.connect(addr);
-		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.CONTEST_EDIT.toByte());
-		        send.writeObject(cp);
-		        send.flush();
-		        boolean ret = get.readBoolean();
-		        socket.close();
-		        if(!ret) {
-					return false;
-		        }
-		        return true;
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
-	}
-	
-	private class DeleteTask extends Task<Boolean> {
-		
-		private int conId;
-		
-		protected DeleteTask(int conId) {
-			this.conId = conId;
-		}
-		
-		@Override
-		protected Boolean call() throws Exception {
-			try {
-				InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-		        Socket socket = new Socket();
-		        socket.connect(addr);
-		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.CONTEST_DELETE.toByte());
-		        send.writeInt(conId);
-		        send.flush();
-		        boolean ret = get.readBoolean();
-		        socket.close();
-		        if(!ret) {
-					return false;
-		        }
-		        return true;
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
 	}
 }

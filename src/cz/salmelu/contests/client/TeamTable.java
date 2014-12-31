@@ -18,7 +18,7 @@ import javafx.util.Callback;
 import cz.salmelu.contests.model.Team;
 import cz.salmelu.contests.model.TeamCategory;
 
-final class TeamTable {
+final class TeamTable implements Displayable {
 	
 	private Client c = null;
 	private static TeamTable instance = null;
@@ -126,7 +126,7 @@ final class TeamTable {
 		return instance;
 	}
 	
-	protected void displayHeader() {
+	private void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
 		catChoice.setItems(FXCollections.observableArrayList(c.current.getTeamCategories().values()));
 		for(TeamCategory tc : catChoice.getItems()) {
@@ -137,7 +137,7 @@ final class TeamTable {
 		c.mainPanel.setTop(catBox);
 	}
 	
-	protected void displayTable() {
+	private void displayTable() {
 		if(currentCat == null) {
 			c.mainPanel.setCenter(noCategory);
 			return;
@@ -151,7 +151,7 @@ final class TeamTable {
 		c.mainPanel.setCenter(table);
 	}
 	
-	protected void displayAll() {
+	public void displayAll() {
 		if(c.current == null) return;
 		displayHeader();
 		displayTable();

@@ -1,11 +1,5 @@
 package cz.salmelu.contests.client;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import cz.salmelu.contests.model.Contestant;
@@ -13,13 +7,11 @@ import cz.salmelu.contests.model.Category;
 import cz.salmelu.contests.model.Team;
 import cz.salmelu.contests.model.TeamCategory;
 import cz.salmelu.contests.model.TeamContestant;
-import cz.salmelu.contests.net.Packet;
-import cz.salmelu.contests.net.ContestantPacket;
+import cz.salmelu.contests.net.PacketOrder;
+import cz.salmelu.contests.net.PacketContestant;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -31,7 +23,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
-final class EditContestant {
+final class EditContestant implements Displayable {
 	
 	private Client c;
 	private static EditContestant instance = null;
@@ -171,7 +163,7 @@ final class EditContestant {
 		return instance;
 	}
 	
-	protected void displayHeader() {
+	private void displayHeader() {
 		boolean selected = false;
 		int id = currentCat == null ? 0 : currentCat.getId();
 		catChoice.setItems(FXCollections.observableArrayList(c.current.getCategories().values()));
@@ -233,7 +225,7 @@ final class EditContestant {
 		}
 	}
 	
-	protected void displayAll() {
+	public void displayAll() {
 		if(c.current == null) return;
 		displayHeader();
 		fillFields();
@@ -250,25 +242,19 @@ final class EditContestant {
 				"Do you really want to remove the contestant?")) {
 			return;
 		}
-		DeleteTask dt = new DeleteTask(c.current.getId(), currentCat.getId(), currentCs.getId());
-		dt.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-			}
-		});
-		
-		Thread t = new Thread(dt);
+		TaskDelete td = new TaskDelete(PacketOrder.CONTESTANT_DELETE, c.current.getId(), 
+				currentCat.getId(), currentCs.getId());		
+		Thread t = new Thread(td);
 		t.run();
 		ActionHandler.get().showSuccessDialog("Contestant deleted", "Contestant " + currentCs.toString() + " was deleted.");
 	}
 	
 	private void newContestant() {
-		ContestantPacket cp = new ContestantPacket();
-		cp.fName = fName.getText();
-		cp.lName = lName.getText();
+		PacketContestant pc = new PacketContestant();
+		pc.fName = fName.getText();
+		pc.lName = lName.getText();
 		try {
-			cp.bonus = Double.parseDouble(bonus.getText());
+			pc.bonus = Double.parseDouble(bonus.getText());
 		}
 		catch(NumberFormatException e) {
 			ActionHandler.get().showErrorDialog("Invalid value", "Invalid numeric value in bonus field");
@@ -278,33 +264,26 @@ final class EditContestant {
 			ActionHandler.get().showErrorDialog("Invalid value", "No category is selected.");
 			return;
 		}
-		cp.catId = cat.getSelectionModel().getSelectedItem().getId();
-		if(cp.fName == null || cp.fName.equals("")) {
+		pc.catId = cat.getSelectionModel().getSelectedItem().getId();
+		if(pc.fName == null || pc.fName.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid first name selected. Please enter a valid name.");
 			return;
 		}
-		if(cp.lName == null || cp.lName.equals("")) {
+		if(pc.lName == null || pc.lName.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid last name selected. Please enter a valid name.");
 			return;
 		}
 		if(team.getSelectionModel().getSelectedItem().equals(dummy)) {
-			cp.teamId = 0;
+			pc.teamId = 0;
 		}
 		else {
-			cp.teamId = team.getSelectionModel().getSelectedItem().getId();
-			cp.tcId = team.getSelectionModel().getSelectedItem().getCategory().getId();
+			pc.teamId = team.getSelectionModel().getSelectedItem().getId();
+			pc.tcId = team.getSelectionModel().getSelectedItem().getCategory().getId();
 		}
-		cp.id = 0;
-		cp.conId = c.current.getId();
-		NewEditTask net = new NewEditTask(cp);
-		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-			}
-		});
-		
-		Thread t = new Thread(net);
+		pc.id = 0;
+		pc.conId = c.current.getId();
+		TaskNewEdit<PacketContestant> tne = new TaskNewEdit<>(PacketOrder.CONTESTANT_EDIT, pc);
+		Thread t = new Thread(tne);
 		t.run();
 		ActionHandler.get().showSuccessDialog("New contestant added", "You have successfully sent a request for a new contestant.");
 	}
@@ -314,11 +293,11 @@ final class EditContestant {
 			ActionHandler.get().showErrorDialog("No category or contestant selected", "You have not chosen a contestant and a category.");
 			return;
 		}
-		ContestantPacket cp = new ContestantPacket();
-		cp.fName = fName.getText();
-		cp.lName = lName.getText();
+		PacketContestant pc = new PacketContestant();
+		pc.fName = fName.getText();
+		pc.lName = lName.getText();
 		try {
-			cp.bonus = Double.parseDouble(bonus.getText());
+			pc.bonus = Double.parseDouble(bonus.getText());
 		}
 		catch(NumberFormatException e) {
 			ActionHandler.get().showErrorDialog("Invalid value", "Invalid numeric value in bonus field");
@@ -328,118 +307,28 @@ final class EditContestant {
 			ActionHandler.get().showErrorDialog("Invalid value", "No category is selected.");
 			return;
 		}
-		cp.catId = cat.getSelectionModel().getSelectedItem().getId();
-		cp.oldCatId = currentCs.getCategory().getId();
-		if(cp.fName == null || cp.fName.equals("")) {
+		pc.catId = cat.getSelectionModel().getSelectedItem().getId();
+		pc.oldCatId = currentCs.getCategory().getId();
+		if(pc.fName == null || pc.fName.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid first name selected. Please enter a valid name.");
 			return;
 		}
-		if(cp.lName == null || cp.lName.equals("")) {
+		if(pc.lName == null || pc.lName.equals("")) {
 			ActionHandler.get().showErrorDialog("Field error", "An invalid last name selected. Please enter a valid name.");
 			return;
 		}
 		if(team.getSelectionModel().getSelectedItem().equals(dummy)) {
-			cp.teamId = 0;
+			pc.teamId = 0;
 		}
 		else {
-			cp.teamId = team.getSelectionModel().getSelectedItem().getId();
-			cp.tcId = team.getSelectionModel().getSelectedItem().getCategory().getId();
+			pc.teamId = team.getSelectionModel().getSelectedItem().getId();
+			pc.tcId = team.getSelectionModel().getSelectedItem().getCategory().getId();
 		}
-		cp.id = currentCs.getId();
-		cp.conId = c.current.getId();
-		NewEditTask net = new NewEditTask(cp);
-		net.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				if(net.getValue()) {
-					c.handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-				}
-				else {
-					ActionHandler.get().showConnectionError();
-				}
-			}
-		});
-		
-		Thread t = new Thread(net);
+		pc.id = currentCs.getId();
+		pc.conId = c.current.getId();
+		TaskNewEdit<PacketContestant> tne = new TaskNewEdit<>(PacketOrder.CONTESTANT_EDIT, pc);
+		Thread t = new Thread(tne);
 		t.run();
 		ActionHandler.get().showSuccessDialog("Contestant update requested", "You have successfully sent a request for a contestant update.");
-	}
-	
-	private class NewEditTask extends Task<Boolean> {
-		
-		private ContestantPacket cp;
-		
-		protected NewEditTask(ContestantPacket cp) {
-			this.cp = cp;
-		}
-		
-		@Override
-		protected Boolean call() throws Exception {
-			try {
-				InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-		        Socket socket = new Socket();
-		        socket.connect(addr);
-		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.CONTESTANT_EDIT.toByte());
-		        send.writeObject(cp);
-		        send.flush();
-		        boolean ret = get.readBoolean();
-		        socket.close();
-		        if(!ret) {
-					return false;
-		        }
-		        return true;
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
-	}
-	
-	private class DeleteTask extends Task<Boolean> {
-
-		private int id;
-		private int catId;
-		private int conId;
-		
-		protected DeleteTask(int conId, int catId, int id) {
-			this.conId = conId;
-			this.catId = catId;
-			this.id = id;
-		}
-		
-		@Override
-		protected Boolean call() throws Exception {
-			try {
-				InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-		        Socket socket = new Socket();
-		        socket.connect(addr);
-		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.CONTESTANT_DELETE.toByte());
-		        send.writeInt(conId);
-		        send.writeInt(catId);
-		        send.writeInt(id);
-		        send.flush();
-		        boolean ret = get.readBoolean();
-		        socket.close();
-		        if(!ret) {
-					return false;
-		        }
-		        return true;
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
-		}
 	}
 }

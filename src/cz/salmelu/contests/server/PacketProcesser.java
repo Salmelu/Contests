@@ -37,7 +37,7 @@ class PacketProcesser {
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
 	 */
-	protected boolean processPacket(Packet p, ObjectInputStream in, ObjectOutputStream out) {
+	protected boolean processPacket(PacketOrder p, ObjectInputStream in, ObjectOutputStream out) {
 		if(p == null) {
 			writeServerError(out, ServerError.InvalidPacket);
 			return false;
@@ -176,13 +176,13 @@ class PacketProcesser {
 	 * @throws IOException if the streams are corrupted
 	 */
 	private boolean editAddContest(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
-		ContestPacket cp = (ContestPacket) in.readObject();
-		if(cp.id == -1 || cp.name == null || cp.name == "") {
+		PacketContest packet = (PacketContest) in.readObject();
+		if(packet.id == -1 || packet.name == null || packet.name == "") {
 			writeServerError(out, ServerError.InvalidInput);
 			return false;
 		}
-		if(cp.id == 0) {
-			Contest cs = new Contest(cp.name);
+		if(packet.id == 0) {
+			Contest cs = new Contest(packet.name);
 			if(!dh.lock()) {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
@@ -197,12 +197,12 @@ class PacketProcesser {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
 			}
-			if(dh.getContest(cp.id) == null) {
+			if(dh.getContest(packet.id) == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
 			}
-			Contest cs = dh.getContest(cp.id);
-			cs.setName(cp.name);
+			Contest cs = dh.getContest(packet.id);
+			cs.setName(packet.name);
 			dh.unlock();
 			out.writeBoolean(true);
 			return true;
@@ -241,18 +241,18 @@ class PacketProcesser {
 	 * @throws IOException if the streams are corrupted
 	 */
 	private boolean editAddDiscipline(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
-		DisciplinePacket dp = (DisciplinePacket) in.readObject();
-		if(dp.id == -1 || dp.name == null || dp.name == "" || dp.conId == -1) {
+		PacketDiscipline packet = (PacketDiscipline) in.readObject();
+		if(packet.id == -1 || packet.name == null || packet.name == "" || packet.conId == -1) {
 			writeServerError(out, ServerError.InvalidInput);
 			return false;
 		}
-		if(dp.id == 0) {
-			Discipline d = new Discipline(dp.name);
+		if(packet.id == 0) {
+			Discipline d = new Discipline(packet.name);
 			if(!dh.lock()) {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
 			}
-			if(!dh.addDiscipline(dp.conId, d)) {
+			if(!dh.addDiscipline(packet.conId, d)) {
 				writeServerError(out, ServerError.InvalidDataState);
 				dh.unlock();
 				return false;
@@ -266,17 +266,17 @@ class PacketProcesser {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
 			}
-			if(dh.getContest(dp.conId) == null) {
+			if(dh.getContest(packet.conId) == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
 			}
-			Contest cs = dh.getContest(dp.conId);
-			Discipline d = cs.getDiscipline(dp.id);
+			Contest cs = dh.getContest(packet.conId);
+			Discipline d = cs.getDiscipline(packet.id);
 			if(d == null) {
 				writeServerError(out, ServerError.InvalidDataState);
 				return false;
 			}
-			d.setName(dp.name);
+			d.setName(packet.name);
 			dh.unlock();
 			out.writeBoolean(true);
 			return true;
@@ -316,18 +316,18 @@ class PacketProcesser {
 	 * @throws IOException if the streams are corrupted
 	 */
 	private boolean editAddTeamCategory(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
-		TeamCategoryPacket tcp = (TeamCategoryPacket) in.readObject();
-		if(tcp.id == -1 || tcp.name == null || tcp.name == "" || tcp.conId == -1 || tcp.sm == null) {
+		PacketTeamCategory packet = (PacketTeamCategory) in.readObject();
+		if(packet.id == -1 || packet.name == null || packet.name == "" || packet.conId == -1 || packet.sm == null) {
 			writeServerError(out, ServerError.InvalidInput);
 			return false;
 		}
-		if(tcp.id == 0) {
-			TeamCategory tc = new TeamCategory(tcp.name, tcp.sm);
+		if(packet.id == 0) {
+			TeamCategory tc = new TeamCategory(packet.name, packet.sm);
 			if(!dh.lock()) {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
 			}
-			if(!dh.addTeamCategory(tcp.conId, tc)) {
+			if(!dh.addTeamCategory(packet.conId, tc)) {
 				writeServerError(out, ServerError.InvalidDataState);
 				dh.unlock();
 				return false;
@@ -341,18 +341,18 @@ class PacketProcesser {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
 			}
-			if(dh.getContest(tcp.conId) == null) {
+			if(dh.getContest(packet.conId) == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
 			}
-			Contest cs = dh.getContest(tcp.conId);
-			TeamCategory tc = cs.getTeamCategory(tcp.id);
+			Contest cs = dh.getContest(packet.conId);
+			TeamCategory tc = cs.getTeamCategory(packet.id);
 			if(tc == null) {
 				writeServerError(out, ServerError.InvalidDataState);
 				return false;
 			}
-			tc.setName(tcp.name);
-			tc.setScoreMode(tcp.sm);
+			tc.setName(packet.name);
+			tc.setScoreMode(packet.sm);
 			dh.unlock();
 			out.writeBoolean(true);
 			return true;
@@ -393,23 +393,23 @@ class PacketProcesser {
 	 * @throws IOException if the streams are corrupted
 	 */
 	private boolean editAddCategory(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
-		CategoryPacket cp = (CategoryPacket) in.readObject();
-		if(cp.id == -1 || cp.name == null || cp.name == "" || cp.conId == -1 || cp.disciplines == null) {
+		PacketCategory packet = (PacketCategory) in.readObject();
+		if(packet.id == -1 || packet.name == null || packet.name == "" || packet.conId == -1 || packet.disciplines == null) {
 			writeServerError(out, ServerError.InvalidInput);
 			return false;
 		}
-		if(cp.id == 0) {
-			Category cat = new Category(cp.name);
+		if(packet.id == 0) {
+			Category cat = new Category(packet.name);
 			if(!dh.lock()) {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
 			}
-			if(dh.getContest(cp.conId) == null) {
+			if(dh.getContest(packet.conId) == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
 			}
-			Contest cs = dh.getContest(cp.conId);
-			for(int discId : cp.disciplines) {
+			Contest cs = dh.getContest(packet.conId);
+			for(int discId : packet.disciplines) {
 				if(!cs.hasDiscipline(discId)) {
 					writeServerError(out, ServerError.InvalidDataState);
 					dh.unlock();
@@ -417,7 +417,7 @@ class PacketProcesser {
 				}
 				cat.addDiscipline(cs.getDiscipline(discId));
 			}
-			if(!dh.addCategory(cp.conId, cat)) {
+			if(!dh.addCategory(packet.conId, cat)) {
 				writeServerError(out, ServerError.InvalidDataState);
 				dh.unlock();
 				return false;
@@ -431,19 +431,19 @@ class PacketProcesser {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
 			}
-			if(dh.getContest(cp.conId) == null) {
+			if(dh.getContest(packet.conId) == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
 			}
-			Contest cs = dh.getContest(cp.conId);
-			Category cat = cs.getCategory(cp.id);
+			Contest cs = dh.getContest(packet.conId);
+			Category cat = cs.getCategory(packet.id);
 			if(cat == null) {
 				writeServerError(out, ServerError.InvalidDataState);
 				return false;
 			}
-			cat.setName(cp.name);
+			cat.setName(packet.name);
 			ArrayList<Discipline> toAdd = new ArrayList<>();
-			for(int discId : cp.disciplines) {
+			for(int discId : packet.disciplines) {
 				if(!cs.hasDiscipline(discId)) {
 					writeServerError(out, ServerError.InvalidDataState);
 					dh.unlock();
@@ -457,7 +457,7 @@ class PacketProcesser {
 			// A safe remove method
 			for(Iterator<Discipline> itd = cat.getDisciplines().iterator(); itd.hasNext(); ) {
 				Discipline d = itd.next();
-				if(!cp.disciplines.contains(d.getId())) {
+				if(!packet.disciplines.contains(d.getId())) {
 					itd.remove();
 				}
 			}
@@ -501,28 +501,28 @@ class PacketProcesser {
 	 * @throws IOException if the streams are corrupted
 	 */
 	private boolean editAddTeam(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
-		TeamPacket tp = (TeamPacket) in.readObject();
-		if(tp.id == -1 || tp.name == null || tp.name == "" || tp.conId == -1 || tp.tcId == -1) {
+		PacketTeam packet = (PacketTeam) in.readObject();
+		if(packet.id == -1 || packet.name == null || packet.name == "" || packet.conId == -1 || packet.tcId == -1) {
 			writeServerError(out, ServerError.InvalidInput);
 			return false;
 		}
-		if(tp.id == 0) {
-			Team t = new Team(tp.name, tp.bonus);
+		if(packet.id == 0) {
+			Team t = new Team(packet.name, packet.bonus);
 			if(!dh.lock()) {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
 			}
-			if(dh.getContest(tp.conId) == null) {
+			if(dh.getContest(packet.conId) == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
 			}
-			Contest cs = dh.getContest(tp.conId);
-			TeamCategory tc = cs.getTeamCategory(tp.tcId);
+			Contest cs = dh.getContest(packet.conId);
+			TeamCategory tc = cs.getTeamCategory(packet.tcId);
 			if(tc == null) {
 				writeServerError(out, ServerError.InvalidDataState);
 				return false;
 			}
-			if(!dh.addTeam(tp.conId, tc, t)) {
+			if(!dh.addTeam(packet.conId, tc, t)) {
 				writeServerError(out, ServerError.InvalidDataState);
 				dh.unlock();
 				return false;
@@ -536,19 +536,19 @@ class PacketProcesser {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
 			}
-			if(dh.getContest(tp.conId) == null) {
+			if(dh.getContest(packet.conId) == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
 			}
-			Contest cs = dh.getContest(tp.conId);
-			Team t = cs.getTeam(tp.oldTcId, tp.id);
-			TeamCategory tc = cs.getTeamCategory(tp.tcId);
+			Contest cs = dh.getContest(packet.conId);
+			Team t = cs.getTeam(packet.oldTcId, packet.id);
+			TeamCategory tc = cs.getTeamCategory(packet.tcId);
 			if(t == null || tc == null) {
 				writeServerError(out, ServerError.InvalidDataState);
 				return false;
 			}
-			t.setName(tp.name);
-			t.setBonus(tp.bonus);
+			t.setName(packet.name);
+			t.setBonus(packet.bonus);
 			if(t.getCategory() != tc) {
 				cs.changeTeamCategory(t, tc);
 			}
@@ -592,31 +592,31 @@ class PacketProcesser {
 	 * @throws IOException if the streams are corrupted
 	 */
 	private boolean editAddContestant(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
-		ContestantPacket cp = (ContestantPacket) in.readObject();
-		if(cp.id == -1 || cp.fName == null || cp.fName == "" || cp.lName == null || cp.lName == "" || 
-				cp.conId == -1 || cp.catId == -1 || cp.teamId == -1) {
+		PacketContestant packet = (PacketContestant) in.readObject();
+		if(packet.id == -1 || packet.fName == null || packet.fName == "" || packet.lName == null || packet.lName == "" || 
+				packet.conId == -1 || packet.catId == -1 || packet.teamId == -1) {
 			writeServerError(out, ServerError.InvalidInput);
 			return false;
 		}
-		if(cp.id == 0) {
-			TeamContestant tcs = new TeamContestant(cp.fName, cp.lName);
-			tcs.setBonus(cp.bonus);
+		if(packet.id == 0) {
+			TeamContestant tcs = new TeamContestant(packet.fName, packet.lName);
+			tcs.setBonus(packet.bonus);
 			if(!dh.lock()) {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
 			}
-			if(dh.getContest(cp.conId) == null) {
+			if(dh.getContest(packet.conId) == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
 			}
-			Contest cs = dh.getContest(cp.conId);
-			Category cat = cs.getCategory(cp.catId);
+			Contest cs = dh.getContest(packet.conId);
+			Category cat = cs.getCategory(packet.catId);
 			if(cat == null) {
 				writeServerError(out, ServerError.InvalidDataState);
 				return false;
 			}
-			if(cp.teamId != 0) {
-				Team t = cs.getTeam(cp.tcId, cp.teamId);
+			if(packet.teamId != 0) {
+				Team t = cs.getTeam(packet.tcId, packet.teamId);
 				if(t == null) {
 					writeServerError(out, ServerError.InvalidDataState);
 					return false;
@@ -624,7 +624,7 @@ class PacketProcesser {
 				t.addContestant(tcs);
 			}
 			tcs.setCategory(cat);
-			if(dh.addContestant(cp.conId, cat, tcs)) {
+			if(!dh.addContestant(packet.conId, cat, tcs)) {
 				writeServerError(out, ServerError.InvalidDataState);
 				dh.unlock();
 				return false;
@@ -638,26 +638,26 @@ class PacketProcesser {
 				writeServerError(out, ServerError.UnableToLock);
 				return false;
 			}
-			if(dh.getContest(cp.conId) == null) {
+			if(dh.getContest(packet.conId) == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
 			}
-			Contest cs = dh.getContest(cp.conId);
-			Contestant cst = cs.getContestant(cp.oldCatId, cp.id);
-			if(cst.getCategory().getId() != cp.catId) {
-				Category cat = cs.getCategory(cp.catId);
+			Contest cs = dh.getContest(packet.conId);
+			Contestant cst = cs.getContestant(packet.oldCatId, packet.id);
+			if(cst.getCategory().getId() != packet.catId) {
+				Category cat = cs.getCategory(packet.catId);
 				cs.changeContestantCategory(cst, cat);
 			}
-			cst.setFirstName(cp.fName);
-			cst.setLastName(cp.lName);
+			cst.setFirstName(packet.fName);
+			cst.setLastName(packet.lName);
 			if(cst instanceof TeamContestant) {
 				TeamContestant tcs = (TeamContestant) cst;
-				tcs.setBonus(cp.bonus);
-				if(cp.teamId == 0 && tcs.getTeam() != null) {
+				tcs.setBonus(packet.bonus);
+				if(packet.teamId == 0 && tcs.getTeam() != null) {
 					tcs.getTeam().removeContestant(tcs);
 				}
-				else if(cp.teamId > 0 && (tcs.getTeam() == null || tcs.getTeam().getId() != cp.teamId)) {
-					Team t = cs.getTeam(cp.tcId, cp.teamId);
+				else if(packet.teamId > 0 && (tcs.getTeam() == null || tcs.getTeam().getId() != packet.teamId)) {
+					Team t = cs.getTeam(packet.tcId, packet.teamId);
 					if(t != null) {
 						if(tcs.getTeam() == null) {
 							t.addContestant(tcs);
@@ -722,7 +722,7 @@ class PacketProcesser {
 			return false;
 		}
 		for(int i=0; i<size; i++) {
-			UpdateScorePacket usp = (UpdateScorePacket) in.readObject();
+			PacketUpdateScore usp = (PacketUpdateScore) in.readObject();
 			if(!dh.updateScore(con, usp.catId, usp.conId, usp.discId, usp.score)) {
 				writeServerError(out, ServerError.InvalidDataState);
 				dh.clearUpdateScores();
@@ -744,7 +744,7 @@ class PacketProcesser {
 	private void writeServerError(ObjectOutputStream out, ServerError message) {
 		try {
 			out.writeBoolean(false);
-			Logger.getInstance().log("Packet processing error: " + message, LoggerSeverity.VERBOSE);
+			Logger.getInstance().log("PacketOrder processing error: " + message, LoggerSeverity.VERBOSE);
 			out.writeObject(message);
 		}
 		catch (IOException e) {

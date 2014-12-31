@@ -170,18 +170,12 @@ public class Client extends Application {
 		return mbar;
 	}
 	
-	private void clearPanel() {
-		mainPanel.setTop(null);
-		mainPanel.setCenter(null);
-	}
-	
 	protected void handleMenuAction(MenuAction ma) {
 		MenuAction prevMa = currentMenu;
 		currentMenu = ma;
 		boolean nonQuietReload = false;
 		switch(ma) {
 		case MAIN_CONTESTS:
-			clearPanel();
 			ActionHandler.get().showContestList();
 			break;
 		case MAIN_RELOAD:
@@ -200,47 +194,35 @@ public class Client extends Application {
 			this.mainStage.close();
 			break;
 		case SHOW_CONTESTANTS:
-			clearPanel();
-			ActionHandler.get().showContestantTable();
+			ActionHandler.get().showTable(ContestantTable.getInstance());
 			break;
 		case SHOW_TEAMS:
-			clearPanel();
-			ActionHandler.get().showTeamTable();
+			ActionHandler.get().showTable(TeamTable.getInstance());
 			break;
 		case SHOW_ONE_TEAM:
-			clearPanel();
-			ActionHandler.get().showTeamDetail();
+			ActionHandler.get().showTable(TeamDetail.getInstance());
 			break;
 		case SCORE_CATEGORY:
-			clearPanel();
-			ActionHandler.get().updateCategoryScore();
+			ActionHandler.get().showTable(CategoryScore.getInstance());
 			break;
 		case UPDATE_CONTEST:
-			clearPanel();
-			ActionHandler.get().updateContest();
+			ActionHandler.get().showTable(EditContest.getInstance());
 			break;
 		case UPDATE_DISCIPLINE:
-			clearPanel();
-			ActionHandler.get().updateDiscipline();
+			ActionHandler.get().showTable(EditDiscipline.getInstance());
 			break;
 		case UPDATE_TCATEGORY:
-			clearPanel();
-			ActionHandler.get().updateTeamCategory();
+			ActionHandler.get().showTable(EditTeamCategory.getInstance());
 			break;
 		case UPDATE_CATEGORY:
-			clearPanel();
-			ActionHandler.get().updateCategory();
+			ActionHandler.get().showTable(EditCategory.getInstance());
 			break;
 		case UPDATE_TEAM:
-			clearPanel();
-			ActionHandler.get().updateTeam();
+			ActionHandler.get().showTable(EditTeam.getInstance());
 			break;
 		case UPDATE_CONTESTANT:
-			clearPanel();
-			ActionHandler.get().updateContestant();
+			ActionHandler.get().showTable(EditContestant.getInstance());
 			break;
-		default:
-				
 		}
 	}
 	

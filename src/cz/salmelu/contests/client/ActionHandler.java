@@ -19,7 +19,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import cz.salmelu.contests.model.Contest;
 import cz.salmelu.contests.model.ContestInfo;
-import cz.salmelu.contests.net.Packet;
+import cz.salmelu.contests.net.PacketOrder;
 
 @SuppressWarnings("deprecation")
 class ActionHandler {
@@ -38,6 +38,7 @@ class ActionHandler {
 	}
 	
 	protected void showContestList() {
+		clearPanel();
 		if(Client.get().contests == null) {
 			Client.get().contests = new HashMap<>();
 			reloadContestList(true);
@@ -51,7 +52,7 @@ class ActionHandler {
 			done.setAlignment(Pos.CENTER);
 			Client.get().mainPanel.setCenter(done);
 		}
-		ContestTable.getInstance().display();
+		ContestTable.getInstance().displayAll();
 	}
 	
 	protected void reloadContestList(boolean display) {
@@ -66,7 +67,7 @@ class ActionHandler {
 			        socket.connect(addr);
 			        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
 			        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-			        send.writeByte(Packet.ALL_GET_NAMES.toByte());
+			        send.writeByte(PacketOrder.ALL_GET_NAMES.toByte());
 			        send.flush();
 			        boolean ret = get.readBoolean();
 			        if(!ret) {
@@ -136,7 +137,7 @@ class ActionHandler {
 			        socket.connect(addr);
 			        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
 			        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-			        send.writeByte(Packet.CONTEST_GET.toByte());
+			        send.writeByte(PacketOrder.CONTEST_GET.toByte());
 			        send.writeInt(id);
 			        send.flush();
 			        boolean ret = get.readBoolean();
@@ -172,81 +173,18 @@ class ActionHandler {
 		t.run();	
 	}
 	
-	protected void showContestantTable() {
+	private void clearPanel() {
+		Client.get().mainPanel.setTop(null);
+		Client.get().mainPanel.setCenter(null);
+	}
+	
+	protected void showTable(Displayable d) {
 		if(!Client.contestSelected()) {
 			showNoContestWarning();
 			return;
 		}
-		ContestantTable.getInstance().displayAll();
-	}
-	
-	protected void showTeamTable() {
-		if(!Client.contestSelected()) {
-			showNoContestWarning();
-			return;
-		}
-		TeamTable.getInstance().displayAll();
-	}
-	
-	protected void showTeamDetail() {
-		if(!Client.contestSelected()) {
-			showNoContestWarning();
-			return;
-		}
-		TeamDetail.getInstance().displayAll();
-	}
-	
-	protected void updateCategoryScore() {
-		if(!Client.contestSelected()) {
-			showNoContestWarning();
-			return;
-		}
-		CategoryScore.getInstance().displayAll();
-	}
-	
-	protected void updateContest() {
-		EditContest.getInstance().displayAll();
-	}
-	
-	protected void updateDiscipline() {
-		if(!Client.contestSelected()) {
-			showNoContestWarning();
-			return;
-		}
-		EditDiscipline.getInstance().displayAll();
-	}
-	
-	protected void updateTeamCategory() {
-		if(!Client.contestSelected()) {
-			showNoContestWarning();
-			return;
-		}
-		EditTeamCategory.getInstance().displayAll();
-	}
-	
-	protected void updateCategory() {
-		if(!Client.contestSelected()) {
-			showNoContestWarning();
-			return;
-		}
-		EditCategory.getInstance().displayAll();
-	}
-	
-	protected void updateTeam() {
-		if(!Client.contestSelected()) {
-			showNoContestWarning();
-			return;
-		}
-		EditTeam.getInstance().displayAll();
-	}
-
-	
-	protected void updateContestant() {
-		if(!Client.contestSelected()) {
-			showNoContestWarning();
-			return;
-		}
-		EditContestant.getInstance().displayAll();
+		clearPanel();
+		d.displayAll();
 	}
 	
 	protected void showNoContestWarning() {

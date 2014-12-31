@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Used for sending contestant field updates to server 
  * @author salmelu
  */
-public class ContestantPacket implements Serializable {
+public class PacketContestant implements Serializable, Packet {
 
 	private static final long serialVersionUID = 4650829858344324359L;
 	/** Parent contest id; -1 is invalid */
@@ -31,7 +31,7 @@ public class ContestantPacket implements Serializable {
 	/**
 	 * An empty constructor, does nothing
 	 */
-	public ContestantPacket() {
+	public PacketContestant() {
 		
 	}
 }

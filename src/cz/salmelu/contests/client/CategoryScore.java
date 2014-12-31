@@ -29,10 +29,10 @@ import javafx.scene.layout.HBox;
 import cz.salmelu.contests.model.Category;
 import cz.salmelu.contests.model.Contestant;
 import cz.salmelu.contests.model.Discipline;
-import cz.salmelu.contests.net.Packet;
-import cz.salmelu.contests.net.UpdateScorePacket;
+import cz.salmelu.contests.net.PacketOrder;
+import cz.salmelu.contests.net.PacketUpdateScore;
 
-final class CategoryScore {
+final class CategoryScore implements Displayable {
 	private Client c = null;
 	private static CategoryScore instance = null;
 	private Category currentCat = null;
@@ -86,7 +86,7 @@ final class CategoryScore {
 		scoreFields = new HashMap<>();
 	}
 	
-	protected void displayHeader() {
+	private void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
 		catChoice.setItems(FXCollections.observableArrayList(c.current.getCategories().values()));
 		for(Category cat : catChoice.getItems()) {
@@ -97,7 +97,7 @@ final class CategoryScore {
 		c.mainPanel.setTop(catBox);
 	}
 	
-	protected void displayTable() {
+	private void displayTable() {
 		if(currentCat == null) {
 			c.mainPanel.setCenter(noCategory);
 			return;
@@ -142,14 +142,14 @@ final class CategoryScore {
 		c.mainPanel.setCenter(table);
 	}
 	
-	protected void displayAll() {
+	public void displayAll() {
 		if(c.current == null) return;
 		displayHeader();
 		displayTable();
 	}
 	
 	private void updateScore() {
-		ArrayList<UpdateScorePacket> updatePackets = new ArrayList<>();
+		ArrayList<PacketUpdateScore> updatePackets = new ArrayList<>();
 		HashMap<Contestant, HashMap<Discipline, Double>> updateScores = new HashMap<>();
 		try {
 			for(Contestant con : c.current.getContestants(currentCat).values()) {
@@ -160,7 +160,7 @@ final class CategoryScore {
 					}
 					double score = Double.parseDouble(scoreFields.get(con).get(disc).getText());
 					if(score != con.getScore(disc)) {
-						updatePackets.add(new UpdateScorePacket(currentCat.getId(), disc.getId(), con.getId(), score));
+						updatePackets.add(new PacketUpdateScore(currentCat.getId(), disc.getId(), con.getId(), score));
 						updateScores.get(con).put(disc, score);
 					}
 				}
@@ -204,12 +204,13 @@ final class CategoryScore {
 		}
 		return instance;
 	}
+	
 	private class UpdateRequest extends Task<Boolean> {
 		
-		private ArrayList<UpdateScorePacket> updates = null;
+		private ArrayList<PacketUpdateScore> updates = null;
 		private int conId;
 		
-		public UpdateRequest(ArrayList<UpdateScorePacket> updates, int conId) {
+		public UpdateRequest(ArrayList<PacketUpdateScore> updates, int conId) {
 			this.updates = updates;
 			this.conId = conId;
 		}
@@ -222,10 +223,10 @@ final class CategoryScore {
 		        socket.connect(addr);
 		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
 		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(Packet.SCORE_UPDATE.toByte());
+		        send.writeByte(PacketOrder.SCORE_UPDATE.toByte());
 		        send.writeInt(conId);
 		        send.writeInt(updates.size());
-		        for(UpdateScorePacket usp : updates) {
+		        for(PacketUpdateScore usp : updates) {
 		        	send.writeObject(usp);
 		        }
 		        send.flush();
