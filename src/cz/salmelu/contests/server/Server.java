@@ -116,6 +116,7 @@ public class Server {
 						catch (InterruptedException e) { }
 					}
 				}
+				Logger.getInstance().logAlways("Server ended. Goodbye.");
 			}
 		});
 		// Load data
@@ -224,7 +225,6 @@ public class Server {
 				Logger.getInstance().log("Couldn't save the data.", LoggerSeverity.ERROR);
 			}
 		}
-		Logger.getInstance().logAlways("Server ended. Goodbye.");
 	}
 	
 	/**
