@@ -64,8 +64,22 @@
 		<java fork="true" spawn="true" dir="${dist}/client" jar="${dist}/client/ContestClient-${version}.jar"/>
 	</target>
 
+	<target name="doc" description="generate the docs">
+		<delete dir="${doc}"/>
+		<mkdir dir="${doc}"/>
+		<javadoc classpathref="classpath" packagenames="cz.salmelu.contests.*" sourcepath="${src}" destdir="${doc}"/>
+	</target>
+
+	<target name="docall" description="generate the private docs">
+		<delete dir="${doc}"/>
+		<mkdir dir="${doc}"/>
+		<javadoc classpathref="classpath" packagenames="cz.salmelu.contests.*" sourcepath="${src}" destdir="${doc}" private="true"/>
+	</target>
+
+
 	<target name="clean" description="removes compiled files">
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
+		<delete dir="${doc}"/>
 	</target>
 </project>
