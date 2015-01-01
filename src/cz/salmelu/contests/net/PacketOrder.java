@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * An enumeration of supported packets to be sent to server.
- *  First byte sent to the server should always be one of the packet codes.
+ * An enumeration of supported packets to be sent to server.<br>
+ * First byte sent to the server should always be one of the packet codes.
  * @author salmelu
  */
 public enum PacketOrder {
@@ -38,7 +38,7 @@ public enum PacketOrder {
 	}
 	
 	/**
-	 * Creates new packet 
+	 * Creates new packet with an associated byte value.
 	 * @param order the byte value of the packet
 	 */
 	private PacketOrder(byte order) {
@@ -46,7 +46,7 @@ public enum PacketOrder {
 	}
 	
 	/**
-	 * Gets a packet with the supplied byte value
+	 * Gets a packet by the supplied byte value.
 	 * @param order byte value received
 	 * @return corresponding packet or null if there is no packet for that value
 	 */
@@ -58,7 +58,7 @@ public enum PacketOrder {
 	}
 	
 	/**
-	 * Converts a packet to its byte value
+	 * Converts a packet to its byte value.
 	 * @return byte representing the packet
 	 */
 	public byte toByte() {

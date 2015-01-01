@@ -5,7 +5,7 @@ import java.io.Serializable;
 import cz.salmelu.contests.model.ScoreMode;
 
 /**
- * Used for sending team category field updates to server 
+ * Used for sending team category field updates to server.
  * @author salmelu
  */
 public class PacketTeamCategory implements Serializable, Packet {
@@ -21,7 +21,7 @@ public class PacketTeamCategory implements Serializable, Packet {
 	public ScoreMode sm = null;
 	
 	/**
-	 * An empty constructor, does nothing
+	 * An empty constructor.
 	 */
 	public PacketTeamCategory() {
 		

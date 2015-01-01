@@ -3,7 +3,7 @@ package cz.salmelu.contests.net;
 import java.io.Serializable;
 
 /**
- * Used for sending contest field updates to server 
+ * Used for sending contest field updates to server.
  * @author salmelu
  */
 public class PacketContest implements Serializable, Packet{
@@ -15,7 +15,7 @@ public class PacketContest implements Serializable, Packet{
 	public String name = null;
 	
 	/**
-	 * An empty constructor, does nothing
+	 * An empty constructor.
 	 */
 	public PacketContest() {
 		

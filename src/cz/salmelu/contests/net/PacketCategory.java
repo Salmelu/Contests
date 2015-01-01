@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Used for sending category field updates to server 
+ * Used for sending category field updates to server.
  * @author salmelu
  */
 public class PacketCategory implements Serializable, Packet {
@@ -21,7 +21,7 @@ public class PacketCategory implements Serializable, Packet {
 	public List<Integer> disciplines = null;
 	
 	/**
-	 * An empty constructor, does nothing
+	 * An empty constructor, initializes the list.
 	 */
 	public PacketCategory() {
 		disciplines = new ArrayList<>();

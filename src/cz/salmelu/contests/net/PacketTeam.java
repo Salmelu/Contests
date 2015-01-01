@@ -3,7 +3,7 @@ package cz.salmelu.contests.net;
 import java.io.Serializable;
 
 /**
- * Used for sending category field updates to server 
+ * Used for sending category field updates to server.
  * @author salmelu
  */
 public class PacketTeam implements Serializable, Packet {
@@ -23,7 +23,7 @@ public class PacketTeam implements Serializable, Packet {
 	public double bonus = 0;
 	
 	/**
-	 * An empty constructor, does nothing
+	 * An empty constructor.
 	 */
 	public PacketTeam() {
 	}

@@ -3,7 +3,7 @@ package cz.salmelu.contests.net;
 import java.io.Serializable;
 
 /**
- * Used for sending discipline field updates to server 
+ * Used for sending discipline field updates to server.
  * @author salmelu
  */
 public class PacketDiscipline implements Serializable, Packet {
@@ -17,7 +17,7 @@ public class PacketDiscipline implements Serializable, Packet {
 	public String name = null;
 	
 	/**
-	 * An empty constructor, does nothing
+	 * An empty constructor.
 	 */
 	public PacketDiscipline() {
 		

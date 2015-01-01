@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 /**
  * Used for sending change score data to server.
- * All the member fields are public, as this class should only hold some data
  * @author salmelu
  */
 public class PacketUpdateScore implements Serializable {
@@ -21,7 +20,7 @@ public class PacketUpdateScore implements Serializable {
 	public double score;
 	
 	/**
-	 * A simple constructor to make creating the packet easier
+	 * A simple constructor to make creating the packet easier.
 	 * @param catId category id
 	 * @param discId discipline id
 	 * @param conId contestant id
