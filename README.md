@@ -22,6 +22,10 @@ There is an attached buildfile which can be run using `ant`. This builds both th
 You can run the program using `java -jar packageName.jar`. The runnables are found in the `dist/client` or `dist/server` folders after the compilation. The entry point and path to the library is set by the buildfile.  
 You can also run the program directly from buildfile using `ant client` or `ant server`. Be warned that these commands run the JVM in the background.
 
+## Documentation
+
+You can generate javadoc documentation by running `ant doc`. If you want a detailed documentation containing all the private methods and package private classes, run `ant docall`. 
+
 ## Releases
 
 The program is currently in development and there has been no release yet.
