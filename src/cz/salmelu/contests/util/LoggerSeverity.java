@@ -1,7 +1,7 @@
 package cz.salmelu.contests.util;
 
 /**
- * Sets the severity of logging/debug messages
+ * Sets the severity of logging and debug messages.
  * @author salmelu
  */
 public enum LoggerSeverity {
@@ -13,7 +13,7 @@ public enum LoggerSeverity {
 	private int order;
 	
 	/**
-	 * Sets a new severity
+	 * Sets a new severity.
 	 * @param order integer value used for comparing gravity of severities
 	 */
 	LoggerSeverity(int order) {
@@ -21,7 +21,7 @@ public enum LoggerSeverity {
 	}
 	
 	/**
-	 * Checks if a severity is at least s
+	 * Checks if a severity is at least s.
 	 * @param s the severity to be compared to
 	 * @return true, if the object on which the method is called, is at least s
 	 */

@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Custom class used for parsing configuration files
+ * Custom class used for parsing configuration files.<br>
+ * Defines a constructor which parses the file.<br>
+ * Also defines methods that take the parsed values and are used by Config classes to fill the fields.
  * @author salmelu
  */
 public class ConfigParser {
@@ -18,8 +20,8 @@ public class ConfigParser {
 	private Map<String, String> properties;
 	
 	/**
-	 * Constructs a parser and tries to parse the given file. Saves the parsed
-	 *  data for later uses or requests
+	 * Constructs a parser and tries to parse the given file.<br>
+	 *  Saves the parsed data for later uses or requests.
 	 * @param fname File to be parsed
 	 */
 	public ConfigParser(File fname) {
@@ -43,8 +45,8 @@ public class ConfigParser {
 	}
 	
 	/**
-	 * Gets an integer property parsed from the file, if it exists.
-	 *  If the property doesn't exist or is an invalid integer, returns default value
+	 * Gets an integer property parsed from the file, if it exists.<br>
+	 * If the property doesn't exist or is an invalid integer, returns default value.
 	 * @param name Name of the parsed property
 	 * @param defaultValue Value returned if something fails
 	 * @return the read property or default value
@@ -65,9 +67,9 @@ public class ConfigParser {
 	}
 	
 	/**
-	 * Gets an integer property parsed from the file, if it exists.
-	 *  If the property doesn't exist, it is not a valid integer,
-	 *   or it is not in allowed range returns default value
+	 * Gets an integer property parsed from the file, if it exists.<br>
+	 * If the property doesn't exist, it is not a valid integer, 
+	 *  or it is not in allowed range returns default value.
 	 * @param name Name of the parsed property
 	 * @param defaultValue Value returned if something fails
 	 * @param min Minimal allowed value
@@ -85,8 +87,8 @@ public class ConfigParser {
 	}
 	
 	/**
-	 * Gets a string property parsed from the file, if it exists.
-	 *  If the property doesn't exist, returns default value
+	 * Gets a string property parsed from the file, if it exists.<br>
+	 * If the property doesn't exist, returns default value.
 	 * @param name Name of the parsed property
 	 * @param defaultValue Value returned if the property doesn't exist
 	 * @return the read property or default value
@@ -100,9 +102,9 @@ public class ConfigParser {
 	}
 	
 	/**
-	 * Gets a string property parsed from the file, if it exists.
-	 *  Checks if the string is in allowed values. 
-	 *  If the property doesn't exist or is not in allowed values, returns default value
+	 * Gets a string property parsed from the file, if it exists.<br>
+	 * Checks if the string is in allowed values.<br> 
+	 * If the property doesn't exist or is not in allowed values, returns default value.
 	 * @param name Name of the parsed property
 	 * @param defaultValue Value returned if the property doesn't exist or it is not in allowed values
 	 * @param allowed An array or enumeration of allowed values
@@ -124,8 +126,8 @@ public class ConfigParser {
 	}
 
 	/**
-	 * Gets a boolean property parsed from the file, if it exists.
-	 *  If the property doesn't exist, or it is not a valid boolean, returns default value
+	 * Gets a boolean property parsed from the file, if it exists.<br>
+	 * If the property doesn't exist, or it is not a valid boolean, returns default value.
 	 * @param name Name of the parsed property
 	 * @param defaultValue Value returned if the property doesn't exist or it's an invalid boolean
 	 * @return the read property or default value

@@ -9,7 +9,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Custom Logger allowing to log a message to few different PrintStreams
+ * Custom Logger allowing to log a message to a {@see java.io.PrintStream}.<br>
+ * Allows for logging to different outputs by registering each output to the Logger instance.<br>
+ * The logging action is synchronized and therefore is thread-safe.<br>
+ * Uses Singleton design pattern.
  * @author salmelu
  */
 public class Logger {
@@ -18,12 +21,15 @@ public class Logger {
 	/** Implements singleton pattern */
 	private static Logger instance;
 	
+	/**
+	 * Constructs a new Logger instance and initializes its' output list.
+	 */
 	private Logger() {
 		loggers = new ArrayList<>();
 	}
 	
 	/**
-	 * Gets an instance of Logger
+	 * Gets an instance of Logger.
 	 * @return an instance of Logger, if it doesn't exist, creates a new one
 	 */
 	public static Logger getInstance() {
@@ -34,7 +40,7 @@ public class Logger {
 	}
 	
 	/**
-	 * Adds a file output to logger with Warning severity
+	 * Adds a file output to logger with Warning severity.
 	 * @param f File to be used
 	 * @throws FileNotFoundException if the stream couldn't be created
 	 */
@@ -43,7 +49,7 @@ public class Logger {
 	}
 	
 	/**
-	 * Adds a file output to logger
+	 * Adds a file output to logger.
 	 * @param f File to be used
 	 * @param s Minimal severity required to log the message
 	 * @throws FileNotFoundException if the stream couldn't be created
@@ -54,7 +60,7 @@ public class Logger {
 	}
 	
 	/**
-	 * Adds an existing PrintStream to the Logger with Warning severity
+	 * Adds an existing PrintStream to the Logger with Warning severity.
 	 * @param ps PrintStream opened
 	 */
 	public void openOutput(PrintStream ps) {
@@ -62,7 +68,7 @@ public class Logger {
 	}
 
 	/**
-	 * Adds an existing PrintStream to the Logger
+	 * Adds an existing PrintStream to the Logger.
 	 * @param ps PrintStream opened
 	 * @param s Minimal severity required to log the message
 	 */
@@ -71,7 +77,7 @@ public class Logger {
 	}
 	
 	/**
-	 * Closes all PrintStreams associated with this Logger
+	 * Closes all PrintStreams associated with this Logger.
 	 */
 	public void closeOutputs() {
 		for(LoggerOutput lo : loggers) {
@@ -81,7 +87,7 @@ public class Logger {
 	}
 	
 	/**
-	 * Logs a message to all output streams, not dependant on the severity
+	 * Logs a message to all output streams, not dependant on the severity.
 	 * @param message Message to be logged
 	 */
 	public void logAlways(String message) {
@@ -91,7 +97,7 @@ public class Logger {
 	}
 	
 	/**
-	 * Logs a message to all output streams allowing message with Info severity
+	 * Logs a message to all output streams allowing message with Info severity.
 	 * @param message Message to be logged
 	 */
 	public void log(String message) {
@@ -99,7 +105,7 @@ public class Logger {
 	}
 	
 	/**
-	 * Logs a message to all output stream allowing messages with severity s
+	 * Logs a message to all output streams allowing messages with severity s.
 	 * @param message Message to be logged
 	 * @param s Severity of the message
 	 */
@@ -111,7 +117,7 @@ public class Logger {
 }
 
 /**
- * Class representing each pair PrintStream + LoggerSeverity
+ * Class representing each pair {@see java.io.PrintStream} and {@link LoggerSeverity}.
  * @author salmelu
  */
 class LoggerOutput {
@@ -127,7 +133,7 @@ class LoggerOutput {
 	}
 	
 	/**
-	 * Creates a new output
+	 * Links a new output.
 	 * @param logger Printstream used to print to the output
 	 * @param s Minimal severity of the message required to be logged
 	 */
@@ -137,14 +143,15 @@ class LoggerOutput {
 	}
 	
 	/**
-	 * Closes the PrintStream
+	 * Closes the PrintStream.
 	 */
 	public void close() {
 		logger.close();
 	}
 	
 	/**
-	 * Logs a message to the stream
+	 * Logs a message to the stream.<br>
+	 * The method is synchronized and therefore multiple threads cannot write to the same stream simultaneously.
 	 * @param message Message to be logged
 	 * @param s Severity of the message
 	 */
@@ -176,7 +183,7 @@ class LoggerOutput {
 	
 	/**
 	 * Logs a message to the stream if the severity of the message
-	 *  is greater of equal to the severity of this stream
+	 *  is greater of equal to the severity of this stream.
 	 * @param message Message to be logged
 	 * @param s Severity of the message
 	 */
@@ -185,7 +192,7 @@ class LoggerOutput {
 	}
 	
 	/**
-	 * Changes the output's severity
+	 * Changes the output's severity.
 	 * @param s new Severity
 	 */
 	public void setSeverity(LoggerSeverity s) {
@@ -193,7 +200,7 @@ class LoggerOutput {
 	}
 	
 	/**
-	 * Gets the output's severity
+	 * Gets the output's severity.
 	 * @return severity
 	 */
 	public LoggerSeverity getSeverity() {
