@@ -6,9 +6,10 @@ import cz.salmelu.contests.util.Logger;
 import cz.salmelu.contests.util.LoggerSeverity;
 
 /**
- * A class designed for automatically saving all the data. 
- * Runs another thread, which is used once a while to save
- * all the data required.
+ * A class designed for automatically saving all the data.<br>
+ * Runs another thread, which is used once a while to save all the data required.<br>
+ * It is only created when {@link Config#AUTO_SAVE} is set to true and {@link Config#SAVE_ON_CHANGE} to false.<br>
+ * This thread should be manually stopped on shutdown to prevent data corruption.
  * @author salmelu
  */
 class AutoSaver extends Thread {
@@ -21,7 +22,7 @@ class AutoSaver extends Thread {
 	private volatile boolean running = true;
 	
 	/**
-	 * Initializes an autosaver
+	 * Initializes an autosaver with given {@link DataHolder} and {@link DataLoader}.
 	 * @param dh DataHolder to be used to extract the data
 	 * @param dl DataLoader used to save the data
 	 */
@@ -30,6 +31,10 @@ class AutoSaver extends Thread {
 		this.dl = dl;
 	}
 	
+	/**
+	 * This method should be called when the thread should end.<br>
+	 * It is called by the {@link Server} when the shutdown is initiated.
+	 */
 	public synchronized void stopRunning() {
 		this.running = false;
 	}

@@ -29,7 +29,12 @@ import cz.salmelu.contests.util.Logger;
 import cz.salmelu.contests.util.LoggerSeverity;
 
 /**
- * A main class used by server. Creates a socket, listens on it and hands all the packets to processer.
+ * A main class used by server.<br>
+ * Creates a socket, listens on it and hands all the packets to processer.<br>
+ * Holds all the references to important classes such as {@link DataLoader}, {@link DataHolder} and
+ * {@link PacketProcesser}.<br>
+ * It also remembers references to the server thread (and optionally to the autoSaver thread) to be used 
+ * in the shutdown hook to safely end the server and avoid data corruption.
  * @author salmelu
  */
 public class Server {
@@ -86,7 +91,9 @@ public class Server {
 	}
 	
 	/**
-	 * Creates a new server instance
+	 * Creates a new server instance.<br>
+	 * Initializes instances of {@link DataHolder}, {@link DataLoader}, {@link PacketProcesser}.<br>
+	 * Sets up a shutdown hook and tries to load initial data.
 	 */	
 	public Server() {
 		dh = new DataHolder();
@@ -96,6 +103,7 @@ public class Server {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
+				// Send the stop singal to the server thread and wait for its end 
 				running = false;
 				Logger.getInstance().logAlways("Received shutdown signal, ending server sockets.");
 				while(socketThread.isAlive()) {
@@ -105,6 +113,7 @@ public class Server {
 					}
 					catch (InterruptedException e) { }
 				}
+				// If there is autosaver, do the same to its thread
 				if(autoSaver != null) {
 					autoSaver.stopRunning();
 					autoSaver.interrupt();
@@ -138,6 +147,7 @@ public class Server {
 			throw new UnsupportedOperationException("Saving to database is not supported yet.");
 		}
 		
+		// If autosaver is allowed, start the thread
 		if(Config.AUTO_SAVE && !Config.SAVE_ON_CHANGE) {
 			Logger.getInstance().log("AutoSaver enabled, starting AutoSaver thread", LoggerSeverity.INFO);
 			autoSaver = new AutoSaver(dh, dl);
@@ -149,16 +159,15 @@ public class Server {
 	}
 	
 	/**
-	 * Starts the server by opening a server socket and starting to listen
+	 * Starts the server by opening a server socket and starts listening at it.
 	 */
 	public void start() {
-		// Get client
 		ServerSocket sckt = null;
 		try {
 			sckt = new ServerSocket();
 			SocketAddress addr = new InetSocketAddress(Inet4Address.getLocalHost(), Config.INET_PORT);
 			sckt.bind(addr);
-			sckt.setSoTimeout(4000);
+			sckt.setSoTimeout(4000);  // To allow shutdown hook to end this thread
 			Logger.getInstance().log("Server socket bound at port " + Config.INET_PORT + ".", LoggerSeverity.INFO);
 			while(running) {
 				try {
@@ -228,11 +237,11 @@ public class Server {
 	}
 	
 	/**
-	 * Entry point of the program
+	 * Entry point of the program.
 	 * @param args command-line arguments
 	 */
 	public static void main(String[] args) {
-		// Start logging
+		// Start logging and set up all the streams. This also triggers parsing the config.
 		String logs[] = Config.LOGGING.split("-");
 		switch(logs[1]) {
 		case "verbose":
@@ -264,6 +273,7 @@ public class Server {
 			Logger.getInstance().log(e.getLocalizedMessage(), LoggerSeverity.ERROR);
 		}
 		
+		// Start the server
 		Logger.getInstance().logAlways("Initializing server.");
 		Server s = new Server();
 		Logger.getInstance().logAlways("Server initialized, starting server.");

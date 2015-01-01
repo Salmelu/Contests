@@ -14,7 +14,11 @@ import cz.salmelu.contests.util.Logger;
 import cz.salmelu.contests.util.LoggerSeverity;
 
 /**
- * Class dealing with all the packets and the actions done by them
+ * Processes any obtained packet.<br>
+ * It is linked to the {@link DataHolder} which it uses to access and modify the data.<br>
+ * Defines a method for each packet returning true, if the packet is processed correctly and false,
+ * if it's processed incorrectly. In that case, it also writes a {@link ServerError} to the stream to deliver
+ * to the client. 
  * @author salmelu
  */
 class PacketProcesser {
@@ -108,7 +112,7 @@ class PacketProcesser {
 				break;
 			}
 		}
-		catch(IOException e) {
+		catch (IOException e) {
 			writeServerError(out, ServerError.InvalidInput);
 			return false;
 		}
@@ -120,7 +124,7 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Pushes a Map of ContestInfo objects into out stream
+	 * Pushes a {@link java.util.Map} of {@link ContestInfo} objects into out stream.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -142,7 +146,7 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Pushes a Contest (with all the data inside it) into the out stream
+	 * Pushes a {@link Contest} (with all the data inside it) into the out stream.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -168,7 +172,7 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Processes an update/edit contest packet
+	 * Processes an update/edit contest packet.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -233,7 +237,7 @@ class PacketProcesser {
 	}
 
 	/**
-	 * Processes an update/edit discipline packet
+	 * Processes an update/edit discipline packet.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -308,7 +312,7 @@ class PacketProcesser {
 	}
 
 	/**
-	 * Processes an update/edit team category packet
+	 * Processes an update/edit team category packet.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -360,8 +364,8 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Processes a delete team category request. <br>
-	 * <b>Warning:</b> Removes all the teams in the category.
+	 * Processes a delete team category request.<br>
+	 * <b>Warning:</b> Removes all the teams in the category!
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -385,7 +389,7 @@ class PacketProcesser {
 	}
 
 	/**
-	 * Processes an update/edit team category packet
+	 * Processes an update/edit team category packet.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -468,8 +472,8 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Processes a delete category request. <br>
-	 * <b>Warning:</b> Removes all the contestants in the category.
+	 * Processes a delete category request.<br>
+	 * <b>Warning:</b> Removes all the contestants in the category!
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -493,7 +497,7 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Processes an update/edit team packet
+	 * Processes an update/edit team packet.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -559,7 +563,7 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Processes a delete team request. <br>
+	 * Processes a delete team request.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -584,7 +588,7 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Processes an update/edit contestant packet
+	 * Processes an update/edit contestant packet.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -676,7 +680,7 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Processes a delete contestant request. <br>
+	 * Processes a delete contestant request.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -701,7 +705,7 @@ class PacketProcesser {
 	}
 	
 	/**
-	 * Processes an updateScore packet.
+	 * Processes an a packet for updating contestants' scores.
 	 * @param in ObjectInputStream received by the socket
 	 * @param out ObjectOutputStream received by the socket
 	 * @return true, if the packet was successfully processed, false otherwise
@@ -737,7 +741,7 @@ class PacketProcesser {
 	}
 
 	/**
-	 * Writes a server error to the out stream. 
+	 * Writes a {@link ServerError} to the output stream to be delivered to client. 
 	 * @param out stream to write the error to
 	 * @param message message to be sent to client
 	 */

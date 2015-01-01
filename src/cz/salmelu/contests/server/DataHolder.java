@@ -22,14 +22,14 @@ class DataHolder {
 	private Map<Contestant,Map<Discipline, Double>> updateScore;
 	
 	/** 
-	 * Creates a new empty holder
+	 * Creates a new empty holder and initializes its map.
 	 */
 	protected DataHolder() {
 		this.contests = new TreeMap<>();
 	}
 	
 	/**
-	 * Gets a map of all contests on the server
+	 * Gets a map of all contests on the server.
 	 * @return map of all contests indexed by their id
 	 */
 	protected Map<Integer, Contest> getAllContests() {
@@ -37,7 +37,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Replaces the map of contests with a new (loaded) one
+	 * Replaces the map of contests with a new one, obtained by {@link DataLoader}.
 	 * @param contests map of contests indexed by their id
 	 */
 	protected void replaceContests(Map<Integer, Contest> contests) {
@@ -45,7 +45,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Gets a contest by its id
+	 * Gets a contest by its id.
 	 * @param id an id of the contest
 	 * @return the contest, or null, if it doesn't exist
 	 */
@@ -56,7 +56,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Adds a new contest to the server
+	 * Adds a new contest to the server.
 	 * @param cs added contest
 	 */
 	protected void addContest(Contest cs) {
@@ -64,7 +64,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Removes a contest from the server
+	 * Removes a contest from the server.
 	 * @param id id of the removed contest
 	 * @return true, if the contest was removed, false, if it doesn't exist
 	 */
@@ -76,7 +76,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Adds a new discipline to the contest
+	 * Adds a new discipline to the contest.
 	 * @param conId id of the affected contest
 	 * @param d added discipline
 	 * @return true, if the discipline was added, false, if it couldn't be added
@@ -91,7 +91,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Removes a discipline from the contest
+	 * Removes a discipline from the contest.
 	 * @param conId id of the affected contest
 	 * @param discId id of the removed discipline
 	 * @return true, if something was removed, false, if the discipline or the contest was not found
@@ -109,7 +109,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Adds a new team category to the contest
+	 * Adds a new team category to the contest.
 	 * @param conId id of the affected contest
 	 * @param tc added team category
 	 * @return true, if the contest was found and category added, false otherwise
@@ -124,7 +124,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Removes a team category from the contest. <br>
+	 * Removes a team category from the contest.<br>
 	 * <b>Warning:</b> Removes all the teams in the category!
 	 * @param conId id of the affected contest
 	 * @param tcId id of the removed team category
@@ -143,7 +143,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Adds a new category to the contest
+	 * Adds a new category to the contest.
 	 * @param conId id of the affected contest
 	 * @param cat added category
 	 * @return true, if the contest was found and category added, false otherwise
@@ -158,7 +158,7 @@ class DataHolder {
 	}
 
 	/**
-	 * Removes a category from the contest <br>
+	 * Removes a category from the contest.<br>
 	 * <b>Warning:</b> Removes all the contestants in the category!
 	 * @param conId id of the affected contest
 	 * @param catId id of the removed category
@@ -177,7 +177,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Adds a new team to the contest
+	 * Adds a new team to the contest.
 	 * @param conId id of the affected contest
 	 * @param tc team category of the added team
 	 * @param t added team
@@ -197,7 +197,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Removes a team from the contest
+	 * Removes a team from the contest.
 	 * @param conId id of the affected contest
 	 * @param tcId id of the affected team category
 	 * @param teamId removed team
@@ -219,7 +219,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Adds a new contestant to the contest
+	 * Adds a new contestant to the contest.
 	 * @param conId id of the affected contest
 	 * @param cat category of the added team
 	 * @param cs added contestant
@@ -238,7 +238,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Removes a team from the contest
+	 * Removes a team from the contest.
 	 * @param conId id of the affected contest
 	 * @param catId id of the affected category
 	 * @param id removed contestant
@@ -260,9 +260,9 @@ class DataHolder {
 	}
 	
 	/**
-	 * Adds an update score task to the queue. The queue is not processes until a commit action is called.
-	 * If there happens to be an invalid update, method clearUpdateScores() should be called to clear the queue.
-	 * If every update score action is valid, the queue is processed by commitUpdateScores() action.
+	 * Adds an update score task to the queue. The queue is not processes until a commit action is called.<br>
+	 * If there happens to be an invalid update, {@link #clearUpdateScores()} should be called to clear the queue.<br>
+	 * If every update score action is valid, the queue is processed by {@link #commitUpdateScores()} action.
 	 * @param con contest id
 	 * @param catId category id
 	 * @param conId contestant id
@@ -289,7 +289,7 @@ class DataHolder {
 	}
 
 	/**
-	 * Commits and clears the queue. Does all the changes queued by updateScore() method.
+	 * Commits and clears the queue. Does all the changes queued by {@link #updateScore()} method.
 	 */
 	protected void commitUpdateScores() {
 		if(updateScore == null) return;
@@ -309,7 +309,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Locks the thread.
+	 * Locks the holder for the current thread.
 	 * @return true, if locking was successful
 	 */
 	protected synchronized boolean lock() {
@@ -326,7 +326,7 @@ class DataHolder {
 	}
 	
 	/**
-	 * Unlocks the holder
+	 * Unlocks the holder.
 	 */
 	protected synchronized void unlock() {
 		this.locked = false;
