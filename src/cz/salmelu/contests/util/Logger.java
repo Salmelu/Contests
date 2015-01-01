@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Custom Logger allowing to log a message to a {@see java.io.PrintStream}.<br>
+ * Custom Logger allowing to log a message to a {@link java.io.PrintStream}.<br>
  * Allows for logging to different outputs by registering each output to the Logger instance.<br>
  * The logging action is synchronized and therefore is thread-safe.<br>
  * Uses Singleton design pattern.
@@ -117,7 +117,7 @@ public class Logger {
 }
 
 /**
- * Class representing each pair {@see java.io.PrintStream} and {@link LoggerSeverity}.
+ * Class representing each pair {@link java.io.PrintStream} and {@link LoggerSeverity}.
  * @author salmelu
  */
 class LoggerOutput {

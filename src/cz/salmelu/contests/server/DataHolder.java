@@ -289,7 +289,7 @@ class DataHolder {
 	}
 
 	/**
-	 * Commits and clears the queue. Does all the changes queued by {@link #updateScore()} method.
+	 * Commits and clears the queue. Does all the changes queued by {@link #updateScore(Contest, int, int, int, double)} method.
 	 */
 	protected void commitUpdateScores() {
 		if(updateScore == null) return;

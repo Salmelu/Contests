@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * Represents a discipline in which the contestants compete.<br>
- * It is used by a {@link Category} to represent category disciplines and by the {@Contestant} 
+ * It is used by a {@link Category} to represent category disciplines and by the {@link Contestant} 
  * to mark down their score.
  * @author salmelu
  */

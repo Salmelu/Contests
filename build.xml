@@ -67,13 +67,13 @@
 	<target name="doc" description="generate the docs">
 		<delete dir="${doc}"/>
 		<mkdir dir="${doc}"/>
-		<javadoc classpathref="classpath" packagenames="cz.salmelu.contests.*" sourcepath="${src}" destdir="${doc}"/>
+		<javadoc classpathref="classpath" packagenames="cz.salmelu.contests.*" sourcepath="${src}" destdir="${doc}" overview="overview.html"/>
 	</target>
 
 	<target name="docall" description="generate the private docs">
 		<delete dir="${doc}"/>
 		<mkdir dir="${doc}"/>
-		<javadoc classpathref="classpath" packagenames="cz.salmelu.contests.*" sourcepath="${src}" destdir="${doc}" private="true"/>
+		<javadoc classpathref="classpath" packagenames="cz.salmelu.contests.*" sourcepath="${src}" destdir="${doc}" private="true" overview="overview.html"/>
 	</target>
 
 
