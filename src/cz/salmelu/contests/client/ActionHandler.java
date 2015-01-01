@@ -22,10 +22,11 @@ import cz.salmelu.contests.model.ContestInfo;
 import cz.salmelu.contests.net.PacketOrder;
 
 /**
- * A class responsible for all GUI displaying and loading tasks.
- * It is implemented as a singleton class to allow accessing it from anywhere. 
+ * A class responsible for all GUI displaying and loading tasks.<br>
+ * It is implemented as a singleton class to allow accessing it from anywhere.<br> 
+ * Contains display methods, which are responsible for displaying GUI components,
+ * and loading methods, which are responsible for loading the content from the server.
  * @author salmelu
- *
  */
 @SuppressWarnings("deprecation")
 class ActionHandler {
@@ -34,7 +35,8 @@ class ActionHandler {
 	private static ActionHandler instance = null;
 	
 	/**
-	 * Construct a new action holder
+	 * Construct a new empty action holder. 
+	 * The constructor should be only called once, for creating a first instance.
 	 */
 	private ActionHandler() {
 		
@@ -53,6 +55,7 @@ class ActionHandler {
 	
 	/**
 	 * Shows a list of all contests found on the server.
+	 * Uses a {@link ContestTable} class to display the table with contests' relevant information.
 	 */
 	protected void showContestList() {
 		clearPanel();
@@ -73,8 +76,10 @@ class ActionHandler {
 	}
 	
 	/**
-	 * Reloads the contest list from the server
-	 * @param display if set to true, the method will display the reloaded list
+	 * Reloads the contest list from the server.<br>
+	 * The reload task is called as a different thread using JavaFX tasks.<br>
+	 * If the reloading fails, displays a GUI dialog to inform the user of the failure. 
+	 * @param display when set to true, the task will call {@link #showContestList} to show the list
 	 */
 	protected void reloadContestList(boolean display) {
 		Task<Boolean> load = new Task<Boolean>() {			
@@ -145,7 +150,10 @@ class ActionHandler {
 	}
 	
 	/**
-	 * Loads full contest data from the server. 
+	 * Loads full contest data from the server. <br>
+	 * Gets all the relevant information such as a list of all contestants, teams, categories, etc.<br>
+	 * The method will display a success dialog, if the loading is successful, and an error dialog, 
+	 * if the loading is unsuccessful.
 	 * @param id id of the loaded contest
 	 */
 	protected void loadContest(Integer id) {
@@ -153,7 +161,9 @@ class ActionHandler {
 	}
 	
 	/**
-	 * Loads full contest data from the server.
+	 * Loads full contest data from the server.<br>
+	 * Gets all the relevant information such as a list of all contestants, teams, categories, etc.<br>
+	 * The method will display an error dialog, if the loading is unsuccessful.
 	 * @param id id of the loaded contest
 	 * @param display if set to true, displays a success dialog when the contest is loaded.
 	 */
@@ -194,8 +204,11 @@ class ActionHandler {
 		load.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent arg0) {
-				if(display) showSuccessDialog("Contest was loaded", 
-						"Contest " + Client.get().current.getName() + " was successfully loaded.");				
+				if(display && load.getValue()) showSuccessDialog("Contest was loaded", 
+						"Contest " + Client.get().current.getName() + " was successfully loaded.");	
+				if(!load.getValue()) {
+					showConnectionError();
+				}
 			}
 		});
 		Thread t = new Thread(load);
@@ -204,7 +217,9 @@ class ActionHandler {
 	}
 	
 	/**
-	 * Clears all the elements from the BorderPane
+	 * Clears all the elements from the BorderPane.
+	 * This is used before any GUI updates to clear the header and body.
+	 * It is mean to prevent other components to stay displayed in case something fails. 
 	 */
 	private void clearPanel() {
 		Client.get().mainPanel.setTop(null);
@@ -213,6 +228,7 @@ class ActionHandler {
 	
 	/**
 	 * Show a Displayable in the GUI.
+	 * Clears the BorderPane and fills it with new content.
 	 * @param d Displayable to be shown.
 	 */
 	protected void showTable(Displayable d) {
@@ -226,7 +242,7 @@ class ActionHandler {
 	
 	/**
 	 * Shows a warning dialog stating that there is no contest selected,
-	 *  so it doesn't make sense to display a GUI table
+	 *  so it doesn't make sense to display a GUI table.
 	 */
 	protected void showNoContestWarning() {
 		Dialogs.create()
@@ -238,7 +254,7 @@ class ActionHandler {
 	}
 	
 	/**
-	 * Shows a prompt dialog for the user
+	 * Shows a prompt dialog for the user.
 	 * @param sm the header of the dialog
 	 * @param lm the text of the dialog
 	 * @return true, if the user clicked Yes, false on any other action
@@ -267,7 +283,7 @@ class ActionHandler {
 	}
 	
 	/**
-	 * Shows an error dialog
+	 * Shows an error dialog with a custom message.
 	 * @param sm the header of the dialog
 	 * @param lm the text of the dialog
 	 */
@@ -281,7 +297,7 @@ class ActionHandler {
 	}
 	
 	/**
-	 * Shows a success dialog
+	 * Shows a success dialog with a custom message.
 	 * @param sm the header of the dialog
 	 * @param lm the text of the dialog
 	 */

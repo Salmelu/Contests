@@ -33,7 +33,7 @@ import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.PacketUpdateScore;
 
 /**
- * Holds a GUI panel used for updating contestants' score
+ * Holds a GUI panel used for updating contestants' score.
  * @author salmelu
  */
 final class CategoryScore implements Displayable {
@@ -56,7 +56,7 @@ final class CategoryScore implements Displayable {
 	private Button updateButton = null;
 	
 	/**
-	 * Constructs all the GUI components for score editing table
+	 * Constructs all the GUI components for score editing table.
 	 */
 	private CategoryScore() {
 		this.c = Client.get();
@@ -107,7 +107,7 @@ final class CategoryScore implements Displayable {
 	}
 	
 	/**
-	 * Displays the table header, containing a choicebox with for chosing a category
+	 * Displays the table header, containing a choicebox with for chosing a category.
 	 */
 	private void displayHeader() {
 		int id = currentCat == null ? 0 : currentCat.getId();
@@ -121,7 +121,7 @@ final class CategoryScore implements Displayable {
 	}
 	
 	/**
-	 * Displays a table depending on the category set. It shows all the textfields for editing the score
+	 * Displays a table depending on the category set. It shows all the textfields for editing the score.
 	 */
 	private void displayTable() {
 		if(currentCat == null) {
@@ -168,7 +168,7 @@ final class CategoryScore implements Displayable {
 	
 	/**
 	 * This method is called on clicking update button. It collects all the data from the textfields and 
-	 * sends a request to the server
+	 * sends a request to the server.
 	 */
 	private void updateScore() {
 		ArrayList<PacketUpdateScore> updatePackets = new ArrayList<>();
@@ -233,7 +233,7 @@ final class CategoryScore implements Displayable {
 	}
 	
 	/**
-	 * A task run when the client wants to send update score packets to the server
+	 * A task run when the client wants to send update score packets to the server.
 	 * @author salmelu
 	 */
 	private class UpdateRequest extends Task<Boolean> {
@@ -242,7 +242,7 @@ final class CategoryScore implements Displayable {
 		private int conId;
 		
 		/**
-		 * Constructs a new Update request
+		 * Constructs a new Update request.
 		 * @param updates List of PacketUpdateScore instances
 		 * @param conId id of the modified contest
 		 */

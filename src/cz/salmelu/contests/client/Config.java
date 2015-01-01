@@ -7,7 +7,7 @@ import java.net.UnknownHostException;
 import cz.salmelu.contests.util.ConfigParser;
 
 /**
- * Holds all the configuration options for the client
+ * Holds all the required configuration options for the client.
  * @author salmelu
  */
 public class Config {
@@ -27,8 +27,8 @@ public class Config {
 	private Config() {}
 
 	/**
-	 * Tries to parse a string address from the config file. 
-	 * If parsing fails, it tries to get the localhost address.
+	 * Tries to parse a string address from the config file.<br>
+	 * If parsing fails, it tries to get the localhost address.<br>
 	 * If the localhost address cannot be received, returns a loopback address.
 	 * @param strAddr read IP address
 	 * @return an InetAddress for accessing the server

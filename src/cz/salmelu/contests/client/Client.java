@@ -18,8 +18,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
- * Main class onwning all the GUI components responsible for creating the main window,
- *  menu buttons and holding the main BorderPane and Stage
+ * Main class owning all the GUI components responsible for creating the main window,
+ *  menu buttons and holding the main BorderPane and Stage.<br>
+ * Also holds the references to current loaded contest list and contest.
  * @author salmelu
  */
 public class Client extends Application {
@@ -41,7 +42,7 @@ public class Client extends Application {
 	protected MenuAction currentMenu = null;
 	
 	/**
-	 * Gets a current instance of this client
+	 * Gets a current instance of this client.
 	 * @return an instance of client
 	 */
 	public static Client get() {
@@ -49,7 +50,7 @@ public class Client extends Application {
 	}
 	
 	/**
-	 * Checks, if there is a contest selected
+	 * Checks, if there is a contest already selected.
 	 * @return true, if there is a selected and loaded contest
 	 */
 	public static boolean contestSelected() {
@@ -77,7 +78,7 @@ public class Client extends Application {
 	}
 	
 	/**
-	 * Creates a MenuBar with all the menus and adds the listeners to them
+	 * Creates a MenuBar with all the menus and adds the listeners to them.
 	 * @return a MenuBar with all menu options
 	 */
 	private MenuBar loadMenus() {
@@ -195,8 +196,9 @@ public class Client extends Application {
 	}
 	
 	/**
-	 * Handles a MenuAction. This method is called when a menu button is clicked.
-	 * @param ma MenuAction
+	 * Handles a MenuAction. This method is called when a menu button is clicked 
+	 * and the respective enum value is passed to this method.
+	 * @param ma MenuAction representing the menu option selected.
 	 */
 	protected void handleMenuAction(MenuAction ma) {
 		MenuAction prevMa = currentMenu;

@@ -14,9 +14,10 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 
 /**
- * This class represents the editing task sent to the server.
+ * This class represents the editing task sent to the server.<br>
+ * It is used either on adding new data to the server, or on editing the data.<br> 
+ * If the intention of this task is to add new data, the packet's id representing the data is set to 0. 
  * @author salmelu
- *
  * @param <T> Packet type send to the server
  */
 class TaskNewEdit<T extends Packet> extends Task<Boolean> {
@@ -27,7 +28,9 @@ class TaskNewEdit<T extends Packet> extends Task<Boolean> {
 	T packet;
 	
 	/**
-	 * Constructs a new task for sending a data update or data insertion to the server.
+	 * Constructs a new task for sending a data update or data insertion to the server.<br>
+	 * Also sets a handler to call a reload action when the task is finished
+	 * or show a connection error if the task fails.
 	 * @param packetOrder the order sent to the server
 	 * @param packet the transmitted packet
 	 */
