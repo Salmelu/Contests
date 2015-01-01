@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Holds some information about the contest to avoid sending whole maps 
  * of contestants, teams, etc. to client and still allow displaying some 
- * contest info
+ * contest info.
  * @author salmelu
  */
 public class ContestInfo implements Serializable {
@@ -22,7 +22,7 @@ public class ContestInfo implements Serializable {
 	private int teams = 0;
 	
 	/**
-	 * Constructs a new Object. Should be only called from Contest class when creating a new contest
+	 * Constructs a new Object. Should be only called from Contest class when creating a new contest.
 	 * @param id unique id of the represented contest
 	 * @param name display name of the represented contest
 	 */
@@ -32,7 +32,7 @@ public class ContestInfo implements Serializable {
 	}
 	
 	/**
-	 * Updates the contest's name
+	 * Updates the contest's name.
 	 * @param name new contest name
 	 */
 	protected void setName(String name) {
@@ -40,7 +40,7 @@ public class ContestInfo implements Serializable {
 	}
 	
 	/**
-	 * Updates a number of teams in the contest
+	 * Updates a number of teams in the contest.
 	 * @param size new number of teams
 	 */
 	protected void setTeams(int size) {
@@ -48,7 +48,7 @@ public class ContestInfo implements Serializable {
 	}
 
 	/**
-	 * Updates a number of contestants in the contest
+	 * Updates a number of contestants in the contest.
 	 * @param size new number of contestants
 	 */
 	protected void setContestants(int size) {
@@ -56,7 +56,7 @@ public class ContestInfo implements Serializable {
 	}
 	
 	/**
-	 * Gets a number of teams in the represented contest
+	 * Gets a number of teams in the represented contest.
 	 * @return number of teams
 	 */
 	public int getTeams() {
@@ -64,7 +64,7 @@ public class ContestInfo implements Serializable {
 	}
 	
 	/**
-	 * Gets a number of contestants in the represented contest
+	 * Gets a number of contestants in the represented contest.
 	 * @return number of contestants
 	 */
 	public int getContestants() {
@@ -72,7 +72,7 @@ public class ContestInfo implements Serializable {
 	}
 	
 	/**
-	 * Gets an unique id of the represented contest
+	 * Gets an unique id of the represented contest.
 	 * @return id
 	 */
 	public int getId() {
@@ -80,7 +80,7 @@ public class ContestInfo implements Serializable {
 	}
 	
 	/**
-	 * Gets a display name of the represented contest
+	 * Gets a display name of the represented contest.
 	 * @return display name
 	 */
 	public String getName() {

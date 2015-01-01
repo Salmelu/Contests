@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class representing a contestant in the contest
+ * Class representing a contestant in the contest.<br>
+ * Holds all their information and score.
  * @author salmelu
  */
 public class Contestant implements Serializable {
@@ -26,7 +27,7 @@ public class Contestant implements Serializable {
 	//private transient int order;
 	
 	/**
-	 * Creates a new contestant
+	 * Creates a new contestant with given names.
 	 * @param firstName First name of the contestant
 	 * @param lastName Last name of the contestant
 	 */
@@ -35,7 +36,7 @@ public class Contestant implements Serializable {
 	}
 	
 	/**
-	 * Creates a new contestant
+	 * Creates a new contestant with given names and category.
 	 * @param firstName First name of the contestant
 	 * @param lastName Last name of the contestant
 	 * @param cat The category of the contestant
@@ -49,7 +50,7 @@ public class Contestant implements Serializable {
 	}
 
 	/**
-	 * Gets contestant's id
+	 * Gets contestant's id.
 	 * @return id
 	 */
 	public int getId() {
@@ -57,7 +58,7 @@ public class Contestant implements Serializable {
 	}
 
 	/**
-	 * Gets contestant's first name
+	 * Gets contestant's first name.
 	 * @return first name
 	 */
 	public String getFirstName() {
@@ -65,7 +66,7 @@ public class Contestant implements Serializable {
 	}
 
 	/**
-	 * Changes contestant's first name
+	 * Changes contestant's first name.
 	 * @param firstName new first name
 	 */
 	public void setFirstName(String firstName) {
@@ -73,7 +74,7 @@ public class Contestant implements Serializable {
 	}
 
 	/**
-	 * Gets contestant's last name
+	 * Gets contestant's last name.
 	 * @return last name
 	 */
 	public String getLastName() {
@@ -81,7 +82,7 @@ public class Contestant implements Serializable {
 	}
 
 	/**
-	 * Changes contestant's last name
+	 * Changes contestant's last name.
 	 * @param lastName new last name
 	 */
 	public void setLastName(String lastName) {
@@ -94,7 +95,7 @@ public class Contestant implements Serializable {
 	}
 
 	/**
-	 * Gets a map of contestant's scores accessed by disciplines
+	 * Gets a map of contestant's scores sorted by disciplines.
 	 * @return map of scores
 	 */
 	public Map<Discipline, Double> getAllScores() {
@@ -102,7 +103,7 @@ public class Contestant implements Serializable {
 	}
 	
 	/**
-	 * Changes contestant's category
+	 * Changes contestant's category.
 	 * @param cat new category
 	 */
 	public void setCategory(Category cat) {
@@ -110,7 +111,7 @@ public class Contestant implements Serializable {
 	}
 	
 	/**
-	 * Gets contestant's category
+	 * Gets contestant's category.
 	 * @return category
 	 */
 	public Category getCategory() {
@@ -118,7 +119,7 @@ public class Contestant implements Serializable {
 	}
 	
 	/**
-	 * Gets contestant's score in a discipline
+	 * Gets contestant's score in a discipline.
 	 * @param d contestant's discipline
 	 * @return score in discipline d
 	 */
@@ -128,7 +129,7 @@ public class Contestant implements Serializable {
 	}
 	
 	/**
-	 * Gets a sum of score in all disciplines 
+	 * Gets a sum of contestant's score in all disciplines.
 	 * @return total score of the contestant
 	 */
 	public double getTotalScore() {
@@ -151,7 +152,7 @@ public class Contestant implements Serializable {
 	}
 
 	/**
-	 * Changes a score of the contestant
+	 * Changes a score of the contestant.
 	 * @param d a discipline where the score will be changed
 	 * @param score new score
 	 */

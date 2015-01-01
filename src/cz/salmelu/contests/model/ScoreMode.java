@@ -1,7 +1,9 @@
 package cz.salmelu.contests.model;
 
 /**
- * A simple enum for all score modes in team competition
+ * A simple enum for all score modes in team competition.<br>
+ * It is used by {@link Team} to calculate a team score and is set by {@link TeamCategory} 
+ * for all teams in the category.
  * @author salmelu
  *
  */
@@ -14,8 +16,4 @@ public enum ScoreMode {
 	AddAllBonuses,
 	/** All score is calculated by addition */
 	Additive;
-	
-	ScoreMode() {
-		
-	}
 }

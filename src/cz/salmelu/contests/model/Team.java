@@ -6,7 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Represents each team in the program
+ * Represents each team in the program.<br>
+ * Contains a list of all contestants in the team to allow a quick and easy iterating through them.
  * @author salmelu
  */
 public class Team implements Serializable {
@@ -26,7 +27,7 @@ public class Team implements Serializable {
 	// private transient int order; UNUSED
 	
 	/**
-	 * Constructs a new team
+	 * Constructs a new team with a given name.
 	 * @param name display name of the new team
 	 */
 	public Team(String name) {
@@ -34,7 +35,7 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Constructs a new team
+	 * Constructs a new team with a given name and team bonus.
 	 * @param name display name of the new team
 	 * @param teamBonus team bonus of the team
 	 */
@@ -46,7 +47,7 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Gets team's unique id
+	 * Gets team's unique id.
 	 * @return id
 	 */
 	public int getId() {
@@ -54,7 +55,7 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Changes team's display name
+	 * Changes team's display name.
 	 * @param name new display name
 	 */
 	public void setName(String name) {
@@ -62,7 +63,7 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Gets team's display name
+	 * Gets team's display name.
 	 * @return display name
 	 */
 	public String getName() {
@@ -75,7 +76,7 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Changes/sets team's category
+	 * Changes or sets team's category.
 	 * @param tc new team category
 	 */
 	public void setCategory(TeamCategory tc) {
@@ -85,7 +86,7 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Gets team's current category
+	 * Gets team's current category.
 	 * @return team category of the team 
 	 */
 	public TeamCategory getCategory() {
@@ -93,7 +94,7 @@ public class Team implements Serializable {
 	}
  
 	/**
-	 * Changes team bonus of the team 
+	 * Changes team bonus of the team.
 	 * @param bonus new bonus
 	 */
 	public void setBonus(double bonus) {
@@ -101,7 +102,7 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Gets team's bonus
+	 * Gets team's bonus.
 	 * @return bonus
 	 */
 	public double getBonus() {
@@ -109,7 +110,8 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Gets team total score, calculated from contestants score, using category score mode 
+	 * Gets team total score.
+	 * It is calculated from contestants' score, using this team's category {@link ScoreMode}.
 	 * @return team's total score
 	 */
 	public double getTotalScore() {
@@ -151,7 +153,7 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Gets a list of all contestants in the team
+	 * Gets a list of all contestants in the team.
 	 * @return list of team contestants
 	 */
 	public List<TeamContestant> getContestants() {
@@ -159,7 +161,7 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Adds a new contestant to the team
+	 * Adds a new contestant to the team.
 	 * @param tc a new contestant
 	 */
 	public void addContestant(TeamContestant tc) {
@@ -168,7 +170,7 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Removes a contestant from the team
+	 * Removes a contestant from the team.
 	 * @param tc removed contestant
 	 */
 	public void removeContestant(TeamContestant tc) {
@@ -177,7 +179,8 @@ public class Team implements Serializable {
 	}
 	
 	/**
-	 * Removes all contestants from the team
+	 * Removes all contestants from the team.<br>
+	 * Used when the team is removed from the contest.
 	 */
 	public void removeAllContestants() {
 		for(Iterator<TeamContestant> itc = contestants.iterator(); itc.hasNext(); ) {

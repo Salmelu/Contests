@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A factory taking care of object ids, being the only way to assign a new id to objects.
- * Class is package private, therefore it cannot be modified and used outside the model objects
- * Registers the class automatically when getNewId() is first called
- * Implemented as a singleton
+ * A factory taking care of object ids, being the only way to assign a new id to objects.<br>
+ * Class is package private, therefore it cannot be modified and used outside the model objects.<br>
+ * Registers the class automatically when getNewId() is first called.<br>
+ * Implemented as a singleton.
  * @author salmelu
  */
 class IdFactory implements Serializable {
@@ -21,8 +21,11 @@ class IdFactory implements Serializable {
 	private static IdFactory instance = null;
 	
 	/**
-	 * Gets a new unique id for an object
+	 * Gets a new unique id for an object.<br>
+	 * Takes a next integer value after the value last used for the given object type.<br>
+	 * If the handed object hasn't been used yet, returns 1.
 	 * @param o the current object (required for object type)
+	 * @param <T> the type of the handed object 
 	 * @return a new unique id for the object
 	 */
 	protected <T> int getNewId(T o) {
@@ -40,14 +43,14 @@ class IdFactory implements Serializable {
 	}
 	
 	/**
-	 * Private constructor initializing the field
+	 * Private constructor which initializes the map.
 	 */
 	private IdFactory() {
 		ids = new HashMap<>();
 	}
 	
 	/**
-	 * Gets (and initializes, if needed) an instance of IdFactory
+	 * Gets (and initializes, if needed) an instance of IdFactory.
 	 * @return an instance of IdFactory
 	 */
 	protected static IdFactory getInstance() {
@@ -58,8 +61,8 @@ class IdFactory implements Serializable {
 	}
 	
 	/** 
-	 * Allows replacing the remembered instance by a new one
-	 * Used for loading purposes
+	 * Allows replacing the remembered instance by a new one.<br>
+	 * Used for loading purposes by {@link DataLoader}.
 	 * @param f replacing IdFactory
 	 */
 	protected static void loadFactory(IdFactory f) {

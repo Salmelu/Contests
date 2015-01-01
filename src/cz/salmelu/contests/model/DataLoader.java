@@ -11,7 +11,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * A helper class loading the data for the server
+ * A helper class for loading the data for the server.<br>
+ * Allows loading server data from a file specified in the configuration file.
+ * Supports loading and saving a map of all contests. Also saves and loads an {@link IdFactory}
+ * instance to continue using the same set of unique ids.
  * @author salmelu
  */
 public class DataLoader {
@@ -24,7 +27,7 @@ public class DataLoader {
 	private String dbName;
 	
 	/**
-	 * Constructs a new data loader using loading from file
+	 * Constructs a new data loader for loading from file.
 	 * @param saveFile file to be loaded from
 	 */
 	public DataLoader(File saveFile) {
@@ -34,7 +37,7 @@ public class DataLoader {
 	
 	/**
 	 * Loads contests. Uses the settings given with class' constructor.
-	 * @return A map of all contests on the server
+	 * @return A map of all contests found in the saving location
 	 * @throws LoaderException Loading was unsuccessful. Either the save file doesn't exists, the Loader couldn't read the file or some of the required classes are missing.
 	 */
 	public Map<Integer, Contest> load() throws LoaderException {
@@ -47,8 +50,8 @@ public class DataLoader {
 	}
 	
 	/**
-	 * Loads contests from a file.
-	 * @return A map of all contests on the server
+	 * Loads all contests from a file and resets an {@link IdFactory} instance.
+	 * @return A map of all contests found in the save file
 	 * @throws LoaderException Loading was unsuccessful. Either the save file doesn't exists, the Loader couldn't read the file or some of the required classes are missing.
 	 */
 	private Map<Integer, Contest> loadFromFile() throws LoaderException {
@@ -86,8 +89,8 @@ public class DataLoader {
 	}
 	
 	/**
-	 * Saves contests to a file
-	 * @param contests saved data
+	 * Saves contests to a file. Also saves an {@link IdFactory} instance.
+	 * @param contests data which will be saved
 	 * @throws LoaderException Loader couldn't access or write to the file
 	 */
 	private void saveToFile(Map<Integer, Contest> contests) throws LoaderException  {

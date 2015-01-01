@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents contestants' category. Defines a set of disciplines for the contestants
+ * Represents contestants' category. Defines a set of disciplines for the contestants.
  * @author salmelu
  */
 public class Category implements Serializable {
@@ -20,8 +20,8 @@ public class Category implements Serializable {
 	private String name;
 	
 	/**
-	 * Constructs a new category
-	 * @param name Display name of this category
+	 * Constructs a new category with a given name.
+	 * @param name display name of this category
 	 */
 	public Category(String name) {
 		this.id = IdFactory.getInstance().getNewId(this);
@@ -30,7 +30,7 @@ public class Category implements Serializable {
 	}
 	
 	/**
-	 * Gets category id
+	 * Gets category unique id.
 	 * @return id
 	 */
 	public int getId() {
@@ -38,7 +38,7 @@ public class Category implements Serializable {
 	}
 	
 	/**
-	 * Changes category display name
+	 * Changes category display name.
 	 * @param name new name
 	 */
 	public void setName(String name) {
@@ -46,7 +46,7 @@ public class Category implements Serializable {
 	}
 	
 	/**
-	 * Gets category name
+	 * Gets category name.
 	 * @return display name
 	 */
 	public String getName() {
@@ -59,7 +59,7 @@ public class Category implements Serializable {
 	}
 	
 	/**
-	 * Gets a list of disciplines associated with this category
+	 * Gets a list of disciplines associated with this category.
 	 * @return list of disciplines
 	 */
 	public List<Discipline> getDisciplines() {
@@ -67,7 +67,7 @@ public class Category implements Serializable {
 	}
 	
 	/**
-	 * Adds a new discipline to the category
+	 * Adds a new discipline to the category.
 	 * @param d new discipline
 	 */
 	public void addDiscipline(Discipline d) {
@@ -75,7 +75,7 @@ public class Category implements Serializable {
 	}
 	
 	/**
-	 * Checks if the category contains a certain discipline
+	 * Checks if the category contains a certain discipline.
 	 * @param d checked discipline
 	 * @return true if the category contains Discipline d, false otherwise
 	 */
@@ -84,7 +84,7 @@ public class Category implements Serializable {
 	}
 	
 	/**
-	 * Removes the discipline from the category
+	 * Removes the discipline from the category.
 	 * @param d removed discipline
 	 */
 	public void removeDiscipline(Discipline d) {

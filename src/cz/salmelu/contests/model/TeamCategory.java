@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a team category, in which the teams compete among each other
+ * Represents a team category, in which the teams compete among each other.<br>
+ * Also holds a list of all teams in the category to allow quick iterating.
  * @author salmelu
  */
 public class TeamCategory implements Serializable {
@@ -22,7 +23,7 @@ public class TeamCategory implements Serializable {
 	private List<Team> teams;
 	
 	/**
-	 * Constructs a new TeamCategory
+	 * Constructs a new TeamCategory with a given name and {@link ScoreMode}
 	 * @param name display name of the category
 	 * @param sm a score mode used for calculating results 
 	 */
@@ -34,7 +35,7 @@ public class TeamCategory implements Serializable {
 	}
 	
 	/**
-	 * Gets team category id
+	 * Gets team category id.
 	 * @return id
 	 */
 	public int getId() {
@@ -42,7 +43,7 @@ public class TeamCategory implements Serializable {
 	}
 	
 	/**
-	 * Changes the display name of the category
+	 * Changes the display name of the team category.
 	 * @param name new display name
 	 */
 	public void setName(String name) {
@@ -50,7 +51,7 @@ public class TeamCategory implements Serializable {
 	}
 	
 	/**
-	 * Gets the display name of the category
+	 * Gets the display name of the team category.
 	 * @return display name
 	 */
 	public String getName() {
@@ -63,7 +64,7 @@ public class TeamCategory implements Serializable {
 	}
 	
 	/**
-	 * Changes the score mode of the category
+	 * Changes the score mode of the team category.
 	 * @param sm new score mode
 	 */
 	public void setScoreMode(ScoreMode sm) {
@@ -71,7 +72,7 @@ public class TeamCategory implements Serializable {
 	}
 	
 	/**
-	 * Gets the score mode of the category
+	 * Gets the score mode of the team category.
 	 * @return score mode
 	 */
 	public ScoreMode getScoreMode() {
@@ -79,7 +80,8 @@ public class TeamCategory implements Serializable {
 	}
 	
 	/**
-	 * Adds a team to the category. Doesn't affect the team itself
+	 * Adds a team to the category. Doesn't affect the team itself.<br>
+	 * The team must be added by {@link Contest#addTeam(TeamCategory, Team)} too.
 	 * @param t added team
 	 */
 	public void addTeam(Team t) {
@@ -87,7 +89,7 @@ public class TeamCategory implements Serializable {
 	}
 	
 	/**
-	 * Removes a team from the category. Doesn't affect the team itself
+	 * Removes a team from the category. Doesn't affect the team itself.
 	 * @param t removed team
 	 */
 	public void removeTeam(Team t) {
@@ -95,7 +97,7 @@ public class TeamCategory implements Serializable {
 	}
 	
 	/**
-	 * Gets a list of all teams in the category
+	 * Gets a list of all teams in the category.
 	 * @return a list of teams
 	 */
 	public List<Team> getAllTeams() {

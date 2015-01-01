@@ -1,7 +1,8 @@
 package cz.salmelu.contests.model;
 
 /**
- * Represents a team member. Used for the team bonuses of the members.
+ * Represents a team member.<br>
+ * Used for the team bonuses of the members and linking a contestant with a {@link Team}.
  * @author salmelu
  */
 public class TeamContestant extends Contestant {
@@ -14,7 +15,7 @@ public class TeamContestant extends Contestant {
 	private Team team = null;
 	
 	/**
-	 * Constructs a new contestant with given name
+	 * Constructs a new contestant with given name.
 	 * @param firstName the contestant's first name
 	 * @param lastName the contestant's last name
 	 */
@@ -23,7 +24,7 @@ public class TeamContestant extends Contestant {
 	}
 	
 	/**
-	 * Constructs a new contestant with given name and category
+	 * Constructs a new contestant with given name and category.
 	 * @param firstName the contestant's first name
 	 * @param lastName the contestant's last name
 	 * @param cat the contestant's category
@@ -33,7 +34,7 @@ public class TeamContestant extends Contestant {
 	}
 
 	/**
-	 * Constructs a new contestant with given name and category, team and his bonus
+	 * Constructs a new contestant with given name and category, team and his bonus.
 	 * @param firstName the contestant's first name
 	 * @param lastName the contestant's last name
 	 * @param cat the contestant's category
@@ -47,8 +48,9 @@ public class TeamContestant extends Contestant {
 	}
 	
 	/**
-	 * Changes contestant's team. This action doesn't affect the setting in the team
-	 * due to cyclic dependencies, must be changed there manually too.
+	 * Changes contestant's team.<br>
+	 * This action doesn't affect the setting in the team due to cyclic dependencies,
+	 *  must be changed there manually too.
 	 * @param t new team
 	 */
 	public void setTeam(Team t) {
@@ -56,7 +58,7 @@ public class TeamContestant extends Contestant {
 	}
 	
 	/**
-	 * Gets contestant's current team
+	 * Gets contestant's current team.
 	 * @return team
 	 */
 	public Team getTeam() {
@@ -64,7 +66,7 @@ public class TeamContestant extends Contestant {
 	}
 	
 	/**
-	 * Sets contestant's bonus for team competitions
+	 * Sets contestant's bonus for team competitions.
 	 * @param bonus new bonus
 	 */
 	public void setBonus(double bonus) {
@@ -72,7 +74,7 @@ public class TeamContestant extends Contestant {
 	}
 	
 	/**
-	 * Gets contestant's bonus for team competitions
+	 * Gets contestant's bonus for team competitions.
 	 * @return bonus
 	 */
 	public double getBonus() {

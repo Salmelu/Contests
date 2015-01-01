@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Represents each Contest
+ * Represents each contest on the server.<br>
+ * Holds all the contest related information and data, each type of data is stored in a {@code Map}.<br>
+ * This class is sent by the server to client when the client requests some contest related data.
  * @author salmelu
  */
 public class Contest implements Serializable {
@@ -32,7 +34,8 @@ public class Contest implements Serializable {
 	private String name;
 	
 	/**
-	 * Construct a new contest
+	 * Construct a new contest with a given name.
+	 * Initializes all the required maps.
 	 * @param name Display name of that contest
 	 */
 	public Contest(String name) {
@@ -47,7 +50,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets contest's id
+	 * Gets contest's id.
 	 * @return id
 	 */
 	public int getId() {
@@ -55,7 +58,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Changes contest's display name
+	 * Changes contest's display name.
 	 * @param name new name
 	 */
 	public void setName(String name) {
@@ -63,7 +66,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets contest's display name
+	 * Gets contest's display name.
 	 * @return display name
 	 */
 	public String getName() {
@@ -71,7 +74,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets all teams in the contest
+	 * Gets all teams in the contest.
 	 * @return a double map of teams sorted by team categories and then by ids
 	 */
 	public Map<TeamCategory, Map<Integer, Team>> getAllTeams() {
@@ -79,9 +82,9 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets all teams in a certain category
+	 * Gets all teams in a certain category.
 	 * @param tc selected category
-	 * @return map of teams in the category ordered by ids, null if this contest doesn't contain tc
+	 * @return map of teams in the category ordered by ids, or null if this contest doesn't contain tc
 	 */
 	public Map<Integer, Team> getTeams(TeamCategory tc) {
 		if(teams.containsKey(tc)) {
@@ -91,7 +94,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets all contestants in the contest
+	 * Gets all contestants in the contest.
 	 * @return a double map of contestants sorted by categories and then by ids
 	 */
 	public Map<Category, Map<Integer, Contestant>> getAllContestants() {
@@ -99,7 +102,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets all contestants in a certain category
+	 * Gets all contestants in a certain category.
 	 * @param c selected category
 	 * @return map of contestants in the category ordered by ids, null if this contest doesn't contain c
 	 */
@@ -111,7 +114,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets all categories in the contest
+	 * Gets all categories in the contest.
 	 * @return map of categories ordered by ids
 	 */
 	public Map<Integer, Category> getCategories() {
@@ -119,7 +122,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets all disciplines in the contest
+	 * Gets all disciplines in the contest.
 	 * @return map of disciplines ordered by ids
 	 */
 	public Map<Integer, Discipline> getDisciplines() {
@@ -127,7 +130,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets all team categories in the contest
+	 * Gets all team categories in the contest.
 	 * @return map of team categories ordered by ids
 	 */
 	public Map<Integer, TeamCategory> getTeamCategories() {
@@ -135,7 +138,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Adds a new team category
+	 * Adds a new team category.
 	 * @param tc new team category
 	 */
 	public void addTeamCategory(TeamCategory tc) {
@@ -144,7 +147,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Checks if the contest contains a team category
+	 * Checks if the contest contains a team category.
 	 * @param tcId the id of the contained team category
 	 * @return true, if the contest has team category with id tcId
 	 */
@@ -153,7 +156,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Checks if the contest contains a team category
+	 * Checks if the contest contains a team category.
 	 * @param tc the team category
 	 * @return true, if the contest has team category tc
 	 */
@@ -162,7 +165,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Removes a team category<br>
+	 * Removes a team category.<br>
 	 * <b>Warning:</b> Removes all the teams in the category.
 	 * @param tcId id of the removed team category
 	 */
@@ -175,7 +178,7 @@ public class Contest implements Serializable {
 	}
 
 	/**
-	 * Gets a team category in the contest
+	 * Gets a team category in the contest.
 	 * @param tcId id of the wanted team category
 	 * @return the team category, or null, if it doesn't exist
 	 */
@@ -184,7 +187,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Adds a new category
+	 * Adds a new category.
 	 * @param c new category
 	 */
 	public void addCategory(Category c) {
@@ -193,7 +196,7 @@ public class Contest implements Serializable {
 	}
 
 	/**
-	 * Checks if the contest contains a category
+	 * Checks if the contest contains a category.
 	 * @param catId id of the contained category
 	 * @return true, if the contest has a category with id catId
 	 */
@@ -202,7 +205,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Checks if the contest contains a category
+	 * Checks if the contest contains a category.
 	 * @param cat the category
 	 * @return true, if the contest has category cat
 	 */
@@ -211,7 +214,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Removes a category. <br>
+	 * Removes a category.<br>
 	 * <b>Warning:</b> Removes all the contestants in the category.
 	 * @param catId id of the removed category
 	 */
@@ -229,7 +232,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets a category in the contest
+	 * Gets a category in the contest.
 	 * @param catId id of the wanted category
 	 * @return the category, or null, if it doesn't exist
 	 */
@@ -238,7 +241,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Adds a new discipline
+	 * Adds a new discipline.
 	 * @param d new discipline
 	 */
 	public void addDiscipline(Discipline d) {
@@ -246,7 +249,7 @@ public class Contest implements Serializable {
 	}
 
 	/**
-	 * Checks if the contest contains a discipline
+	 * Checks if the contest contains a discipline.
 	 * @param discId id of the contained discipline
 	 * @return true, if the contest has a discipline with id discId
 	 */
@@ -255,7 +258,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Checks if the contest contains a discipline
+	 * Checks if the contest contains a discipline.
 	 * @param d the discipline
 	 * @return true, if the contest has discipline d
 	 */
@@ -264,7 +267,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Removes a discipline
+	 * Removes a discipline.
 	 * @param discId id of the removed discipline
 	 */
 	public void removeDiscipline(int discId) {
@@ -280,7 +283,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets a discipline in the contest
+	 * Gets a discipline in the contest.
 	 * @param discId id of the wanted discipline
 	 * @return the discipline, or null, if it doesn't exist
 	 */
@@ -289,7 +292,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Adds a new team. If this contest doesn't contain the team's category, no team is added
+	 * Adds a new team. If this contest doesn't contain the team's category, no team is added.
 	 * @param tc team category of the team
 	 * @param t new team
 	 */
@@ -302,7 +305,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Checks if the contest contains a team in a category
+	 * Checks if the contest contains a team in a category.
 	 * @param tcId id of the containing team category
 	 * @param teamId id of the checked team
 	 * @return true, if the contest has a team with id teamId
@@ -313,7 +316,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Checks if the contest contains a team
+	 * Checks if the contest contains a team.
 	 * @param t checked team
 	 * @return true, if the contest has team t
 	 */
@@ -323,7 +326,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Removes a team from the contest and all its contestants from the team
+	 * Removes a team from the contest and all its contestants from the team.
 	 * @param tcId id of containing team category
 	 * @param teamId id of the removed team
 	 */
@@ -340,7 +343,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Changes a team's category. Does all the required data transfers
+	 * Changes a team's category. Does all the required data transfers.
 	 * @param t affected team
 	 * @param newTc new team category
 	 */
@@ -353,7 +356,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets a team by its id and its category id
+	 * Gets a team by its id and its category id.
 	 * @param tcId id of the containing category
 	 * @param teamId id of the requested team
 	 * @return a team with id teamId, or null, if it couldn't be found
@@ -368,7 +371,8 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Adds a new contestant. If this contest doesn't contain the contestant's category, no contestant is added
+	 * Adds a new contestant. If this contest doesn't contain the contestant's category, no contestant is added.
+	 * @param cat the contestant's category
 	 * @param c new contestant
 	 */
 	public void addContestant(Category cat, Contestant c) {
@@ -380,7 +384,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Checks if the contest contains a contestant in a category
+	 * Checks if the contest contains a contestant in a category.
 	 * @param catId id of the containing category
 	 * @param id id of the checked contestant
 	 * @return true, if the contest has a contestant with id id
@@ -391,7 +395,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Checks if the contest contains a contestant
+	 * Checks if the contest contains a contestant.
 	 * @param c checked contestant
 	 * @return true, if the contest has contestant c
 	 */
@@ -401,7 +405,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Removes a team from the contest and all its contestants from the team
+	 * Removes a team from the contest and all its contestants from the team.
 	 * @param catId id of containing category
 	 * @param id id of the removed contestant
 	 */
@@ -422,7 +426,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Changes a contestant's category. Does all the required data transfers
+	 * Changes a contestant's category. Does all the required data transfers.
 	 * @param cs affected contestant
 	 * @param cat new category
 	 */
@@ -435,7 +439,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Gets a contestant by its id and its category id
+	 * Gets a contestant by its id and its category id.
 	 * @param catId id of the containing category
 	 * @param id id of the requested contestant
 	 * @return a contestant with id id, or null, if it couldn't be found
@@ -450,7 +454,8 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Updates ContestInfo of this contest with new values
+	 * Updates ContestInfo of this contest with new values.<br>
+	 * Should be called before sending the object to the client in order to set current contest's data.
 	 */
 	private void updateInfo() {
 		infos.setName(name);
@@ -467,7 +472,7 @@ public class Contest implements Serializable {
 	}
 	
 	/**
-	 * Updates and gets a ContestInfo object of the contest
+	 * Updates and gets a ContestInfo object of the contest.
 	 * @return ContestInfo of the contest
 	 */
 	public ContestInfo getContestInfo() {
