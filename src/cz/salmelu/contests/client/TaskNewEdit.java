@@ -10,8 +10,6 @@ import java.net.UnknownHostException;
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.Packet;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 
 /**
  * This class represents the editing task sent to the server.<br>
@@ -37,16 +35,11 @@ class TaskNewEdit<T extends Packet> extends Task<Boolean> {
 	protected TaskNewEdit(PacketOrder packetOrder, T packet) {
 		this.packetOrder = packetOrder;
 		this.packet = packet;
-		this.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				if(getValue()) {
-					Client.get().handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-				}
-				else {
-					ActionHandler.get().showConnectionError();
-				}
-			}
+		this.setOnSucceeded(event -> {
+			if(getValue())
+				Client.get().handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
+			else
+				ActionHandler.get().showConnectionError();
 		});
 	}
 	

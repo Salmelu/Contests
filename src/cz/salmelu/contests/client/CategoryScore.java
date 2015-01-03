@@ -11,13 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -67,13 +62,9 @@ final class CategoryScore implements Displayable {
 		catLabel = new Label("Choose a category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(200);
-		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
-			@Override
-			public void changed(ObservableValue<? extends Category> arg0, Category arg1,
-					Category arg2) {
-				currentCat = arg2;
-				displayTable();
-			}
+		catChoice.getSelectionModel().selectedItemProperty().addListener((ov, oldVal, newVal) -> {
+			currentCat = newVal;
+			displayTable();
 		});
 		catBox.getChildren().addAll(catLabel, catChoice);
 		catBox.setPadding(new Insets(0,15,40,15));
@@ -98,12 +89,7 @@ final class CategoryScore implements Displayable {
 		updateButton = new Button("Update score");
 		updateButton.setAlignment(Pos.CENTER);
 		updateButton.setPrefWidth(200);
-		updateButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				updateScore();
-			}
-		});
+		updateButton.setOnAction(event -> updateScore());
 	}
 	
 	/**
@@ -204,14 +190,12 @@ final class CategoryScore implements Displayable {
 			}
 		}
 		UpdateRequest ur = new UpdateRequest(updatePackets, c.current.getId());
-		ur.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			public void handle(WorkerStateEvent arg0) {
-				if(!ur.getValue()) {
-					ActionHandler.get().showErrorDialog("Error updating score", 
-							"Server didn't accept the update request. "
-							+ "The possible reason is that some of the contestants or disciplines were removed. "
-							+ "Please, reload the contest data and try the update again.");
-				}
+		ur.setOnSucceeded(event -> {
+			if(!ur.getValue()) {
+				ActionHandler.get().showErrorDialog("Error updating score", 
+						"Server didn't accept the update request. "
+						+ "The possible reason is that some of the contestants or disciplines were removed. "
+						+ "Please, reload the contest data and try the update again.");
 			}
 		});
 		Thread t = new Thread(ur);

@@ -9,8 +9,6 @@ import java.net.UnknownHostException;
 
 import cz.salmelu.contests.net.PacketOrder;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 
 /**
  * This class represents a task used by the Edit tables to remove the data from the server.<br>
@@ -34,16 +32,11 @@ class TaskDelete extends Task<Boolean> {
 	protected TaskDelete(PacketOrder packet, int... ids) {
 		this.packet = packet;
 		this.ids = ids;
-		this.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				if(getValue()) {
-					Client.get().handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
-				}
-				else {
-					ActionHandler.get().showConnectionError();
-				}
-			}
+		this.setOnSucceeded(event -> {
+			if(getValue())
+				Client.get().handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
+			else
+				ActionHandler.get().showConnectionError();
 		});
 	}
 

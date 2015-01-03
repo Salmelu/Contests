@@ -4,8 +4,6 @@ import java.util.HashMap;
 
 import cz.salmelu.contests.model.*;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -105,86 +103,20 @@ public class Client extends Application {
 		MenuItem iedit4 = new MenuItem("Update/New Category");
 		MenuItem iedit5 = new MenuItem("Update/New Team");
 		MenuItem iedit6 = new MenuItem("Update/New Contestant");
-		
-		imain1.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.MAIN_CONTESTS);
-			}
-		});
-		imain2.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.MAIN_RELOAD);
-			}
-		});
-		imain3.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.MAIN_EXIT);
-			}
-		});
 
-		ishow1.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.SHOW_CONTESTANTS);
-			}
-		});
-		ishow2.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.SHOW_TEAMS);
-			}
-		});
-		ishow3.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.SHOW_ONE_TEAM);
-			}
-		});
-		iscore1.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.SCORE_CATEGORY);
-			}
-		});
-		iedit1.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.UPDATE_CONTEST);
-			}
-		});
-		iedit2.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.UPDATE_DISCIPLINE);
-			}
-		});
-		iedit3.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.UPDATE_TCATEGORY);
-			}
-		});
-		iedit4.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.UPDATE_CATEGORY);
-			}
-		});
-		iedit5.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.UPDATE_TEAM);
-			}
-		});
-		iedit6.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				handleMenuAction(MenuAction.UPDATE_CONTESTANT);
-			}
-		});
+		imain1.setOnAction(ae -> handleMenuAction(MenuAction.MAIN_CONTESTS));
+		imain2.setOnAction(ae -> handleMenuAction(MenuAction.MAIN_RELOAD));
+		imain3.setOnAction(ae -> handleMenuAction(MenuAction.MAIN_EXIT));
+		imain3.setOnAction(ae -> handleMenuAction(MenuAction.SHOW_CONTESTANTS));
+		ishow1.setOnAction(ae -> handleMenuAction(MenuAction.SHOW_TEAMS));
+		ishow3.setOnAction(ae -> handleMenuAction(MenuAction.SHOW_ONE_TEAM));
+		iscore1.setOnAction(ae -> handleMenuAction(MenuAction.SCORE_CATEGORY));
+		iedit1.setOnAction(ae -> handleMenuAction(MenuAction.UPDATE_CONTEST));
+		iedit2.setOnAction(ae -> handleMenuAction(MenuAction.UPDATE_DISCIPLINE));
+		iedit3.setOnAction(ae -> handleMenuAction(MenuAction.UPDATE_TCATEGORY));
+		iedit4.setOnAction(ae -> handleMenuAction(MenuAction.UPDATE_CATEGORY));
+		iedit5.setOnAction(ae -> handleMenuAction(MenuAction.UPDATE_TEAM));
+		iedit6.setOnAction(ae -> handleMenuAction(MenuAction.UPDATE_CONTESTANT));
 		
 		main.getItems().addAll(imain1, imain2, imain3);
 		show.getItems().addAll(ishow1, ishow2, ishow3);

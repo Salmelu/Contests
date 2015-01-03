@@ -3,8 +3,6 @@ package cz.salmelu.contests.client;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,9 +10,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.layout.HBox;
-import javafx.util.Callback;
 import cz.salmelu.contests.model.Team;
 import cz.salmelu.contests.model.TeamCategory;
 
@@ -48,13 +44,9 @@ final class TeamTable implements Displayable {
 		catLabel = new Label("Choose a team category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(200);
-		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TeamCategory>() {
-			@Override
-			public void changed(ObservableValue<? extends TeamCategory> arg0, TeamCategory arg1,
-					TeamCategory arg2) {
-				currentCat = arg2;
-				displayTable();
-			}
+		catChoice.getSelectionModel().selectedItemProperty().addListener((ov, oldVal, newVal) -> {
+			currentCat = newVal;
+			displayTable();
 		});
 		catBox.getChildren().addAll(catLabel, catChoice);
 		catBox.setPadding(new Insets(0,15,40,15));
@@ -75,53 +67,24 @@ final class TeamTable implements Displayable {
 
 		TableColumn<Team, Integer> idCol = new TableColumn<>("Id");
 		idCol.setMinWidth(30);
-		idCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Team,Integer>, 
-				ObservableValue<Integer>>()  {
-			@Override
-			public ObservableValue<Integer> call(
-					CellDataFeatures<Team, Integer> arg0) {
-				return new SimpleIntegerProperty(arg0.getValue().getId()).asObject();
-			}
-		});
+		idCol.setCellValueFactory(cell ->
+				new SimpleIntegerProperty(cell.getValue().getId()).asObject());
 		TableColumn<Team, String> nameCol = new TableColumn<>("Team Name");
 		nameCol.setMinWidth(100);
-		nameCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Team,String>, 
-				ObservableValue<String>>()  {
-			@Override
-			public ObservableValue<String> call(
-					CellDataFeatures<Team, String> arg0) {
-				return new SimpleStringProperty(arg0.getValue().getName());
-			}
-		});TableColumn<Team, Integer> sizeCol = new TableColumn<>("Team Size");
+		nameCol.setCellValueFactory(cell ->
+				new SimpleStringProperty(cell.getValue().getName()));
+		TableColumn<Team, Integer> sizeCol = new TableColumn<>("Team Size");
 		sizeCol.setMinWidth(40);
-		sizeCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Team,Integer>, 
-				ObservableValue<Integer>>()  {
-			@Override
-			public ObservableValue<Integer> call(
-					CellDataFeatures<Team, Integer> arg0) {
-				return new SimpleIntegerProperty(arg0.getValue().getContestants().size()).asObject();
-			}
-		});
+		sizeCol.setCellValueFactory(cell ->
+				new SimpleIntegerProperty(cell.getValue().getContestants().size()).asObject());
 		TableColumn<Team, Double> bonusCol = new TableColumn<>("Bonus score");
 		bonusCol.setMinWidth(60);
-		bonusCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Team,Double>, 
-				ObservableValue<Double>>()  {
-			@Override
-			public ObservableValue<Double> call(
-					CellDataFeatures<Team, Double> arg0) {
-				return new SimpleDoubleProperty(arg0.getValue().getBonus()).asObject();
-			}
-		});
+		bonusCol.setCellValueFactory(cell ->
+				new SimpleDoubleProperty(cell.getValue().getBonus()).asObject());
 		TableColumn<Team, Double> totalCol = new TableColumn<>("Total score");
 		totalCol.setMinWidth(60);
-		totalCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Team,Double>, 
-				ObservableValue<Double>>()  {
-			@Override
-			public ObservableValue<Double> call(
-					CellDataFeatures<Team, Double> arg0) {
-				return new SimpleDoubleProperty(arg0.getValue().getTotalScore()).asObject();
-			}
-		});
+		totalCol.setCellValueFactory(cell ->
+				new SimpleDoubleProperty(cell.getValue().getTotalScore()).asObject());
 		table.getColumns().add(idCol);
 		table.getColumns().add(nameCol);
 		table.getColumns().add(sizeCol);

@@ -13,8 +13,6 @@ import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import cz.salmelu.contests.model.Contest;
@@ -119,31 +117,15 @@ class ActionHandler {
 				return false;
 			}
 		};
-		if(display) {
-			load.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-				@Override
-				public void handle(WorkerStateEvent arg0) {
-					if(load.getValue()) {
-						showContestList();
-					}
-					else {
-						showConnectionError();
-						Client.get().contests = null;
-					}
-				}
-			});
-		}
-		else {
-			load.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-				@Override
-				public void handle(WorkerStateEvent arg0) {
-					if(!load.getValue()) {
-						showConnectionError();
-						Client.get().contests = null;
-					}
-				}
-			});
-		}
+		load.setOnSucceeded(event -> {
+			if(load.getValue() && display) {
+				showContestList();
+			}
+			else if(!load.getValue()){
+				showConnectionError();
+				Client.get().contests = null;
+			}
+		});
 		Thread t = new Thread(load);
 		t.setDaemon(true);
 		t.run();
@@ -201,14 +183,11 @@ class ActionHandler {
 				return false;
 			}
 		};
-		load.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent arg0) {
-				if(display && load.getValue()) showSuccessDialog("Contest was loaded", 
-						"Contest " + Client.get().current.getName() + " was successfully loaded.");	
-				if(!load.getValue()) {
-					showConnectionError();
-				}
+		load.setOnSucceeded(event -> {
+			if(display && load.getValue()) showSuccessDialog("Contest was loaded", 
+					"Contest " + Client.get().current.getName() + " was successfully loaded.");	
+			if(!load.getValue()) {
+				showConnectionError();
 			}
 		});
 		Thread t = new Thread(load);

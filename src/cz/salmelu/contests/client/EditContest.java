@@ -3,11 +3,7 @@ package cz.salmelu.contests.client;
 import cz.salmelu.contests.model.ContestInfo;
 import cz.salmelu.contests.net.PacketContest;
 import cz.salmelu.contests.net.PacketOrder;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -39,23 +35,14 @@ final class EditContest implements Displayable {
 		contestLabel = new Label("Choose a contest: ");
 		contestChoice = new ChoiceBox<>();
 		contestChoice.setPrefWidth(180);
-		contestChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ContestInfo>() {
-			@Override
-			public void changed(ObservableValue<? extends ContestInfo> arg0, ContestInfo arg1,
-					ContestInfo arg2) {
-				currentContest = arg2;
-				fillFields();
-			}
+		contestChoice.getSelectionModel().selectedItemProperty().addListener((ov, oldVal, newVal) -> {
+			currentContest = newVal;
+			fillFields();
 		});
 		deleteButton = new Button("Delete contest");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(200);
-		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				deleteContest();
-			}
-		});
+		deleteButton.setOnAction(ae -> deleteContest());
 		contestBox.getChildren().addAll(contestLabel, contestChoice, deleteButton);
 		contestBox.setPadding(new Insets(0,15,40,15));
 		
@@ -80,18 +67,8 @@ final class EditContest implements Displayable {
 		updateButton.setPadding(new Insets(5,5,5,5));
 		updateButton.setPrefWidth(200);
 		
-		newButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				newContest();
-			}
-		});
-		updateButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				updateContest();
-			}
-		});
+		newButton.setOnAction(ae -> newContest());
+		updateButton.setOnAction(ae -> updateContest());
 		buttonBox.getChildren().add(newButton);
 		buttonBox.getChildren().add(updateButton);
 		buttonBox.setAlignment(Pos.CENTER);

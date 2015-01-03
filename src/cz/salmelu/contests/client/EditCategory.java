@@ -6,11 +6,7 @@ import cz.salmelu.contests.model.Discipline;
 import cz.salmelu.contests.model.Category;
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.PacketCategory;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -43,23 +39,14 @@ final class EditCategory implements Displayable {
 		catLabel = new Label("Choose a category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(180);
-		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
-			@Override
-			public void changed(ObservableValue<? extends Category> arg0, Category arg1,
-					Category arg2) {
-				currentCat = arg2;
-				fillFields();
-			}
+		catChoice.getSelectionModel().selectedItemProperty().addListener((ov, oldVal, newVal) -> {
+			currentCat = newVal;
+			fillFields();
 		});
 		deleteButton = new Button("Delete category");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(200);
-		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				deleteCategory();
-			}
-		});
+		deleteButton.setOnAction(ae -> deleteCategory());
 		catBox.setPadding(new Insets(0,15,40,15));
 		catBox.getChildren().addAll(catLabel, catChoice, deleteButton);
 		
@@ -84,18 +71,8 @@ final class EditCategory implements Displayable {
 		updateButton.setPadding(new Insets(5,5,5,5));
 		updateButton.setPrefWidth(200);
 		
-		newButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				newCategory();
-			}
-		});
-		updateButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				updateCategory();
-			}
-		});
+		newButton.setOnAction(ae -> newCategory());
+		updateButton.setOnAction(ae -> updateCategory());
 		buttonBox.getChildren().add(newButton);
 		buttonBox.getChildren().add(updateButton);
 		buttonBox.setAlignment(Pos.CENTER);

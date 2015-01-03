@@ -4,11 +4,7 @@ import cz.salmelu.contests.model.Team;
 import cz.salmelu.contests.model.TeamCategory;
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.PacketTeam;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -45,34 +41,21 @@ final class EditTeam implements Displayable {
 		catLabel = new Label("Choose a team category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(160);
-		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TeamCategory>() {
-			@Override
-			public void changed(ObservableValue<? extends TeamCategory> arg0, TeamCategory arg1,
-					TeamCategory arg2) {
-				currentCat = arg2;
-				updateTeamList();
-			}
+		catChoice.getSelectionModel().selectedItemProperty().addListener((ov, oldVal, newVal) -> {
+			currentCat = newVal;
+			updateTeamList();
 		});
 		teamLabel = new Label("Choose a team: ");
 		teamChoice = new ChoiceBox<>();
 		teamChoice.setPrefWidth(160);
-		teamChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Team>() {
-			@Override
-			public void changed(ObservableValue<? extends Team> arg0,
-					Team arg1, Team arg2) {
-				currentTeam = arg2;
-				fillFields();
-			}
+		teamChoice.getSelectionModel().selectedItemProperty().addListener((ov, oldVal, newVal) -> {
+			currentTeam = newVal;
+			fillFields();
 		});
 		deleteButton = new Button("Delete team");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(160);
-		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				deleteTeam();
-			}
-		});
+		deleteButton.setOnAction(ae -> deleteTeam());
 		topBox.setPadding(new Insets(0,15,40,15));
 		topBox.getChildren().addAll(catLabel, catChoice, teamLabel, teamChoice, deleteButton);
 		
@@ -105,18 +88,8 @@ final class EditTeam implements Displayable {
 		updateButton.setPadding(new Insets(5,5,5,5));
 		updateButton.setPrefWidth(180);
 		
-		newButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				newTeam();
-			}
-		});
-		updateButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				updateTeam();
-			}
-		});
+		newButton.setOnAction(ae -> newTeam());
+		updateButton.setOnAction(ae -> updateTeam());
 		buttonBox.getChildren().add(newButton);
 		buttonBox.getChildren().add(updateButton);
 		buttonBox.setAlignment(Pos.CENTER);

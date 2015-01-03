@@ -3,11 +3,7 @@ package cz.salmelu.contests.client;
 import cz.salmelu.contests.model.Discipline;
 import cz.salmelu.contests.net.PacketDiscipline;
 import cz.salmelu.contests.net.PacketOrder;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -39,23 +35,14 @@ final class EditDiscipline implements Displayable {
 		discLabel = new Label("Choose a discipline: ");
 		discChoice = new ChoiceBox<>();
 		discChoice.setPrefWidth(180);
-		discChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Discipline>() {
-			@Override
-			public void changed(ObservableValue<? extends Discipline> arg0, Discipline arg1,
-					Discipline arg2) {
-				currentDisc = arg2;
-				fillFields();
-			}
+		discChoice.getSelectionModel().selectedItemProperty().addListener((ov, oldVal, newVal) -> {
+			currentDisc = newVal;
+			fillFields();
 		});
 		deleteButton = new Button("Delete discipline");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(200);
-		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				deleteDiscipline();
-			}
-		});
+		deleteButton.setOnAction(ae -> deleteDiscipline());
 		discBox.setPadding(new Insets(0,15,40,15));
 		discBox.getChildren().addAll(discLabel, discChoice, deleteButton);
 		
@@ -80,18 +67,8 @@ final class EditDiscipline implements Displayable {
 		updateButton.setPadding(new Insets(5,5,5,5));
 		updateButton.setPrefWidth(200);
 		
-		newButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				newDiscipline();
-			}
-		});
-		updateButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				updateDiscipline();
-			}
-		});
+		newButton.setOnAction(ae -> newDiscipline());
+		updateButton.setOnAction(ae -> updateDiscipline());
 		buttonBox.getChildren().add(newButton);
 		buttonBox.getChildren().add(updateButton);
 		buttonBox.setAlignment(Pos.CENTER);

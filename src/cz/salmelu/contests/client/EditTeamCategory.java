@@ -4,11 +4,7 @@ import cz.salmelu.contests.model.ScoreMode;
 import cz.salmelu.contests.model.TeamCategory;
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.PacketTeamCategory;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -41,23 +37,14 @@ final class EditTeamCategory implements Displayable {
 		tcLabel = new Label("Choose a team category: ");
 		tcChoice = new ChoiceBox<>();
 		tcChoice.setPrefWidth(180);
-		tcChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TeamCategory>() {
-			@Override
-			public void changed(ObservableValue<? extends TeamCategory> arg0, TeamCategory arg1,
-					TeamCategory arg2) {
-				currentTc = arg2;
-				fillFields();
-			}
+		tcChoice.getSelectionModel().selectedItemProperty().addListener((ov, oldVal, newVal) -> {
+			currentTc = newVal;
+			fillFields();
 		});
 		deleteButton = new Button("Delete team category");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(200);
-		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				deleteTeamCategory();
-			}
-		});
+		deleteButton.setOnAction(ae -> deleteTeamCategory());
 		tcBox.setPadding(new Insets(0,15,40,15));
 		tcBox.getChildren().addAll(tcLabel, tcChoice, deleteButton);
 		
@@ -86,18 +73,8 @@ final class EditTeamCategory implements Displayable {
 		updateButton.setPadding(new Insets(5,5,5,5));
 		updateButton.setPrefWidth(200);
 		
-		newButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				newTeamCategory();
-			}
-		});
-		updateButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				updateTeamCategory();
-			}
-		});
+		newButton.setOnAction(ae -> newTeamCategory());
+		updateButton.setOnAction(ae -> updateTeamCategory());
 		buttonBox.getChildren().add(newButton);
 		buttonBox.getChildren().add(updateButton);
 		buttonBox.setAlignment(Pos.CENTER);

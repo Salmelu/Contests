@@ -6,8 +6,6 @@ import cz.salmelu.contests.model.Discipline;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,9 +13,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.layout.HBox;
-import javafx.util.Callback;
 
 /**
  * A class responsible for displaying a list of all contestants in a chosen category and their respective scores.
@@ -49,13 +45,9 @@ final class ContestantTable implements Displayable  {
 		catLabel = new Label("Choose a category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(200);
-		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
-			@Override
-			public void changed(ObservableValue<? extends Category> arg0, Category arg1,
-					Category arg2) {
-				currentCat = arg2;
-				displayTable();
-			}
+		catChoice.getSelectionModel().selectedItemProperty().addListener((ov, oldVal, newVal) -> {
+			currentCat = newVal;
+			displayTable();
 		});
 		catBox.getChildren().addAll(catLabel, catChoice);
 		catBox.setPadding(new Insets(0,15,40,15));
@@ -78,60 +70,25 @@ final class ContestantTable implements Displayable  {
 
 		TableColumn<Contestant, Integer> idCol = new TableColumn<>("Id");
 		idCol.setMinWidth(30);
-		idCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Contestant,Integer>, 
-				ObservableValue<Integer>>()  {
-			@Override
-			public ObservableValue<Integer> call(
-					CellDataFeatures<Contestant, Integer> arg0) {
-				return new SimpleIntegerProperty(arg0.getValue().getId()).asObject();
-			}
-		});
+		idCol.setCellValueFactory(cell -> new SimpleIntegerProperty(cell.getValue().getId()).asObject());
 		TableColumn<Contestant, String> fNameCol = new TableColumn<>("First Name");
 		fNameCol.setMinWidth(100);
-		fNameCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Contestant,String>, 
-				ObservableValue<String>>()  {
-			@Override
-			public ObservableValue<String> call(
-					CellDataFeatures<Contestant, String> arg0) {
-				return new SimpleStringProperty(arg0.getValue().getFirstName());
-			}
-		});
+		fNameCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getFirstName()));
 		TableColumn<Contestant, String> lNameCol = new TableColumn<>("Last Name");
 		lNameCol.setMinWidth(100);
-		lNameCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Contestant,String>, 
-				ObservableValue<String>>()  {
-			@Override
-			public ObservableValue<String> call(
-					CellDataFeatures<Contestant, String> arg0) {
-				return new SimpleStringProperty(arg0.getValue().getLastName());
-			}
-		});
+		lNameCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getLastName()));
 		table.getColumns().add(idCol);
 		table.getColumns().add(fNameCol);
 		table.getColumns().add(lNameCol);
 		for(Discipline d : currentCat.getDisciplines()) {
 			TableColumn<Contestant, Double> discCol = new TableColumn<>(d.getName());
 			discCol.setMinWidth(50);
-			discCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Contestant,Double>, 
-					ObservableValue<Double>>()  {
-				@Override
-				public ObservableValue<Double> call(
-						CellDataFeatures<Contestant, Double> arg0) {
-					return new SimpleDoubleProperty(arg0.getValue().getScore(d)).asObject();
-				}
-			});
+			discCol.setCellValueFactory(cell -> new SimpleDoubleProperty(cell.getValue().getScore(d)).asObject());
 			table.getColumns().add(discCol);
 		}
 		TableColumn<Contestant, Double> totalCol = new TableColumn<>("Total score");
 		totalCol.setMinWidth(60);
-		totalCol.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Contestant,Double>, 
-				ObservableValue<Double>>()  {
-			@Override
-			public ObservableValue<Double> call(
-					CellDataFeatures<Contestant, Double> arg0) {
-				return new SimpleDoubleProperty(arg0.getValue().getTotalScore()).asObject();
-			}
-		});
+		totalCol.setCellValueFactory(cell -> new SimpleDoubleProperty(cell.getValue().getTotalScore()).asObject());
 		table.getColumns().add(totalCol);
 	}
 

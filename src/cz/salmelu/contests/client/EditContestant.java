@@ -9,11 +9,7 @@ import cz.salmelu.contests.model.TeamCategory;
 import cz.salmelu.contests.model.TeamContestant;
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.PacketContestant;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -54,34 +50,21 @@ final class EditContestant implements Displayable {
 		catLabel = new Label("Choose a category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(160);
-		catChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Category>() {
-			@Override
-			public void changed(ObservableValue<? extends Category> arg0, Category arg1,
-					Category arg2) {
-				currentCat = arg2;
-				updateCsList();
-			}
+		catChoice.getSelectionModel().selectedItemProperty().addListener((ov, oldVal, newVal) -> {
+			currentCat = newVal;
+			updateCsList();
 		});
 		csLabel = new Label("Choose a contestant: ");
 		csChoice = new ChoiceBox<>();
 		csChoice.setPrefWidth(160);
-		csChoice.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Contestant>() {
-			@Override
-			public void changed(ObservableValue<? extends Contestant> arg0,
-					Contestant arg1, Contestant arg2) {
-				currentCs = arg2;
-				fillFields();
-			}
+		csChoice.getSelectionModel().selectedItemProperty().addListener((ov, oldVal, newVal) -> {
+			currentCs = newVal;
+			fillFields();
 		});
 		deleteButton = new Button("Delete contestant");
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(160);
-		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				deleteContestant();
-			}
-		});
+		deleteButton.setOnAction(ae -> deleteContestant());
 		topBox.setPadding(new Insets(0,15,40,15));
 		topBox.getChildren().addAll(catLabel, catChoice, csLabel, csChoice, deleteButton);
 		
@@ -126,19 +109,9 @@ final class EditContestant implements Displayable {
 		Button updateButton = new Button("Update contestant");
 		updateButton.setPadding(new Insets(5,5,5,5));
 		updateButton.setPrefWidth(180);
-		
-		newButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				newContestant();
-			}
-		});
-		updateButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent arg0) {
-				updateContestant();
-			}
-		});
+
+		newButton.setOnAction(ae -> newContestant());
+		updateButton.setOnAction(ae -> updateContestant());
 		buttonBox.getChildren().add(newButton);
 		buttonBox.getChildren().add(updateButton);
 		buttonBox.setAlignment(Pos.CENTER);
