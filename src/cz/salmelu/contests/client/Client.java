@@ -26,16 +26,16 @@ public class Client extends Application {
 	/** Implementation of Singleton */
 	private static Client instance;
 	
-	/** List of contest infos, the key is its name */
-	protected HashMap<String, ContestInfo> contests = null;
+	/** List of contest infos, the key is its name - volatile, the reference can be changed by the reload action */
+	protected volatile HashMap<String, ContestInfo> contests = null;
 	/** The main box containing the mainPanel and the menu */
 	protected VBox mainBox;
 	/** The main stage */
 	protected Stage mainStage;
 	/** The main BorderPane containing all the GUI components */
 	protected BorderPane mainPanel;
-	/** The current, loaded contest */
-	protected Contest current = null;
+	/** The current, loaded contest - volatile, the reference can be changed by the reload action */
+	protected volatile Contest current = null;
 	/** The current selected menu action */
 	protected MenuAction currentMenu = null;
 	
