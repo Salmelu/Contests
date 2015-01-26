@@ -14,15 +14,8 @@ import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import cz.salmelu.contests.model.Category;
-import cz.salmelu.contests.model.Contest;
 import cz.salmelu.contests.model.DataLoader;
-import cz.salmelu.contests.model.Discipline;
 import cz.salmelu.contests.model.LoaderException;
-import cz.salmelu.contests.model.ScoreMode;
-import cz.salmelu.contests.model.Team;
-import cz.salmelu.contests.model.TeamCategory;
-import cz.salmelu.contests.model.TeamContestant;
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.ServerError;
 import cz.salmelu.contests.util.Logger;
@@ -51,44 +44,6 @@ public class Server {
 	private Thread socketThread;
 	/** AutoSaver thread */
 	private AutoSaver autoSaver = null;
-	
-	// TODO: remove, testing data
-	private void test() {
-		Contest c = new Contest("Hello");
-		Discipline d1 = new Discipline("Pozdrav");
-		Discipline d2 = new Discipline("Utok");
-		Discipline d3 = new Discipline("Obrana");
-		c.addDiscipline(d1);
-		c.addDiscipline(d2);
-		c.addDiscipline(d3);
-		Category ct1 = new Category("Bla");
-		ct1.addDiscipline(d1);
-		ct1.addDiscipline(d2);
-		Category ct2 = new Category("Dla");
-		ct2.addDiscipline(d2);
-		ct2.addDiscipline(d3);
-		c.addCategory(ct1);
-		c.addCategory(ct2);
-		TeamContestant p1 = new TeamContestant("Lama", "Lamut", ct1);
-		TeamContestant p2 = new TeamContestant("Lama2", "Lamut2", ct1);
-		TeamContestant p3 = new TeamContestant("Lama3", "Lamut3", ct1);
-		TeamContestant p4 = new TeamContestant("Lama4", "Lamut4", ct2);
-		Team t1 = new Team("Lamas");
-		Team t2 = new Team("Noobs");
-		t1.addContestant(p1);
-		t2.addContestant(p2);
-		t1.addContestant(p3);
-		t2.addContestant(p4);
-		c.addContestant(ct1, p1);
-		c.addContestant(ct1, p2);
-		c.addContestant(ct1, p3);
-		c.addContestant(ct2, p4);
-		TeamCategory tc = new TeamCategory("Main cat", ScoreMode.Additive);
-		c.addTeamCategory(tc);
-		c.addTeam(tc, t1);
-		c.addTeam(tc, t2);
-		dh.addContest(c);
-	}
 	
 	/**
 	 * Creates a new server instance.<br>
@@ -140,7 +95,6 @@ public class Server {
 		catch (LoaderException e) {
 			Logger.getInstance().log("Unable to load save file, starting new instance.", LoggerSeverity.WARNING);
 			Logger.getInstance().log(e.getLocalizedMessage(), LoggerSeverity.WARNING);
-			test();
 		}
 		
 		// If autosaver is allowed, start the thread
