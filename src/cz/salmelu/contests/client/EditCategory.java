@@ -36,7 +36,7 @@ final class EditCategory implements Displayable {
 	private CheckComboBox<Discipline> discChoice; 
 
 	/**
-	 * Constructs a new object, used by {@link getInstance()} if an instance doesn't exist yet
+	 * Constructs a new object, used by {@link #getInstance()} if an instance doesn't exist yet
 	 */
 	private EditCategory() {
 		this.c = Client.get();

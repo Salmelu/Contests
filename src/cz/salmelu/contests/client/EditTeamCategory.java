@@ -35,7 +35,7 @@ final class EditTeamCategory implements Displayable {
 	private ChoiceBox<ScoreMode> sm = null;
 	
 	/**
-	 * Constructs a new object, used by {@link getInstance()} if an instance doesn't exist yet
+	 * Constructs a new object, used by {@link #getInstance()} if an instance doesn't exist yet
 	 */
 	private EditTeamCategory() {
 		this.c = Client.get();

@@ -47,7 +47,7 @@ final class EditContestant implements Displayable {
 	private ChoiceBox<Team> team = null; 
 
 	/**
-	 * Constructs a new object, used by {@link getInstance()} if an instance doesn't exist yet
+	 * Constructs a new object, used by {@link #getInstance()} if an instance doesn't exist yet
 	 */
 	private EditContestant() {
 		this.c = Client.get();

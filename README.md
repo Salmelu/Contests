@@ -11,7 +11,7 @@ This program was created as an university project. You are free to reuse or edit
 
 ## Compatibility
 
-This program was created under Eclipse IDE using Java 8. It also used ControlsFX library for dialogs and multicombobox, therefore you need at lease java version 8.20 to compile the project.
+This program was created under Eclipse IDE using Java 8. It also used ControlsFX library for dialogs and multicombobox, therefore you need at lease java version 8.25 to compile the project.
 
 ## Building
 
@@ -28,7 +28,7 @@ You can generate javadoc documentation by running `ant doc`. If you want a detai
 
 ## Releases
 
-The program is currently in development and there has been no release yet.
+Version 0.1.0 - released on 26/1/2015.
 
 ## Project creator
 

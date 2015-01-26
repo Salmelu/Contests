@@ -32,7 +32,7 @@ final class EditContest implements Displayable {
 	private TextField name = null;
 
 	/**
-	 * Constructs a new object, used by {@link getInstance()} if an instance doesn't exist yet
+	 * Constructs a new object, used by {@link #getInstance()} if an instance doesn't exist yet
 	 */
 	private EditContest() {
 		this.c = Client.get();

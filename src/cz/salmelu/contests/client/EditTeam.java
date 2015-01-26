@@ -39,7 +39,7 @@ final class EditTeam implements Displayable {
 	private ChoiceBox<TeamCategory> teamCat = null; 
 	
 	/**
-	 * Constructs a new object, used by {@link getInstance()} if an instance doesn't exist yet
+	 * Constructs a new object, used by {@link #getInstance()} if an instance doesn't exist yet
 	 */
 	private EditTeam() {
 		this.c = Client.get();
