@@ -8,14 +8,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import cz.salmelu.contests.net.PacketOrder;
-import javafx.concurrent.Task;
+import cz.salmelu.contests.net.ServerError;
 
 /**
  * This class represents a task used by the Edit tables to remove the data from the server.<br>
  * It takes an array of integer ids which are then sent to the server to identify the removed data.
  * @author salmelu
  */
-class TaskDelete extends Task<Boolean> {
+class TaskDelete extends TaskContest {
 	
 	/** The ids sent to the server */
 	private int[] ids;
@@ -35,6 +35,8 @@ class TaskDelete extends Task<Boolean> {
 		this.setOnSucceeded(event -> {
 			if(getValue())
 				Client.get().handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
+			else if(getServerError() != null)
+				ActionHandler.get().handleServerError(getServerError());
 			else
 				ActionHandler.get().showConnectionError();
 		});
@@ -54,10 +56,12 @@ class TaskDelete extends Task<Boolean> {
 	        }
 	        send.flush();
 	        boolean ret = get.readBoolean();
-	        socket.close();
 	        if(!ret) {	
+	        	setServerError((ServerError) get.readObject());
+		        socket.close();
 	        	return false;
 	        }
+	        socket.close();
 	        return true;
 		}
 		catch (UnknownHostException e) {

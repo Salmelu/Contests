@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -26,6 +25,7 @@ import cz.salmelu.contests.model.Contestant;
 import cz.salmelu.contests.model.Discipline;
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.PacketUpdateScore;
+import cz.salmelu.contests.net.ServerError;
 
 /**
  * Holds a GUI panel used for updating contestants' score.
@@ -192,10 +192,7 @@ final class CategoryScore implements Displayable {
 		UpdateRequest ur = new UpdateRequest(updatePackets, c.current.getId());
 		ur.setOnSucceeded(event -> {
 			if(!ur.getValue()) {
-				ActionHandler.get().showErrorDialog("Error updating score", 
-						"Server didn't accept the update request. "
-						+ "The possible reason is that some of the contestants or disciplines were removed. "
-						+ "Please, reload the contest data and try the update again.");
+				ActionHandler.get().handleServerError(ur.getServerError());
 			}
 		});
 		Thread t = new Thread(ur);
@@ -220,7 +217,7 @@ final class CategoryScore implements Displayable {
 	 * A task run when the client wants to send update score packets to the server.
 	 * @author salmelu
 	 */
-	private class UpdateRequest extends Task<Boolean> {
+	private class UpdateRequest extends TaskContest {
 		
 		private ArrayList<PacketUpdateScore> updates = null;
 		private int conId;
@@ -251,10 +248,12 @@ final class CategoryScore implements Displayable {
 		        }
 		        send.flush();
 		        boolean ret = get.readBoolean();
-		        socket.close();
 		        if(!ret) {
+		        	setServerError((ServerError) get.readObject());
+			        socket.close();
 					return false;
 		        }
+		        socket.close();
 		        return true;
 			}
 			catch (UnknownHostException e) {

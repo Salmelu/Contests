@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.Packet;
-import javafx.concurrent.Task;
+import cz.salmelu.contests.net.ServerError;
 
 /**
  * This class represents the editing task sent to the server.<br>
@@ -18,7 +18,7 @@ import javafx.concurrent.Task;
  * @author salmelu
  * @param <T> Packet type send to the server
  */
-class TaskNewEdit<T extends Packet> extends Task<Boolean> {
+class TaskNewEdit<T extends Packet> extends TaskContest {
 
 	/** An action code for the server */
 	private PacketOrder packetOrder;
@@ -38,6 +38,8 @@ class TaskNewEdit<T extends Packet> extends Task<Boolean> {
 		this.setOnSucceeded(event -> {
 			if(getValue())
 				Client.get().handleMenuAction(MenuAction.MAIN_RELOAD_QUIET);
+			else if(getServerError() != null)
+				ActionHandler.get().handleServerError(getServerError());
 			else
 				ActionHandler.get().showConnectionError();
 		});
@@ -55,10 +57,12 @@ class TaskNewEdit<T extends Packet> extends Task<Boolean> {
 	        send.writeObject(packet);
 	        send.flush();
 	        boolean ret = get.readBoolean();
-	        socket.close();
 	        if(!ret) {
+	        	setServerError((ServerError) get.readObject());
+		        socket.close();
 				return false;
 	        }
+	        socket.close();
 	        return true;
 		}
 		catch (UnknownHostException e) {

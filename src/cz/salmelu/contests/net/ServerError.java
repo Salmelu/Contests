@@ -6,13 +6,19 @@ package cz.salmelu.contests.net;
  */
 public enum ServerError {
 	/** Server received a byte which doesn't represent any of the packets */
-	InvalidPacket,
+	InvalidPacket(false),
 	/** Server expected a different data structure for the obtained packet */
-	InvalidInput,
+	InvalidInput(false),
 	/** Server got a task to be done on a contest, which doesn't exist anymore */
-	ContestNotFound,
+	ContestNotFound(false),
 	/** The data on the server are different, then on the client */ 
-	InvalidDataState,
+	InvalidDataState(false),
 	/** There was an error while the server was locking the data to access them */
-	UnableToLock;
+	UnableToLock(false);
+	
+	private ServerError(boolean details) {
+		this.details = details;
+	}
+	
+	public boolean details;
 }

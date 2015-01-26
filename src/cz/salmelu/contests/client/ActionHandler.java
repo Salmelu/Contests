@@ -12,12 +12,12 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.dialog.Dialog;
 import org.controlsfx.dialog.Dialogs;
 
-import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import cz.salmelu.contests.model.Contest;
 import cz.salmelu.contests.model.ContestInfo;
 import cz.salmelu.contests.net.PacketOrder;
+import cz.salmelu.contests.net.ServerError;
 
 /**
  * A class responsible for all GUI displaying and loading tasks.<br>
@@ -80,7 +80,7 @@ class ActionHandler {
 	 * @param display when set to true, the task will call {@link #showContestList} to show the list
 	 */
 	protected void reloadContestList(boolean display) {
-		Task<Boolean> load = new Task<Boolean>() {			
+		TaskContest load = new TaskContest() {			
 			@SuppressWarnings("unchecked")
 			@Override
 			protected Boolean call() {				
@@ -121,7 +121,11 @@ class ActionHandler {
 			if(load.getValue() && display) {
 				showContestList();
 			}
-			else if(!load.getValue()){
+			else if(!load.getValue() && load.getServerError() != null) {
+				handleServerError(load.getServerError());
+				Client.get().contests = null;
+			}
+			else if(!load.getValue()) {
 				showConnectionError();
 				Client.get().contests = null;
 			}
@@ -150,7 +154,7 @@ class ActionHandler {
 	 * @param display if set to true, displays a success dialog when the contest is loaded.
 	 */
 	protected void loadContest(Integer id, boolean display) {
-		Task<Boolean> load = new Task<Boolean>() {
+		TaskContest load = new TaskContest() {
 			@Override
 			protected Boolean call() {			
 				try {
@@ -164,6 +168,7 @@ class ActionHandler {
 			        send.flush();
 			        boolean ret = get.readBoolean();
 			        if(!ret) {
+			        	setServerError((ServerError) get.readObject());
 						socket.close();
 						return false;
 			        }
@@ -186,7 +191,10 @@ class ActionHandler {
 		load.setOnSucceeded(event -> {
 			if(display && load.getValue()) showSuccessDialog("Contest was loaded", 
 					"Contest " + Client.get().current.getName() + " was successfully loaded.");	
-			if(!load.getValue()) {
+			if(!load.getValue() && load.getServerError() != null) {
+				handleServerError(load.getServerError());
+			}
+			else if(!load.getValue()) {
 				showConnectionError();
 			}
 		});
@@ -287,5 +295,34 @@ class ActionHandler {
 			.masthead(sm)
 			.message(lm)
 	    	.showInformation();
+	}
+	
+	protected void handleServerError(ServerError se) {
+		switch(se) {
+		case ContestNotFound:
+			showErrorDialog("Invalid contest", 
+					"You were trying to access a contest, which probably doesn't exist anymore. "
+					+ "Please, choose a valid contest.");
+			break;
+		case InvalidDataState:
+			showErrorDialog("Invalid data state", 
+					"The data on the server have changed since you last downloaded them and "
+					+ "therefore the operation was invalid. Please reload the data and try again.");
+			break;
+		case InvalidInput:
+			showErrorDialog("Invalid input", 
+					"Server has obtained invalid packet data and therefore it cannot process the operation."
+					+ "Please try again.");
+			break;
+		case InvalidPacket:
+			showErrorDialog("Invalid packet code", 
+					"Server has received an unknown packet code.");
+			break;
+		case UnableToLock:
+			showErrorDialog("Unable to lock data", 
+					"Server couldn't lock the data. "
+					+ "Please verify that the server is running correctly and try again.");
+			break;
+		}
 	}
 }
