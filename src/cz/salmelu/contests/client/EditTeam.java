@@ -28,6 +28,7 @@ final class EditTeam implements Displayable {
 	private Label catLabel = null;
 	private Label teamLabel = null;
 	private HBox topBox = null;
+	private GridPane topGp = null;
 	private TeamCategory currentCat = null;
 	private Team currentTeam = null;
 	private Button deleteButton = null;
@@ -45,6 +46,10 @@ final class EditTeam implements Displayable {
 		
 		topBox = new HBox(16);
 		topBox.setAlignment(Pos.CENTER);
+		topGp = new GridPane();
+		topGp.setAlignment(Pos.CENTER);
+		topGp.setHgap(10);
+		topGp.setVgap(6);
 		catLabel = new Label("Choose a team category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(160);
@@ -63,8 +68,12 @@ final class EditTeam implements Displayable {
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(160);
 		deleteButton.setOnAction(ae -> deleteTeam());
+		topGp.add(catLabel, 0, 0);
+		topGp.add(catChoice, 1, 0);
+		topGp.add(teamLabel, 0, 1);
+		topGp.add(teamChoice, 1, 1);
 		topBox.setPadding(new Insets(0,15,40,15));
-		topBox.getChildren().addAll(catLabel, catChoice, teamLabel, teamChoice, deleteButton);
+		topBox.getChildren().addAll(topGp, deleteButton);
 		
 		createTable();
 	}

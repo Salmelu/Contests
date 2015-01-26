@@ -34,6 +34,7 @@ final class EditContestant implements Displayable {
 	private Label catLabel = null;
 	private Label csLabel = null;
 	private HBox topBox = null;
+	private GridPane topGp = null;
 	private Category currentCat = null;
 	private Contestant currentCs = null;
 	private Button deleteButton = null;
@@ -54,6 +55,11 @@ final class EditContestant implements Displayable {
 		
 		topBox = new HBox(16);
 		topBox.setAlignment(Pos.CENTER);
+		topGp = new GridPane();
+		topGp.setAlignment(Pos.CENTER);
+		topGp.setHgap(10);
+		topGp.setVgap(6);
+		
 		catLabel = new Label("Choose a category: ");
 		catChoice = new ChoiceBox<>();
 		catChoice.setPrefWidth(160);
@@ -72,8 +78,12 @@ final class EditContestant implements Displayable {
 		deleteButton.setPadding(new Insets(5,5,5,5));
 		deleteButton.setPrefWidth(160);
 		deleteButton.setOnAction(ae -> deleteContestant());
+		topGp.add(catLabel, 0, 0);
+		topGp.add(catChoice, 1, 0);
+		topGp.add(csLabel, 0, 1);
+		topGp.add(csChoice, 1, 1);
 		topBox.setPadding(new Insets(0,15,40,15));
-		topBox.getChildren().addAll(catLabel, catChoice, csLabel, csChoice, deleteButton);
+		topBox.getChildren().addAll(topGp, deleteButton);
 		
 		createTable();
 	}
