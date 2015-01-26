@@ -219,7 +219,7 @@ class ActionHandler {
 	 * @param d Displayable to be shown.
 	 */
 	protected void showTable(Displayable d) {
-		if(!Client.contestSelected()) {
+		if(!Client.contestSelected() && !(d instanceof ContestTable)) {
 			showNoContestWarning();
 			return;
 		}
