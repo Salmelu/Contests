@@ -1,6 +1,7 @@
 package cz.salmelu.contests.client;
 
 import cz.salmelu.contests.model.ScoreMode;
+
 import cz.salmelu.contests.model.TeamCategory;
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.PacketTeamCategory;
@@ -14,6 +15,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
+/**
+ * A class holding elements for form fields and their respective labels to allow changing the team category infos
+ * @author salmelu
+ */
 final class EditTeamCategory implements Displayable {
 	
 	private Client c;
@@ -29,6 +34,9 @@ final class EditTeamCategory implements Displayable {
 	private TextField name = null;
 	private ChoiceBox<ScoreMode> sm = null;
 	
+	/**
+	 * Constructs a new object, used by {@link getInstance()} if an instance doesn't exist yet
+	 */
 	private EditTeamCategory() {
 		this.c = Client.get();
 		
@@ -50,7 +58,10 @@ final class EditTeamCategory implements Displayable {
 		
 		createTable();
 	}
-	
+
+	/**
+	 * Creates a gridpane containing all the fields and their labels
+	 */
 	private void createTable() {
 		gp = new GridPane();
 		gp.setAlignment(Pos.CENTER);
@@ -113,6 +124,9 @@ final class EditTeamCategory implements Displayable {
 		c.mainPanel.setTop(tcBox);
 	}
 
+	/**
+	 * Sets the field values. If there aren't any values to be set, empties the fields
+	 */
 	private void fillFields() {
 		if(currentTc == null || !c.current.hasTeamCategory(currentTc.getId())) {
 			name.setText("");
@@ -129,6 +143,10 @@ final class EditTeamCategory implements Displayable {
 		c.mainPanel.setCenter(gp);
 	}
 
+	/** 
+	 * Handler called by the delete button. 
+	 * Provides basic checks and if successful, starts a delete task.
+	 */
 	private void deleteTeamCategory() {
 		if(currentTc == null) {
 			ActionHandler.get().showErrorDialog("No team category selected", "You have not chosen a team category to delete.");
@@ -143,7 +161,11 @@ final class EditTeamCategory implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("Team category deleted", "Team category " + currentTc.getName() + " was deleted.");
 	}
-	
+
+	/** 
+	 * Handler called by the new button. 
+	 * Provides basic checks and if successful, starts a new task.
+	 */
 	private void newTeamCategory() {
 		PacketTeamCategory ptc = new PacketTeamCategory();
 		ptc.name = name.getText();
@@ -163,7 +185,11 @@ final class EditTeamCategory implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("New team category added", "You have successfully sent a request for a new team category.");
 	}
-	
+
+	/** 
+	 * Handler called by the update button. 
+	 * Provides basic checks and if successful, starts an update task.
+	 */
 	private void updateTeamCategory() {
 		if(currentTc == null) {
 			ActionHandler.get().showErrorDialog("No team category selected", "You have not chosen a team category.");

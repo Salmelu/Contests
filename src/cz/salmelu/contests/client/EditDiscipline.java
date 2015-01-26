@@ -13,6 +13,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
+/**
+ * A class holding elements for form fields and their respective labels to allow changing the discipline infos
+ * @author salmelu
+ */
 final class EditDiscipline implements Displayable {
 	
 	private Client c;
@@ -26,7 +30,10 @@ final class EditDiscipline implements Displayable {
 	
 	private GridPane gp = null;
 	private TextField name = null;
-	
+
+	/**
+	 * Constructs a new object, used by {@link getInstance()} if an instance doesn't exist yet
+	 */
 	private EditDiscipline() {
 		this.c = Client.get();
 		
@@ -48,7 +55,10 @@ final class EditDiscipline implements Displayable {
 		
 		createTable();
 	}
-	
+
+	/**
+	 * Creates a gridpane containing all the fields and their labels
+	 */
 	private void createTable() {
 		gp = new GridPane();
 		gp.setAlignment(Pos.CENTER);
@@ -105,6 +115,9 @@ final class EditDiscipline implements Displayable {
 		c.mainPanel.setTop(discBox);
 	}
 
+	/**
+	 * Sets the field values. If there aren't any values to be set, empties the fields
+	 */
 	private void fillFields() {
 		if(currentDisc == null || !c.current.hasDiscipline(currentDisc.getId())) {
 			name.setText("");
@@ -120,6 +133,10 @@ final class EditDiscipline implements Displayable {
 		c.mainPanel.setCenter(gp);
 	}
 
+	/** 
+	 * Handler called by the delete button. 
+	 * Provides basic checks and if successful, starts a delete task.
+	 */
 	private void deleteDiscipline() {
 		if(currentDisc == null) {
 			ActionHandler.get().showErrorDialog("No discipline selected", "You have not chosen a discipline to delete.");
@@ -134,7 +151,11 @@ final class EditDiscipline implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("Discipline deleted", "Discipline " + currentDisc.getName() + " was deleted.");
 	}
-	
+
+	/** 
+	 * Handler called by the new button. 
+	 * Provides basic checks and if successful, starts a new task.
+	 */
 	private void newDiscipline() {
 		PacketDiscipline pd = new PacketDiscipline();
 		pd.name = name.getText();
@@ -149,7 +170,11 @@ final class EditDiscipline implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("New discipline added", "You have successfully sent a request for a new discipline.");
 	}
-	
+
+	/** 
+	 * Handler called by the update button. 
+	 * Provides basic checks and if successful, starts an update task.
+	 */
 	private void updateDiscipline() {
 		if(currentDisc == null) {
 			ActionHandler.get().showErrorDialog("No discipline selected", "You have not chosen a discipline.");

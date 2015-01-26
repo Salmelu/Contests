@@ -16,6 +16,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
+/**
+ * A class holding elements for form fields and their respective labels to allow changing the category infos
+ * @author salmelu
+ */
 final class EditCategory implements Displayable {
 	
 	private Client c;
@@ -30,7 +34,10 @@ final class EditCategory implements Displayable {
 	private GridPane gp = null;
 	private TextField name = null;
 	private CheckComboBox<Discipline> discChoice; 
-	
+
+	/**
+	 * Constructs a new object, used by {@link getInstance()} if an instance doesn't exist yet
+	 */
 	private EditCategory() {
 		this.c = Client.get();
 		
@@ -53,6 +60,9 @@ final class EditCategory implements Displayable {
 		createTable();
 	}
 	
+	/**
+	 * Creates a gridpane containing all the fields and their labels
+	 */
 	private void createTable() {
 		gp = new GridPane();
 		gp.setAlignment(Pos.CENTER);
@@ -110,6 +120,9 @@ final class EditCategory implements Displayable {
 		c.mainPanel.setTop(catBox);
 	}
 
+	/**
+	 * Sets the field values. If there aren't any values to be set, empties the fields
+	 */
 	private void fillFields() {
 		if(currentCat == null || !c.current.hasCategory(currentCat.getId())) {
 			name.setText("");
@@ -124,6 +137,9 @@ final class EditCategory implements Displayable {
 		}
 	}
 	
+	/**
+	 * Called, when the updated category is changed to empty the combobox
+	 */
 	private void updateItems() {
 		// Need to recreate each time to avoid FX bug - warnings when loading css styles
 		gp.getChildren().remove(discChoice);
@@ -140,6 +156,10 @@ final class EditCategory implements Displayable {
 		c.mainPanel.setCenter(gp);
 	}
 
+	/** 
+	 * Handler called by the delete button. 
+	 * Provides basic checks and if successful, starts a delete task.
+	 */
 	private void deleteCategory() {
 		if(currentCat == null) {
 			ActionHandler.get().showErrorDialog("No category selected", "You have not chosen a category to delete.");
@@ -154,7 +174,11 @@ final class EditCategory implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("Category deleted", "Category " + currentCat.getName() + " was deleted.");
 	}
-	
+
+	/** 
+	 * Handler called by the new button. 
+	 * Provides basic checks and if successful, starts a new task.
+	 */
 	private void newCategory() {
 		PacketCategory pc = new PacketCategory();
 		pc.name = name.getText();
@@ -172,7 +196,11 @@ final class EditCategory implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("New category added", "You have successfully sent a request for a new category.");
 	}
-	
+
+	/** 
+	 * Handler called by the update button. 
+	 * Provides basic checks and if successful, starts an update task.
+	 */
 	private void updateCategory() {
 		if(currentCat == null) {
 			ActionHandler.get().showErrorDialog("No category selected", "You have not chosen a category.");

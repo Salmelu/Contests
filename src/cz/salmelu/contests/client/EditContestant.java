@@ -19,6 +19,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
+/**
+ * A class holding elements for form fields and their respective labels to allow changing the contestant infos
+ * @author salmelu
+ */
 final class EditContestant implements Displayable {
 	
 	private Client c;
@@ -40,7 +44,10 @@ final class EditContestant implements Displayable {
 	private TextField bonus = null;
 	private ChoiceBox<Category> cat = null; 
 	private ChoiceBox<Team> team = null; 
-	
+
+	/**
+	 * Constructs a new object, used by {@link getInstance()} if an instance doesn't exist yet
+	 */
 	private EditContestant() {
 		this.c = Client.get();
 		dummy = new Team("No Team");
@@ -70,7 +77,10 @@ final class EditContestant implements Displayable {
 		
 		createTable();
 	}
-	
+
+	/**
+	 * Creates a gridpane containing all the fields and their labels
+	 */
 	private void createTable() {
 		gp = new GridPane();
 		gp.setAlignment(Pos.CENTER);
@@ -162,6 +172,9 @@ final class EditContestant implements Displayable {
 		c.mainPanel.setTop(topBox);
 	}
 	
+	/**
+	 * Updates a list of contestant to match the selected category. Called when a category is changed.
+	 */
 	private void updateCsList() {
 		if(currentCat == null || c.current.getContestants(currentCat) == null) return;
 		int id = currentCs == null ? 0 : currentCs.getId();
@@ -173,6 +186,9 @@ final class EditContestant implements Displayable {
 		}
 	}
 
+	/**
+	 * Sets the field values. If there aren't any values to be set, empties the fields
+	 */
 	private void fillFields() {
 		// Update fields
 		cat.setItems(FXCollections.observableArrayList(c.current.getCategories().values()));
@@ -214,6 +230,10 @@ final class EditContestant implements Displayable {
 		c.mainPanel.setCenter(gp);
 	}
 
+	/** 
+	 * Handler called by the delete button. 
+	 * Provides basic checks and if successful, starts a delete task.
+	 */
 	private void deleteContestant() {
 		if(currentCat == null || currentCs == null) {
 			ActionHandler.get().showErrorDialog("No contestant or category selected",
@@ -230,7 +250,11 @@ final class EditContestant implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("Contestant deleted", "Contestant " + currentCs.toString() + " was deleted.");
 	}
-	
+
+	/** 
+	 * Handler called by the new button. 
+	 * Provides basic checks and if successful, starts a new task.
+	 */
 	private void newContestant() {
 		PacketContestant pc = new PacketContestant();
 		pc.fName = fName.getText();
@@ -269,7 +293,11 @@ final class EditContestant implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("New contestant added", "You have successfully sent a request for a new contestant.");
 	}
-	
+
+	/** 
+	 * Handler called by the update button. 
+	 * Provides basic checks and if successful, starts an update task.
+	 */
 	private void updateContestant() {
 		if(currentCat == null || currentCs == null) {
 			ActionHandler.get().showErrorDialog("No category or contestant selected", "You have not chosen a contestant and a category.");

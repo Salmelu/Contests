@@ -13,6 +13,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
+/**
+ * A class holding elements for form fields and their respective labels to allow changing the contest infos
+ * @author salmelu
+ */
 final class EditContest implements Displayable {
 	
 	private Client c;
@@ -26,7 +30,10 @@ final class EditContest implements Displayable {
 	
 	private GridPane gp = null;
 	private TextField name = null;
-	
+
+	/**
+	 * Constructs a new object, used by {@link getInstance()} if an instance doesn't exist yet
+	 */
 	private EditContest() {
 		this.c = Client.get();
 		
@@ -48,7 +55,10 @@ final class EditContest implements Displayable {
 		
 		createTable();
 	}
-	
+
+	/**
+	 * Creates a gridpane containing all the fields and their labels
+	 */
 	private void createTable() {
 		gp = new GridPane();
 		gp.setAlignment(Pos.CENTER);
@@ -105,6 +115,9 @@ final class EditContest implements Displayable {
 		c.mainPanel.setTop(contestBox);
 	}
 
+	/**
+	 * Sets the field values. If there aren't any values to be set, empties the fields
+	 */
 	private void fillFields() {
 		if(currentContest == null || !c.contests.containsValue(currentContest)) {
 			name.setText("");
@@ -119,6 +132,10 @@ final class EditContest implements Displayable {
 		c.mainPanel.setCenter(gp);
 	}
 
+	/** 
+	 * Handler called by the delete button. 
+	 * Provides basic checks and if successful, starts a delete task.
+	 */
 	private void deleteContest() {
 		if(currentContest == null) {
 			ActionHandler.get().showErrorDialog("No contest selected", "You have not chosen a contest.");
@@ -133,7 +150,11 @@ final class EditContest implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("Contest deleted", "Contest " + currentContest.getName() + " was deleted.");
 	}
-	
+
+	/** 
+	 * Handler called by the new button. 
+	 * Provides basic checks and if successful, starts a new task.
+	 */
 	private void newContest() {
 		PacketContest pc = new PacketContest();
 		pc.name = name.getText();
@@ -147,7 +168,11 @@ final class EditContest implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("New contest added", "You have successfully sent a request for a new contest.");
 	}
-	
+
+	/** 
+	 * Handler called by the update button. 
+	 * Provides basic checks and if successful, starts an update task.
+	 */
 	private void updateContest() {
 		if(currentContest == null) {
 			ActionHandler.get().showErrorDialog("No contest selected", "You have not chosen a contest.");

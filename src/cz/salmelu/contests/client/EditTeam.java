@@ -14,6 +14,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
+/**
+ * A class holding elements for form fields and their respective labels to allow changing the team infos
+ * @author salmelu
+ */
 final class EditTeam implements Displayable {
 	
 	private Client c;
@@ -33,6 +37,9 @@ final class EditTeam implements Displayable {
 	private TextField bonus = null;
 	private ChoiceBox<TeamCategory> teamCat = null; 
 	
+	/**
+	 * Constructs a new object, used by {@link getInstance()} if an instance doesn't exist yet
+	 */
 	private EditTeam() {
 		this.c = Client.get();
 		
@@ -61,7 +68,10 @@ final class EditTeam implements Displayable {
 		
 		createTable();
 	}
-	
+
+	/**
+	 * Creates a gridpane containing all the fields and their labels
+	 */
 	private void createTable() {
 		gp = new GridPane();
 		gp.setAlignment(Pos.CENTER);
@@ -136,6 +146,9 @@ final class EditTeam implements Displayable {
 		c.mainPanel.setTop(topBox);
 	}
 	
+	/**
+	 * Sets new values for chosing the edited team. Called when a team category is changed.
+	 */
 	private void updateTeamList() {
 		if(currentCat == null || c.current.getTeams(currentCat) == null) return;
 		int id = currentTeam == null ? 0 : currentTeam.getId();
@@ -147,6 +160,9 @@ final class EditTeam implements Displayable {
 		}
 	}
 
+	/**
+	 * Sets the field values. If there aren't any values to be set, empties the fields
+	 */
 	private void fillFields() {
 		teamCat.setItems(FXCollections.observableArrayList(c.current.getTeamCategories().values()));
 		if(currentCat == null || currentTeam == null || !c.current.hasTeam(currentTeam)) {
@@ -167,6 +183,10 @@ final class EditTeam implements Displayable {
 		c.mainPanel.setCenter(gp);
 	}
 
+	/** 
+	 * Handler called by the delete button. 
+	 * Provides basic checks and if successful, starts a delete task.
+	 */
 	private void deleteTeam() {
 		if(currentCat == null || currentTeam == null) {
 			ActionHandler.get().showErrorDialog("No team or team category selected",
@@ -183,7 +203,11 @@ final class EditTeam implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("Team deleted", "Team " + currentTeam.getName() + " was deleted.");
 	}
-	
+
+	/** 
+	 * Handler called by the new button. 
+	 * Provides basic checks and if successful, starts a new task.
+	 */
 	private void newTeam() {
 		PacketTeam pt = new PacketTeam();
 		pt.name = name.getText();
@@ -210,7 +234,11 @@ final class EditTeam implements Displayable {
 		t.run();
 		ActionHandler.get().showSuccessDialog("New team added", "You have successfully sent a request for a new team.");
 	}
-	
+
+	/** 
+	 * Handler called by the update button. 
+	 * Provides basic checks and if successful, starts an update task.
+	 */
 	private void updateTeam() {
 		if(currentCat == null || currentTeam == null) {
 			ActionHandler.get().showErrorDialog("No team or team category selected", "You have not chosen a team and team category.");
