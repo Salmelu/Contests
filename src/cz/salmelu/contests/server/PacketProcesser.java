@@ -648,6 +648,11 @@ class PacketProcesser {
 			}
 			Contest cs = dh.getContest(packet.conId);
 			Contestant cst = cs.getContestant(packet.oldCatId, packet.id);
+			if(cst == null) {
+				writeServerError(out, ServerError.InvalidDataState);
+				dh.unlock();
+				return false;
+			}
 			if(cst.getCategory().getId() != packet.catId) {
 				Category cat = cs.getCategory(packet.catId);
 				cs.changeContestantCategory(cst, cat);

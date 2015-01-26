@@ -88,6 +88,7 @@ final class CategoryScore implements Displayable {
 		
 		updateButton = new Button("Update score");
 		updateButton.setAlignment(Pos.CENTER);
+		updateButton.setPadding(new Insets(5,5,5,5));
 		updateButton.setPrefWidth(200);
 		updateButton.setOnAction(event -> updateScore());
 	}

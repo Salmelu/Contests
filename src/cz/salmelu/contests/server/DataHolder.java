@@ -6,6 +6,8 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import cz.salmelu.contests.model.*;
+import cz.salmelu.contests.util.Logger;
+import cz.salmelu.contests.util.LoggerSeverity;
 
 /**
  * A class used by server to hold all contest data and perform all major changes to the structures.
@@ -315,6 +317,7 @@ class DataHolder {
 	protected synchronized boolean lock() {
 		try {
 			while(locked) {
+				Logger.getInstance().log("Data is already locked waiting for the lock", LoggerSeverity.VERBOSE);
 				this.wait();
 			}
 		}
