@@ -5,11 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Inet4Address;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -114,9 +111,7 @@ public class Server {
 	public void start() {
 		ServerSocket sckt = null;
 		try {
-			sckt = new ServerSocket();
-			SocketAddress addr = new InetSocketAddress(Inet4Address.getLocalHost(), Config.INET_PORT);
-			sckt.bind(addr);
+			sckt = new ServerSocket(Config.INET_PORT);
 			sckt.setSoTimeout(4000);  // To allow shutdown hook to end this thread
 			Logger.getInstance().log("Server socket bound at port " + Config.INET_PORT + ".", LoggerSeverity.INFO);
 			while(running) {
