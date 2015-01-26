@@ -116,6 +116,7 @@ public class Team implements Serializable {
 	 */
 	public double getTotalScore() {
 		if(cat == null) return 0;
+		if(contestants.size() == 0) return 0;
 		double score = 0;
 		
 		switch(cat.getScoreMode()) {
@@ -189,14 +190,4 @@ public class Team implements Serializable {
 			itc.remove();
 		}
 	}
-	
-	/* UNUSED
-	public int getOrder() {
-		return order;
-	}
-	
-	protected void setOrder(int order) {
-		this.order = order;
-	}
-	*/
 }

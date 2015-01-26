@@ -107,8 +107,8 @@ public class Client extends Application {
 		imain1.setOnAction(ae -> handleMenuAction(MenuAction.MAIN_CONTESTS));
 		imain2.setOnAction(ae -> handleMenuAction(MenuAction.MAIN_RELOAD));
 		imain3.setOnAction(ae -> handleMenuAction(MenuAction.MAIN_EXIT));
-		imain3.setOnAction(ae -> handleMenuAction(MenuAction.SHOW_CONTESTANTS));
-		ishow1.setOnAction(ae -> handleMenuAction(MenuAction.SHOW_TEAMS));
+		ishow1.setOnAction(ae -> handleMenuAction(MenuAction.SHOW_CONTESTANTS));
+		ishow2.setOnAction(ae -> handleMenuAction(MenuAction.SHOW_TEAMS));
 		ishow3.setOnAction(ae -> handleMenuAction(MenuAction.SHOW_ONE_TEAM));
 		iscore1.setOnAction(ae -> handleMenuAction(MenuAction.SCORE_CATEGORY));
 		iedit1.setOnAction(ae -> handleMenuAction(MenuAction.UPDATE_CONTEST));
