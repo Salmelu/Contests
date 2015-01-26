@@ -16,8 +16,6 @@ public class Config {
 	/** sets path to logs folder */
 	public static final String LOGGING_PATH;
 
-	/** sets saving method */
-	public static final boolean SAVE_METHOD_FILE;
 	/** sets save file */
 	public static final String SAVE_FILE;
 	/** sets, if the autosaving should be enabled */
@@ -35,8 +33,7 @@ public class Config {
 		LOGGING = cp.getAllowedStringProperty("LOGGING", "verbose-warning",
 				"verbose-verbose", "verbose-info", "verbose-warning", "info-info", "info-warning", "warning-warning");
 		LOGGING_PATH = cp.getStringProperty("LOGGING_PATH", "log/");
-
-		SAVE_METHOD_FILE = cp.getBooleanProperty("SAVE_METHOD_FILE", true);
+		
 		SAVE_FILE = cp.getStringProperty("SAVE_FILE", "");
 		AUTO_SAVE = cp.getBooleanProperty("AUTO_SAVE", true);
 		SAVE_ON_CHANGE = cp.getBooleanProperty("SAVE_ON_CHANGE", true);

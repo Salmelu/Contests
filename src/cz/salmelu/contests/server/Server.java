@@ -128,23 +128,19 @@ public class Server {
 				Logger.getInstance().logAlways("Server ended. Goodbye.");
 			}
 		});
+		
 		// Load data
-		if(Config.SAVE_METHOD_FILE) {
-			File f = new File(Config.SAVE_FILE);
-			try {
-				Logger.getInstance().log("Trying to load data from file " + f.getName(), LoggerSeverity.INFO);
-				dl = new DataLoader(f);
-				dh.replaceContests(dl.load());
-				Logger.getInstance().log("Data successfully loaded from " + f.getName(), LoggerSeverity.INFO);
-			}
-			catch (LoaderException e) {
-				Logger.getInstance().log("Unable to load save file, starting new instance.", LoggerSeverity.WARNING);
-				Logger.getInstance().log(e.getLocalizedMessage(), LoggerSeverity.WARNING);
-				test();
-			}
+		File f = new File(Config.SAVE_FILE);
+		try {
+			Logger.getInstance().log("Trying to load data from file " + f.getName(), LoggerSeverity.INFO);
+			dl = new DataLoader(f);
+			dh.replaceContests(dl.load());
+			Logger.getInstance().log("Data successfully loaded from " + f.getName(), LoggerSeverity.INFO);
 		}
-		else {
-			throw new UnsupportedOperationException("Saving to database is not supported yet.");
+		catch (LoaderException e) {
+			Logger.getInstance().log("Unable to load save file, starting new instance.", LoggerSeverity.WARNING);
+			Logger.getInstance().log(e.getLocalizedMessage(), LoggerSeverity.WARNING);
+			test();
 		}
 		
 		// If autosaver is allowed, start the thread
@@ -154,7 +150,7 @@ public class Server {
 			autoSaver.start();
 		}
 		else if(Config.AUTO_SAVE && Config.SAVE_ON_CHANGE) {
-			throw new UnsupportedOperationException("Saving on change is not supported yet");
+			Logger.getInstance().log("Auto saving enabled, saving of data change", LoggerSeverity.INFO);
 		}
 	}
 	
@@ -181,6 +177,12 @@ public class Server {
 						PacketOrder p = PacketOrder.getPacket((byte) packetCode);
 						if(processer.processPacket(p, input, output)) {
 							Logger.getInstance().log("PacketOrder " + (byte) packetCode + " processed successfully.", LoggerSeverity.VERBOSE);
+							if(p.changing() && Config.AUTO_SAVE && Config.SAVE_ON_CHANGE) {
+								dh.lock();
+								Logger.getInstance().log("Saving data", LoggerSeverity.VERBOSE);
+								dl.save(dh.getAllContests());
+								dh.unlock();
+							}
 						}
 						else {
 							Logger.getInstance().log("PacketOrder " + (byte) packetCode + " received error.", LoggerSeverity.VERBOSE);

@@ -12,15 +12,13 @@ import java.util.TreeMap;
 
 /**
  * A helper class for loading the data for the server.<br>
- * Allows loading server data from a file specified in the configuration file.
+ * Allows loading server data from a file specified in the configuration file.<br>
  * Supports loading and saving a map of all contests. Also saves and loads an {@link IdFactory}
  * instance to continue using the same set of unique ids.
  * @author salmelu
  */
 public class DataLoader {
 
-	/** Not used yet, if true, loads from database, if false, loads from file with ObjectStreams */
-	private final boolean usingDatabase;
 	/**	Represents the save file */
 	private File saveFile;
 	@SuppressWarnings("unused")
@@ -31,7 +29,6 @@ public class DataLoader {
 	 * @param saveFile file to be loaded from
 	 */
 	public DataLoader(File saveFile) {
-		this.usingDatabase = false;
 		this.saveFile = saveFile;
 	}
 	
@@ -41,12 +38,7 @@ public class DataLoader {
 	 * @throws LoaderException Loading was unsuccessful. Either the save file doesn't exists, the Loader couldn't read the file or some of the required classes are missing.
 	 */
 	public Map<Integer, Contest> load() throws LoaderException {
-		if(usingDatabase) {
-			throw new UnsupportedOperationException();
-		}
-		else {
-			return loadFromFile();
-		}
+		return loadFromFile();
 	}
 	
 	/**
@@ -80,12 +72,7 @@ public class DataLoader {
 	 * @throws LoaderException Loader couldn't access or write to the file
 	 */
 	public void save(Map<Integer, Contest> contests) throws LoaderException {
-		if(usingDatabase) {
-			throw new UnsupportedOperationException();
-		}
-		else {
-			saveToFile(contests);
-		}
+		saveToFile(contests);
 	}
 	
 	/**

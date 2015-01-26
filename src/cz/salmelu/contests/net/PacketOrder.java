@@ -9,8 +9,8 @@ import java.util.Map;
  * @author salmelu
  */
 public enum PacketOrder {
-	ALL_GET_NAMES((byte) 0x00), // Gets a full map of contests of <name, contestinfo>
-	CONTEST_GET((byte) 0x10), // Get a contest by Id (contest id)
+	ALL_GET_NAMES((byte) 0x00, false), // Gets a full map of contests of <name, contestinfo>
+	CONTEST_GET((byte) 0x10, false), // Get a contest by Id (contest id)
 	CONTEST_EDIT((byte) 0x11), // Edit/add a contest (PacketContest)
 	CONTEST_DELETE((byte) 0x12), // Add a new contest (string name)
 	DISCIPLINE_DELETE((byte) 0x20), // Deletes a discipline (contest id, disc id)
@@ -27,6 +27,8 @@ public enum PacketOrder {
 	
 	/** Byte value of the packet */
 	private byte order;
+	/** True if the order changes server data. Used for saving purposes */
+	private boolean changing = true;
 	/** Map of all the packet used for searching purposes */
 	private static Map<Byte, PacketOrder> packetList;
 	
@@ -38,11 +40,21 @@ public enum PacketOrder {
 	}
 	
 	/**
-	 * Creates new packet with an associated byte value.
+	 * Creates new changing packet with an associated byte value.
 	 * @param order the byte value of the packet
 	 */
 	private PacketOrder(byte order) {
+		this(order, true);
+	}
+	
+	/**
+	 * Creates a new packet with an associated byte value.
+	 * @param order the byte value of the packet
+	 * @param changing marks if the packet changes anything
+	 */
+	private PacketOrder(byte order, boolean changing) {
 		this.order = order;
+		this.changing = changing;
 	}
 	
 	/**
@@ -63,5 +75,13 @@ public enum PacketOrder {
 	 */
 	public byte toByte() {
 		return order;
+	}
+	
+	/**
+	 * Checks if this order changes server data structure
+	 * @return true, if the order changes server data, false otherwise
+	 */
+	public boolean changing() {
+		return changing;
 	}
 }
