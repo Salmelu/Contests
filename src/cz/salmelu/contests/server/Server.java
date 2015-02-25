@@ -124,18 +124,22 @@ public class Server {
 					Logger.getInstance().log("Received packet with id " + (byte) packetCode + ".", LoggerSeverity.VERBOSE);
 					if(packetCode != -1) {
 						PacketOrder p = PacketOrder.getPacket((byte) packetCode);
+						if(!dh.lock()) {
+							output.writeBoolean(false);
+							Logger.getInstance().log("PacketOrder processing error: " + ServerError.UnableToLock, LoggerSeverity.VERBOSE);
+							output.writeObject(ServerError.UnableToLock);
+						}
 						if(processer.processPacket(p, input, output)) {
 							Logger.getInstance().log("PacketOrder " + (byte) packetCode + " processed successfully.", LoggerSeverity.VERBOSE);
 							if(p.changing() && Config.AUTO_SAVE && Config.SAVE_ON_CHANGE) {
-								dh.lock();
 								Logger.getInstance().log("Saving data", LoggerSeverity.VERBOSE);
 								dl.save(dh.getAllContests());
-								dh.unlock();
 							}
 						}
 						else {
 							Logger.getInstance().log("PacketOrder " + (byte) packetCode + " received error.", LoggerSeverity.VERBOSE);
 						}
+						dh.unlock();
 					}
 					else {
 						try {

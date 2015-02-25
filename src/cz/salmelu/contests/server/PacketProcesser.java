@@ -132,16 +132,11 @@ class PacketProcesser {
 	 */
 	private boolean getAllNames(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		HashMap<String, ContestInfo> names = new HashMap<>();
-		if(!dh.lock()) {
-			writeServerError(out, ServerError.UnableToLock);
-			return false;
-		}
 		for(Entry<Integer, Contest> e : dh.getAllContests().entrySet()) {
 			names.put(e.getValue().getName(), e.getValue().getContestInfo());
 		}
 		out.writeBoolean(true);
 		out.writeObject(names);
-		dh.unlock();
 		return true;
 	}
 	
@@ -155,19 +150,13 @@ class PacketProcesser {
 	private boolean getContest(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		int contestId;
 		contestId = in.readInt();
-		if(!dh.lock()) {
-			writeServerError(out, ServerError.UnableToLock);
-			return false;
-		}
 		Contest cs = dh.getContest(contestId);
 		if(cs == null) {
 			writeServerError(out, ServerError.ContestNotFound);
-			dh.unlock();
 			return false;
 		}
 		out.writeBoolean(true);
 		out.writeObject(cs);
-		dh.unlock();
 		return true;
 	}
 	
@@ -181,33 +170,23 @@ class PacketProcesser {
 	 */
 	private boolean editAddContest(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
 		PacketContest packet = (PacketContest) in.readObject();
-		if(packet.id == -1 || packet.name == null || packet.name == "") {
+		if(packet.id == -1 || packet.name == null || packet.name.equals("")) {
 			writeServerError(out, ServerError.InvalidInput);
 			return false;
 		}
 		if(packet.id == 0) {
 			Contest cs = new Contest(packet.name);
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
 			dh.addContest(cs);
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
 		else {
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
 			if(dh.getContest(packet.id) == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
 			}
 			Contest cs = dh.getContest(packet.id);
 			cs.setName(packet.name);
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
@@ -222,16 +201,10 @@ class PacketProcesser {
 	 */
 	private boolean deleteContest(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		int conId = in.readInt();
-		if(!dh.lock()) {
-			writeServerError(out, ServerError.UnableToLock);
-			return false;
-		}
 		if(!dh.deleteContest(conId)) {
 			writeServerError(out, ServerError.ContestNotFound);
-			dh.unlock();
 			return false;
 		}
-		dh.unlock();
 		out.writeBoolean(true);
 		return true;
 	}
@@ -246,42 +219,31 @@ class PacketProcesser {
 	 */
 	private boolean editAddDiscipline(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
 		PacketDiscipline packet = (PacketDiscipline) in.readObject();
-		if(packet.id == -1 || packet.name == null || packet.name == "" || packet.conId == -1) {
+		if(packet.id == -1 || packet.name == null || packet.name.equals("") || packet.conId == -1) {
 			writeServerError(out, ServerError.InvalidInput);
 			return false;
 		}
 		if(packet.id == 0) {
 			Discipline d = new Discipline(packet.name);
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
 			if(!dh.addDiscipline(packet.conId, d)) {
 				writeServerError(out, ServerError.InvalidDataState);
-				dh.unlock();
 				return false;
 			}
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
 		else {
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
-			if(dh.getContest(packet.conId) == null) {
+			Contest cs = dh.getContest(packet.conId);
+			if(cs == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
 			}
-			Contest cs = dh.getContest(packet.conId);
 			Discipline d = cs.getDiscipline(packet.id);
 			if(d == null) {
 				writeServerError(out, ServerError.InvalidDataState);
 				return false;
 			}
 			d.setName(packet.name);
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
@@ -297,16 +259,10 @@ class PacketProcesser {
 	private boolean deleteDiscipline(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		int conId = in.readInt();
 		int discId = in.readInt();
-		if(!dh.lock()) {
-			writeServerError(out, ServerError.UnableToLock);
-			return false;
-		}
 		if(!dh.deleteDiscipline(conId, discId)) {
 			writeServerError(out, ServerError.InvalidDataState);
-			dh.unlock();
 			return false;
 		}
-		dh.unlock();
 		out.writeBoolean(true);
 		return true;
 	}
@@ -321,30 +277,20 @@ class PacketProcesser {
 	 */
 	private boolean editAddTeamCategory(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
 		PacketTeamCategory packet = (PacketTeamCategory) in.readObject();
-		if(packet.id == -1 || packet.name == null || packet.name == "" || packet.conId == -1 || packet.sm == null) {
+		if(packet.id == -1 || packet.name.equals("") || packet.name == null || packet.conId == -1 || packet.sm == null) {
 			writeServerError(out, ServerError.InvalidInput);
 			return false;
 		}
 		if(packet.id == 0) {
 			TeamCategory tc = new TeamCategory(packet.name, packet.sm);
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
 			if(!dh.addTeamCategory(packet.conId, tc)) {
 				writeServerError(out, ServerError.InvalidDataState);
-				dh.unlock();
 				return false;
 			}
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
 		else {
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
 			if(dh.getContest(packet.conId) == null) {
 				writeServerError(out, ServerError.ContestNotFound);
 				return false;
@@ -357,7 +303,6 @@ class PacketProcesser {
 			}
 			tc.setName(packet.name);
 			tc.setScoreMode(packet.sm);
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
@@ -374,16 +319,10 @@ class PacketProcesser {
 	private boolean deleteTeamCategory(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		int conId = in.readInt();
 		int tcId = in.readInt();
-		if(!dh.lock()) {
-			writeServerError(out, ServerError.UnableToLock);
-			return false;
-		}
 		if(!dh.deleteTeamCategory(conId, tcId)) {
 			writeServerError(out, ServerError.InvalidDataState);
-			dh.unlock();
 			return false;
 		}
-		dh.unlock();
 		out.writeBoolean(true);
 		return true;
 	}
@@ -398,48 +337,32 @@ class PacketProcesser {
 	 */
 	private boolean editAddCategory(ObjectInputStream in, ObjectOutputStream out) throws ClassNotFoundException, IOException {
 		PacketCategory packet = (PacketCategory) in.readObject();
-		if(packet.id == -1 || packet.name == null || packet.name == "" || packet.conId == -1 || packet.disciplines == null) {
+		if(packet.id == -1 || packet.name == null || packet.name.equals("") || packet.conId == -1 || packet.disciplines == null) {
 			writeServerError(out, ServerError.InvalidInput);
 			return false;
 		}
+		Contest cs = dh.getContest(packet.conId);
+		if(cs == null) {
+			writeServerError(out, ServerError.ContestNotFound);
+			return false;
+		}		
 		if(packet.id == 0) {
 			Category cat = new Category(packet.name);
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
-			if(dh.getContest(packet.conId) == null) {
-				writeServerError(out, ServerError.ContestNotFound);
-				return false;
-			}
-			Contest cs = dh.getContest(packet.conId);
 			for(int discId : packet.disciplines) {
 				if(!cs.hasDiscipline(discId)) {
 					writeServerError(out, ServerError.InvalidDataState);
-					dh.unlock();
 					return false;
 				}
 				cat.addDiscipline(cs.getDiscipline(discId));
 			}
 			if(!dh.addCategory(packet.conId, cat)) {
 				writeServerError(out, ServerError.InvalidDataState);
-				dh.unlock();
 				return false;
 			}
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
 		else {
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
-			if(dh.getContest(packet.conId) == null) {
-				writeServerError(out, ServerError.ContestNotFound);
-				return false;
-			}
-			Contest cs = dh.getContest(packet.conId);
 			Category cat = cs.getCategory(packet.id);
 			if(cat == null) {
 				writeServerError(out, ServerError.InvalidDataState);
@@ -450,7 +373,6 @@ class PacketProcesser {
 			for(int discId : packet.disciplines) {
 				if(!cs.hasDiscipline(discId)) {
 					writeServerError(out, ServerError.InvalidDataState);
-					dh.unlock();
 					return false;
 				}
 				if(!cat.hasDiscipline(cs.getDiscipline(discId))) {
@@ -465,7 +387,6 @@ class PacketProcesser {
 					itd.remove();
 				}
 			}
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
@@ -482,16 +403,10 @@ class PacketProcesser {
 	private boolean deleteCategory(ObjectInputStream in, ObjectOutputStream out) throws IOException {
 		int conId = in.readInt();
 		int catId = in.readInt();
-		if(!dh.lock()) {
-			writeServerError(out, ServerError.UnableToLock);
-			return false;
-		}
 		if(!dh.deleteCategory(conId, catId)) {
 			writeServerError(out, ServerError.InvalidDataState);
-			dh.unlock();
 			return false;
 		}
-		dh.unlock();
 		out.writeBoolean(true);
 		return true;
 	}
@@ -506,21 +421,17 @@ class PacketProcesser {
 	 */
 	private boolean editAddTeam(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 		PacketTeam packet = (PacketTeam) in.readObject();
-		if(packet.id == -1 || packet.name == null || packet.name == "" || packet.conId == -1 || packet.tcId == -1) {
+		if(packet.id == -1 || packet.name == null || packet.name.equals("") || packet.conId == -1 || packet.tcId == -1) {
 			writeServerError(out, ServerError.InvalidInput);
+			return false;
+		}
+		Contest cs = dh.getContest(packet.conId);
+		if(cs == null) {
+			writeServerError(out, ServerError.ContestNotFound);
 			return false;
 		}
 		if(packet.id == 0) {
 			Team t = new Team(packet.name, packet.bonus);
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
-			if(dh.getContest(packet.conId) == null) {
-				writeServerError(out, ServerError.ContestNotFound);
-				return false;
-			}
-			Contest cs = dh.getContest(packet.conId);
 			TeamCategory tc = cs.getTeamCategory(packet.tcId);
 			if(tc == null) {
 				writeServerError(out, ServerError.InvalidDataState);
@@ -528,23 +439,12 @@ class PacketProcesser {
 			}
 			if(!dh.addTeam(packet.conId, tc, t)) {
 				writeServerError(out, ServerError.InvalidDataState);
-				dh.unlock();
 				return false;
 			}
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
 		else {
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
-			if(dh.getContest(packet.conId) == null) {
-				writeServerError(out, ServerError.ContestNotFound);
-				return false;
-			}
-			Contest cs = dh.getContest(packet.conId);
 			Team t = cs.getTeam(packet.oldTcId, packet.id);
 			TeamCategory tc = cs.getTeamCategory(packet.tcId);
 			if(t == null || tc == null) {
@@ -556,7 +456,6 @@ class PacketProcesser {
 			if(t.getCategory() != tc) {
 				cs.changeTeamCategory(t, tc);
 			}
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
@@ -573,16 +472,10 @@ class PacketProcesser {
 		int conId = in.readInt();
 		int tcId = in.readInt();
 		int teamId = in.readInt();
-		if(!dh.lock()) {
-			writeServerError(out, ServerError.UnableToLock);
-			return false;
-		}
 		if(!dh.deleteTeam(conId, tcId, teamId)) {
 			writeServerError(out, ServerError.InvalidDataState);
-			dh.unlock();
 			return false;
 		}
-		dh.unlock();
 		out.writeBoolean(true);
 		return true;
 	}
@@ -597,23 +490,19 @@ class PacketProcesser {
 	 */
 	private boolean editAddContestant(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 		PacketContestant packet = (PacketContestant) in.readObject();
-		if(packet.id == -1 || packet.fName == null || packet.fName == "" || packet.lName == null || packet.lName == "" || 
+		if(packet.id == -1 || packet.fName == null || packet.fName.equals("") || packet.lName == null || packet.lName.equals("") || 
 				packet.conId == -1 || packet.catId == -1 || packet.teamId == -1) {
 			writeServerError(out, ServerError.InvalidInput);
+			return false;
+		}
+		Contest cs = dh.getContest(packet.conId);
+		if(dh.getContest(packet.conId) == null) {
+			writeServerError(out, ServerError.ContestNotFound);
 			return false;
 		}
 		if(packet.id == 0) {
 			TeamContestant tcs = new TeamContestant(packet.fName, packet.lName);
 			tcs.setBonus(packet.bonus);
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
-			if(dh.getContest(packet.conId) == null) {
-				writeServerError(out, ServerError.ContestNotFound);
-				return false;
-			}
-			Contest cs = dh.getContest(packet.conId);
 			Category cat = cs.getCategory(packet.catId);
 			if(cat == null) {
 				writeServerError(out, ServerError.InvalidDataState);
@@ -630,27 +519,15 @@ class PacketProcesser {
 			tcs.setCategory(cat);
 			if(!dh.addContestant(packet.conId, cat, tcs)) {
 				writeServerError(out, ServerError.InvalidDataState);
-				dh.unlock();
 				return false;
 			}
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
 		else {
-			if(!dh.lock()) {
-				writeServerError(out, ServerError.UnableToLock);
-				return false;
-			}
-			if(dh.getContest(packet.conId) == null) {
-				writeServerError(out, ServerError.ContestNotFound);
-				return false;
-			}
-			Contest cs = dh.getContest(packet.conId);
 			Contestant cst = cs.getContestant(packet.oldCatId, packet.id);
 			if(cst == null) {
 				writeServerError(out, ServerError.InvalidDataState);
-				dh.unlock();
 				return false;
 			}
 			if(cst.getCategory().getId() != packet.catId) {
@@ -678,7 +555,6 @@ class PacketProcesser {
 					}
 				}
 			}
-			dh.unlock();
 			out.writeBoolean(true);
 			return true;
 		}
@@ -695,16 +571,10 @@ class PacketProcesser {
 		int conId = in.readInt();
 		int catId = in.readInt();
 		int id = in.readInt();
-		if(!dh.lock()) {
-			writeServerError(out, ServerError.UnableToLock);
-			return false;
-		}
 		if(!dh.deleteContestant(conId, catId, id)) {
 			writeServerError(out, ServerError.InvalidDataState);
-			dh.unlock();
 			return false;
 		}
-		dh.unlock();
 		out.writeBoolean(true);
 		return true;
 	}
@@ -720,14 +590,9 @@ class PacketProcesser {
 	private boolean updateScore(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 		int conId = in.readInt();
 		int size = in.readInt();
-		if(!dh.lock()) {
-			writeServerError(out, ServerError.UnableToLock);
-			return false;
-		}
 		Contest con = dh.getContest(conId);
 		if(con == null) {
 			writeServerError(out, ServerError.ContestNotFound);
-			dh.unlock();
 			return false;
 		}
 		for(int i=0; i<size; i++) {
@@ -735,12 +600,10 @@ class PacketProcesser {
 			if(!dh.updateScore(con, usp.catId, usp.conId, usp.discId, usp.score)) {
 				writeServerError(out, ServerError.InvalidDataState);
 				dh.clearUpdateScores();
-				dh.unlock();
 				return false;
 			}
 		}
 		dh.commitUpdateScores();
-		dh.unlock();
 		out.writeBoolean(true);
 		return true;
 	}

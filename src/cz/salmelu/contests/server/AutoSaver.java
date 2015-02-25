@@ -15,9 +15,9 @@ import cz.salmelu.contests.util.LoggerSeverity;
 class AutoSaver extends Thread {
 
 	/** Reference to DataHolder, which stores all the data */
-	private DataHolder dh;
+	private final DataHolder dh;
 	/** Reference to DataLoader used to save the data */
-	private DataLoader dl;
+	private final DataLoader dl;
 	/** If set to false, will stop itself */
 	private volatile boolean running = true;
 	
@@ -35,7 +35,7 @@ class AutoSaver extends Thread {
 	 * This method should be called when the thread should end.<br>
 	 * It is called by the {@link Server} when the shutdown is initiated.
 	 */
-	public synchronized void stopRunning() {
+	public void stopRunning() {
 		this.running = false;
 	}
 

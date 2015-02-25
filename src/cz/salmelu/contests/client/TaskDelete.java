@@ -3,9 +3,6 @@ package cz.salmelu.contests.client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.ServerError;
@@ -15,7 +12,7 @@ import cz.salmelu.contests.net.ServerError;
  * It takes an array of integer ids which are then sent to the server to identify the removed data.
  * @author salmelu
  */
-class TaskDelete extends TaskContest {
+class TaskDelete extends TaskAbstract {
 	
 	/** The ids sent to the server */
 	private int[] ids;
@@ -43,34 +40,18 @@ class TaskDelete extends TaskContest {
 	}
 
 	@Override
-	protected Boolean call() throws Exception {
-		try {
-			InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-			Socket socket = new Socket();
-	        socket.connect(addr);
-	        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-	        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-	        send.writeByte(packet.toByte());
-	        for(int id : ids) {
-	        	send.writeInt(id);
-	        }
-	        send.flush();
-	        boolean ret = get.readBoolean();
-	        if(!ret) {	
-	        	setServerError((ServerError) get.readObject());
-		        socket.close();
-	        	return false;
-	        }
-	        socket.close();
-	        return true;
-		}
-		catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
+	protected void send(ObjectOutputStream sender) throws IOException {
+        sender.writeByte(packet.toByte());
+        for(int id : ids) {
+        	sender.writeInt(id);
+        }
+	}
+
+	@Override
+	protected void receive(ObjectInputStream receiver, boolean success)
+			throws ClassNotFoundException, IOException {
+		if(!success) 
+        	setServerError((ServerError) receiver.readObject());
 	}
 	
 }

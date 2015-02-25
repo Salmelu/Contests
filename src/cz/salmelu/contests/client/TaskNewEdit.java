@@ -3,9 +3,6 @@ package cz.salmelu.contests.client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 import cz.salmelu.contests.net.PacketOrder;
 import cz.salmelu.contests.net.Packet;
@@ -18,7 +15,7 @@ import cz.salmelu.contests.net.ServerError;
  * @author salmelu
  * @param <T> Packet type send to the server
  */
-class TaskNewEdit<T extends Packet> extends TaskContest {
+class TaskNewEdit<T extends Packet> extends TaskAbstract {
 
 	/** An action code for the server */
 	private PacketOrder packetOrder;
@@ -44,34 +41,17 @@ class TaskNewEdit<T extends Packet> extends TaskContest {
 				ActionHandler.get().showConnectionError();
 		});
 	}
-	
+
 	@Override
-	protected Boolean call() throws Exception {
-		try {
-			InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-	        Socket socket = new Socket();
-	        socket.connect(addr);
-	        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-	        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-	        send.writeByte(packetOrder.toByte());
-	        send.writeObject(packet);
-	        send.flush();
-	        boolean ret = get.readBoolean();
-	        if(!ret) {
-	        	setServerError((ServerError) get.readObject());
-		        socket.close();
-				return false;
-	        }
-	        socket.close();
-	        return true;
-		}
-		catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
+	protected void send(ObjectOutputStream sender) throws IOException {
+		 sender.writeByte(packetOrder.toByte());
+	     sender.writeObject(packet);
+	}
+
+	@Override
+	protected void receive(ObjectInputStream receiver, boolean success)
+			throws ClassNotFoundException, IOException {
+		if(!success) setServerError((ServerError) receiver.readObject());
 	}
 	
 }

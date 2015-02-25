@@ -3,9 +3,6 @@ package cz.salmelu.contests.client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -218,7 +215,7 @@ final class CategoryScore implements Displayable {
 	 * A task run when the client wants to send update score packets to the server.
 	 * @author salmelu
 	 */
-	private class UpdateRequest extends TaskContest {
+	private class UpdateRequest extends TaskAbstract {
 		
 		private ArrayList<PacketUpdateScore> updates = null;
 		private int conId;
@@ -234,36 +231,19 @@ final class CategoryScore implements Displayable {
 		}
 
 		@Override
-		protected Boolean call() throws Exception {
-			try {
-				InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-		        Socket socket = new Socket();
-		        socket.connect(addr);
-		        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-		        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-		        send.writeByte(PacketOrder.SCORE_UPDATE.toByte());
-		        send.writeInt(conId);
-		        send.writeInt(updates.size());
-		        for(PacketUpdateScore usp : updates) {
-		        	send.writeObject(usp);
-		        }
-		        send.flush();
-		        boolean ret = get.readBoolean();
-		        if(!ret) {
-		        	setServerError((ServerError) get.readObject());
-			        socket.close();
-					return false;
-		        }
-		        socket.close();
-		        return true;
-			}
-			catch (UnknownHostException e) {
-				e.printStackTrace();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-			return false;
+		protected void send(ObjectOutputStream sender) throws IOException {
+			sender.writeByte(PacketOrder.SCORE_UPDATE.toByte());
+	        sender.writeInt(conId);
+	        sender.writeInt(updates.size());
+	        for(PacketUpdateScore usp : updates) {
+	        	sender.writeObject(usp);
+	        }
+		}
+
+		@Override
+		protected void receive(ObjectInputStream receiver, boolean success)
+				throws ClassNotFoundException, IOException {
+			if(!success) setServerError((ServerError) receiver.readObject());
 		}
 	}
 }

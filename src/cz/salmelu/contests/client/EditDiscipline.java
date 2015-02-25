@@ -83,7 +83,7 @@ final class EditDiscipline implements Displayable {
 		buttonBox.getChildren().add(updateButton);
 		buttonBox.setAlignment(Pos.CENTER);
 		
-		gp.add(new Label("Contest name:"), 0, 0);
+		gp.add(new Label("Discipline name:"), 0, 0);
 		gp.add(name, 1, 0);
 		gp.add(buttonBox, 0, 1, 2, 1);
 	}

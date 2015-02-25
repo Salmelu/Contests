@@ -52,9 +52,7 @@ class DataHolder {
 	 * @return the contest, or null, if it doesn't exist
 	 */
 	protected Contest getContest(int id) {
-		if(contests.containsKey(id))
-			return contests.get(id);
-		return null;
+		return contests.get(id);
 	}
 	
 	/**
@@ -71,10 +69,7 @@ class DataHolder {
 	 * @return true, if the contest was removed, false, if it doesn't exist
 	 */
 	protected boolean deleteContest(int id) {
-		if(!contests.containsKey(id))
-			return false;
-		contests.remove(id);
-		return true;
+		return (contests.remove(id) != null);
 	}
 	
 	/**

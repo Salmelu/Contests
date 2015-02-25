@@ -31,7 +31,7 @@ public class ConfigParser {
 			while((line = reader.readLine()) != null) {
 				if(line.startsWith("#")) continue;
 				String[] split = line.split("\\s*=\\s*", 2);
-				if(split.length != 2 || split[0] == null || split[0] == "" 
+				if(split.length != 2 || split[0] == null || split[0].equals("") 
 						|| split[1] == null || split[1] == "") continue;
 				properties.put(split[0], split[1]);
 			}

@@ -3,9 +3,6 @@ package cz.salmelu.contests.client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 
 import org.controlsfx.control.action.Action;
@@ -69,6 +66,7 @@ class ActionHandler {
 			Label done = new Label("There are no contests found on the server. Create a new contest using the menu.");
 			done.setAlignment(Pos.CENTER);
 			Client.get().mainPanel.setCenter(done);
+			return;
 		}
 		ContestTable.getInstance().displayAll();
 	}
@@ -80,41 +78,21 @@ class ActionHandler {
 	 * @param display when set to true, the task will call {@link #showContestList} to show the list
 	 */
 	protected void reloadContestList(boolean display) {
-		TaskContest load = new TaskContest() {			
+		TaskAbstract load = new TaskAbstract() {
+			@Override
+			protected void send(ObjectOutputStream sender) throws IOException {
+				sender.writeByte(PacketOrder.ALL_GET_NAMES.toByte());
+			}
 			@SuppressWarnings("unchecked")
 			@Override
-			protected Boolean call() {				
-				// Get the stuff from server
-				try {
-					InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-			        Socket socket = new Socket();
-			        socket.connect(addr);
-			        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-			        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-			        send.writeByte(PacketOrder.ALL_GET_NAMES.toByte());
-			        send.flush();
-			        boolean ret = get.readBoolean();
-			        if(!ret) {
-						Label error = new Label("Error loading contest list from server!"); 
-						error.setAlignment(Pos.CENTER);
-						Client.get().mainPanel.setCenter(error);
-						socket.close();
-						return false;
-			        }
-			        Client.get().contests = (HashMap<String, ContestInfo>) get.readObject();
-			        socket.close();
-			        return true;
+			protected void receive(ObjectInputStream receiver, boolean success)
+					throws ClassNotFoundException, IOException {
+				if(!success) {
+					Label error = new Label("Error loading contest list from server!"); 
+					error.setAlignment(Pos.CENTER);
+					Client.get().mainPanel.setCenter(error);
 				}
-				catch (UnknownHostException e) {
-					e.printStackTrace();
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
-				catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-				return false;
+				else Client.get().contests = (HashMap<String, ContestInfo>) receiver.readObject();
 			}
 		};
 		load.setOnSucceeded(event -> {
@@ -154,38 +132,17 @@ class ActionHandler {
 	 * @param display if set to true, displays a success dialog when the contest is loaded.
 	 */
 	protected void loadContest(Integer id, boolean display) {
-		TaskContest load = new TaskContest() {
+		TaskAbstract load = new TaskAbstract() {
 			@Override
-			protected Boolean call() {			
-				try {
-					InetSocketAddress addr = new InetSocketAddress(Config.INET_ADDR, Config.INET_PORT);
-			        Socket socket = new Socket();
-			        socket.connect(addr);
-			        ObjectOutputStream send = new ObjectOutputStream(socket.getOutputStream());
-			        ObjectInputStream get = new ObjectInputStream(socket.getInputStream());
-			        send.writeByte(PacketOrder.CONTEST_GET.toByte());
-			        send.writeInt(id);
-			        send.flush();
-			        boolean ret = get.readBoolean();
-			        if(!ret) {
-			        	setServerError((ServerError) get.readObject());
-						socket.close();
-						return false;
-			        }
-			        Client.get().current = (Contest) get.readObject();
-			        socket.close();
-			        return true;
-				}
-				catch (UnknownHostException e) {
-					e.printStackTrace();
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
-				catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-				return false;
+			protected void send(ObjectOutputStream sender) throws IOException {
+				sender.writeByte(PacketOrder.CONTEST_GET.toByte());
+		        sender.writeInt(id);
+			}
+			@Override
+			protected void receive(ObjectInputStream receiver, boolean success)
+					throws ClassNotFoundException, IOException {
+				if(!success) setServerError((ServerError) receiver.readObject());
+				else Client.get().current = (Contest) receiver.readObject();
 			}
 		};
 		load.setOnSucceeded(event -> {
